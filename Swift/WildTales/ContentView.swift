@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  WildTales
-//
-//  Created by Kurt McCullough on 24/3/2025.
-//
-
 import SwiftUI
 import MapKit
 import AVFoundation
@@ -15,16 +8,24 @@ struct MapView: View {
     
     @EnvironmentObject var appState: AppState
     
-    @State private var mapRegion = MKCoordinateRegion(center: .init(latitude: 0, longitude: 0), span: .init(latitudeDelta: 0, longitudeDelta: 0))
+    @StateObject private var locationManager = LocationManager()
+    @State private var mapRegion = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: -27.4705, longitude: 153.0260), 
+        span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
+    )
+    
     @State private var locations = [Location]()
     @State private var showSheet = false
     @State private var showSettingsSheet = false
-    
-    @StateObject private var locationManager = LocationManager()
+    @State private var isMapInitialized = false
     
     var body: some View {
         ZStack {
-            Map(coordinateRegion: $mapRegion, annotationItems: locations) { location in
+            Map(coordinateRegion: $mapRegion,
+                interactionModes: .all,
+                showsUserLocation: true, // Show blue dot
+                userTrackingMode: .none,
+                annotationItems: locations) { location in
                 MapMarker(coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude))
             }
             .ignoresSafeArea(.all)
@@ -32,26 +33,15 @@ struct MapView: View {
                 locationManager.requestLocation()
             }
             .onChange(of: locationManager.userLocation) { newLocation in
-                if let newLocation = newLocation {
+                if let newLocation = newLocation, !isMapInitialized {
                     mapRegion.center = newLocation.coordinate
+                    isMapInitialized = true // Prevents further unwanted updates
                 }
-            }
-            
-
-            if let userLocation = locationManager.userLocation {
-                Circle()
-                    .fill(Color.red)
-                    .opacity(0.7)
-                    .frame(width: 20, height: 20)
-                    .position(
-                        x: CGFloat(mapRegion.center.longitude ),
-                        y: CGFloat(mapRegion.center.latitude)
-                    ).ignoresSafeArea(.all)
-                   /*.animation(.easeInOut(duration: 0.5), value: userLocation.coordinate)*/
             }
             
             VStack {
                 HStack {
+                    // Back Button
                     Button {
                         appState.clickedGo = false
                     } label: {
@@ -63,8 +53,23 @@ struct MapView: View {
                     .font(.title)
                     .clipShape(Circle())
                     .padding()
-                    
+
                     Spacer()
+                    
+                    // Center Map Button
+                    Button {
+                        if let userLocation = locationManager.userLocation {
+                            mapRegion.center = userLocation.coordinate
+                        }
+                    } label: {
+                        Image(systemName: "location.circle.fill")
+                    }
+                    .padding()
+                    .background(.black.opacity(0.5))
+                    .foregroundStyle(.white)
+                    .font(.title)
+                    .clipShape(Circle())
+                    .padding()
                 }
                 Spacer()
             }
@@ -73,6 +78,7 @@ struct MapView: View {
                 Spacer()
                 
                 HStack {
+                    // Add Location Button
                     Button {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         
@@ -91,6 +97,7 @@ struct MapView: View {
                     
                     Spacer()
                     
+                    // Stories Button
                     Button {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         showSheet.toggle()
@@ -107,6 +114,7 @@ struct MapView: View {
                     
                     Spacer()
                     
+                    // Settings Button
                     Button {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         showSettingsSheet.toggle()
