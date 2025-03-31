@@ -112,11 +112,13 @@ struct Intro: View {
                     .hapticOnTouch()
                     
                 }
+                .ignoresSafeArea(edges: .all)
             }
+            .ignoresSafeArea(edges: .all)
         }
         .tabViewStyle(.page)
         .indexViewStyle(.page(backgroundDisplayMode: .always))
-        .ignoresSafeArea()
+        .ignoresSafeArea(.all)
     }
 }
 

@@ -9,16 +9,41 @@ import SwiftUI
 
 struct ScrapBook: View {
     var body: some View {
-        NavigationView{
-            NavigationLink(destination: Home().navigationBarBackButtonHidden(true)) {
-                Image("homeButton")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 75, height: 75)
-                    .padding()
-                    
+        ZStack{
+            /*NavigationView{
+                HStack{
+                    VStack{
+                        NavigationLink(destination: Home().navigationBarBackButtonHidden(true)) {
+                            Image("homeButton")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 75, height: 75)
+                                .padding()
+                                
+                        }
+                        Spacer()
+                    }
+                    Spacer()
+                }
             }
+            */
+            
+            TabView {
+                
+                ScrapBookMemories()
+                    .tabItem {
+                        Label("Memories", systemImage: "memories")
+                    }
+
+                ScrapBookEdit()
+                    .tabItem {
+                        Label("Edit", systemImage: "scissors")
+                    }
+            }
+            
+
         }
+        
         
     }
 }

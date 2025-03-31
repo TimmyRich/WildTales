@@ -60,7 +60,7 @@ struct Home: View {
                         
                         Group {
                             if hasSeenScrapBookGuide {
-                                NavigationLink(destination: ScrapBook().navigationBarBackButtonHidden(true)) {
+                                NavigationLink(destination: ScrapBook()/*.navigationBarBackButtonHidden(true)*/) {
                                     Image("homeButton1")
                                         .resizable()
                                         .scaledToFit()
@@ -68,7 +68,7 @@ struct Home: View {
                                         .padding(.top, 150)
                                 }
                             } else {
-                                NavigationLink(destination: ScrapBookGuide().navigationBarBackButtonHidden(true)) {
+                                NavigationLink(destination: ScrapBookGuide()) {
                                     Image("homeButton1")
                                         .resizable()
                                         .scaledToFit()
@@ -78,7 +78,7 @@ struct Home: View {
                             }
                         }
 
-                        NavigationLink(destination: Intro()) {
+                        NavigationLink(destination: Intro().navigationBarBackButtonHidden(true)) {
                             Image("homeButton3")
                                 .resizable()
                                 .scaledToFit()
