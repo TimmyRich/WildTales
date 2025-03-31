@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WebKit
 
 struct Intro: View {
     
@@ -13,12 +14,30 @@ struct Intro: View {
     
     var body: some View {
         TabView {
-            Image("Narrative 1")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .ignoresSafeArea(.all)
-                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-                .ignoresSafeArea(.all)
+            ZStack {
+                Image("Narrative 1")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .ignoresSafeArea(.all)
+                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+
+                HStack{
+                    GIFView(gifName: "swipe") // Add the GIF
+                        .frame(width: 100, height: 100)
+                        .padding(.bottom, UIScreen.main.bounds.height-200)
+                                }
+                Text("Swipe to view more!")
+                    .padding(.bottom, UIScreen.main.bounds.height-350)
+                    .font(Font.custom("Inter", size: 20))
+                    .foregroundColor(/*@START_MENU_TOKEN@*/Color("Pink")/*@END_MENU_TOKEN@*/)
+
+                
+                    
+                }
+                
+                
+
+            
             
             Image("Narrative 2")
                 .resizable()
@@ -116,6 +135,26 @@ struct Intro: View {
         .indexViewStyle(.page(backgroundDisplayMode: .always))
         .ignoresSafeArea()
     }
+}
+
+struct GIFView: UIViewRepresentable {
+    let gifName: String
+
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = WKWebView()
+        webView.backgroundColor = .clear
+        webView.isOpaque = false
+        
+        if let path = Bundle.main.path(forResource: gifName, ofType: "gif") {
+            let url = URL(fileURLWithPath: path)
+            let request = URLRequest(url: url)
+            webView.load(request)
+        }
+
+        return webView
+    }
+
+    func updateUIView(_ uiView: WKWebView, context: Context) {}
 }
 
 #Preview {
