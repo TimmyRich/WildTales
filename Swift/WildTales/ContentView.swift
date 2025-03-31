@@ -50,22 +50,9 @@ struct MapView: View {
                             .padding()
                             //.hapticOnTouch()
                     }
-                    // Back Button
-                    /*Button {
-                        appState.clickedGo = false
-                    } label: {
-                        Image(systemName: "arrowshape.backward")
-                    }
-                    .padding()
-                    .background(.black.opacity(0.5))
-                    .foregroundStyle(.white)
-                    .font(.title)
-                    .clipShape(Circle())
-                    .padding()*/
-
+                
                     Spacer()
                     
-                    // Center Map Button
                     Button {
                         if let userLocation = locationManager.userLocation {
                             mapRegion.center = userLocation.coordinate

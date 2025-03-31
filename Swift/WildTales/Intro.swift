@@ -92,9 +92,6 @@ struct Intro: View {
                     .ignoresSafeArea(.all)
                 
                 VStack{
-                    
-                    
-                    
                     Button("Continue") {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         appState.clickedGo = true
@@ -115,15 +112,7 @@ struct Intro: View {
                     .hapticOnTouch()
                     
                 }
-                
-                
-                
-                
             }
-            
-           
-
-
         }
         .tabViewStyle(.page)
         .indexViewStyle(.page(backgroundDisplayMode: .always))

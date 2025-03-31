@@ -93,7 +93,7 @@ struct Landing: View {
                         Text("Login")
                             .font(Font.custom("Inter", size: 15))
                             .foregroundColor(Color.white)
-                            .frame(maxWidth: .infinity, minHeight: 20) // Expands the text inside
+                            .frame(maxWidth: .infinity, minHeight: 20) 
                     }
                     .frame(width: UIScreen.main.bounds.width-150, height: 30) 
                     .background(Color("Pink"))
