@@ -12,14 +12,14 @@ class AppState: ObservableObject {
     @Published var showIntro: Bool
     @Published var isLoggedIn: Bool {
         didSet {
-            UserDefaults.standard.set(isLoggedIn, forKey: "isLoggedIn") // Save login state
+            UserDefaults.standard.set(isLoggedIn, forKey: "isLoggedIn") 
         }
     }
     
     init() {
         self.clickedGo = false
         self.showIntro = false
-        self.isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn") // Load login state
+        self.isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
     }
 }
 
@@ -32,13 +32,13 @@ struct SwiftUI_DemoApp: App {
     var body: some Scene {
         WindowGroup {
             if appState.isLoggedIn {
-                MapView() // Redirect if already logged in
+                Home()
                     .environmentObject(appState)
             } else if appState.showIntro {
                 Intro()
                     .environmentObject(appState)
             } else if appState.clickedGo {
-                MapView()
+                Home()
                     .environmentObject(appState)
             } else {
                 Landing()

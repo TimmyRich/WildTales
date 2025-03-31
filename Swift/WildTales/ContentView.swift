@@ -41,8 +41,17 @@ struct MapView: View {
             
             VStack {
                 HStack {
+                    
+                    NavigationLink(destination: Home().navigationBarBackButtonHidden(true)) {
+                        Image("homeButton")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 75, height: 75)
+                            .padding()
+                            //.hapticOnTouch()
+                    }
                     // Back Button
-                    Button {
+                    /*Button {
                         appState.clickedGo = false
                     } label: {
                         Image(systemName: "arrowshape.backward")
@@ -52,7 +61,7 @@ struct MapView: View {
                     .foregroundStyle(.white)
                     .font(.title)
                     .clipShape(Circle())
-                    .padding()
+                    .padding()*/
 
                     Spacer()
                     

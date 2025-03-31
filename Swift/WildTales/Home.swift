@@ -52,52 +52,37 @@ struct Home: View {
 
                     HStack{
                         
+                        NavigationLink(destination: MapView().navigationBarBackButtonHidden(true)) {
+                            Image("homeButton2")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 75, height: 75)
+                                //.hapticOnTouch()
+                        }
                         
-                        Button(action: {
-                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-
-                                }) {
-                                    Image("homeButton2")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 75, height: 75)
-                                        .padding(.horizontal)
-                                        .hapticOnTouch()
-                                }
+                        NavigationLink(destination: Intro().navigationBarBackButtonHidden(true)) {
+                            Image("homeButton1")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 75, height: 75)
+                                .padding(.top, 150)
+                                //.hapticOnTouch()
+                        }
                         
-                        Button(action: {
-                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-
-                                }) {
-                                    Image("homeButton1")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 75, height: 75)
-                                        .padding(.horizontal)
-                                        .padding(.top, 200)
-                                        .hapticOnTouch()
-                                }
+                        NavigationLink(destination: Intro()) {
+                            Image("homeButton3")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 75, height: 75)
+                                //.hapticOnTouch()
+                        }
                         
-                        Button(action: {
-                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                                }) {
-                                    Image("homeButton3")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 75, height: 75)
-                                        .padding(.horizontal)
-                                        .hapticOnTouch()
-                                }
+                        
+                        
                         
                     }.padding(.top, 300)
 
-                }
-                
-                
-                
-                
-
-                
+                } 
                 
             }
             .onAppear(){
