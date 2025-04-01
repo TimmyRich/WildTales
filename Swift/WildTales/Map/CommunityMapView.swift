@@ -1,8 +1,8 @@
 //
-//  MapView.swift
+//  CommunityMapView.swift
 //  WildTales
 //
-//  Created by Kurt McCullough on 22/3/2025.
+//  Created by Kurt McCullough on 1/4/2025.
 //
 import SwiftUI
 import MapKit
@@ -10,13 +10,13 @@ import AVFoundation
 import SpriteKit
 import CoreHaptics
 
-struct MapView: View {
+struct CommunityMapView: View {
     
     @EnvironmentObject var appState: AppState
     
     @StateObject private var locationManager = LocationManager()
     @State private var mapRegion = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: -27.4705, longitude: 153.0260), 
+        center: CLLocationCoordinate2D(latitude: -27.4705, longitude: 153.0260),
         span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
     )
     
@@ -143,5 +143,5 @@ struct MapView: View {
 }
 
 #Preview {
-    MapView()
+    CommunityMapView()
 }
