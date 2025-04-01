@@ -78,7 +78,7 @@ struct Home: View {
                             }
                         }
 
-                        NavigationLink(destination: Intro().navigationBarBackButtonHidden(true)) {
+                        NavigationLink(destination: Intro()/*.navigationBarBackButtonHidden(true)*/) {
                             Image("homeButton3")
                                 .resizable()
                                 .scaledToFit()
