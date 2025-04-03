@@ -94,23 +94,7 @@ struct CommunityMapView: View {
                 
                 HStack {
                     // Add Location Button
-                    Button {
-                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        
-                        let newLocation = Location(id: UUID(), name: "New Location", description: "", latitude: mapRegion.center.latitude, longitude: mapRegion.center.longitude)
-                        locations.append(newLocation)
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                    .font(.system(size: 24))
-                    .foregroundColor(.white)
-                    .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
-                    .shadow(radius: 5)
-                    .padding()
-                    .hapticOnTouch()
-                    
-                    Spacer()
+
                     
                     // Stories Button
                     Button {
@@ -129,6 +113,7 @@ struct CommunityMapView: View {
                     
                     Spacer()
                     
+                    
                     Button {
                         if let userLocation = locationManager.userLocation {
                             mapRegion.center = userLocation.coordinate
@@ -138,21 +123,6 @@ struct CommunityMapView: View {
                     }.simultaneousGesture(TapGesture().onEnded {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                     })
-                    .font(.system(size: 24))
-                    .foregroundColor(.white)
-                    .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
-                    .shadow(radius: 5)
-                    .padding()
-                    .hapticOnTouch()
-                    
-                    
-                    Button {
-                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        showSettingsSheet.toggle()
-                    } label: {
-                        Image(systemName: "gear")
-                    }
                     .font(.system(size: 24))
                     .foregroundColor(.white)
                     .frame(width: 60, height: 60)

@@ -66,7 +66,7 @@ struct MapChoice: View {
                         })
                         .padding()
                         
-                        NavigationLink(destination: CommunityMapView().navigationBarBackButtonHidden(true)) {
+                        NavigationLink(destination: CreateMapView().navigationBarBackButtonHidden(true)) {
                             Image("create")
                                 .resizable()
                                 .scaledToFit()
