@@ -158,9 +158,21 @@ struct Landing: View {
                     }
                     
                     Spacer()
+                    
                 }
                 .padding(.bottom)
-                
+                Button("Skip") {
+                    UserDefaults.standard.set(true, forKey: "isLoggedIn")
+                    appState.showIntro = true
+                    AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                }
+                .frame(width: 100, height: 30)
+                .background(Color.white)
+                .foregroundColor(Color("Pink"))
+                .cornerRadius(10)
+                .font(Font.custom("Inter", size: 10))
+                .padding(.top, 600)
+                .hapticOnTouch()
             }
             .sheet(isPresented: $showSignUp) {
                 SignUp()
