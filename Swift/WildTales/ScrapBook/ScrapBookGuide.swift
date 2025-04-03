@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ScrapBookGuide: View {
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.presentationMode) var goBack
     
     var body: some View {
         NavigationView {
@@ -38,6 +39,28 @@ struct ScrapBookGuide: View {
                     .simultaneousGesture(TapGesture().onEnded {
                         UserDefaults.standard.set(true, forKey: "hasSeenScrapBookGuide")
                     })
+                }
+                HStack{
+                    VStack{
+                        Button {
+                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                            goBack.wrappedValue.dismiss()
+                        } label: {
+                            Image(systemName: "chevron.left")
+                        }
+                        .font(.system(size: 24))
+                        .foregroundColor(.white)
+                        .frame(width: 60, height: 60)
+                        .background(Circle().fill(Color("Pink")))
+                        .shadow(radius: 5)
+                        .padding()
+                        //.hapticOnTouch()
+                        
+                        Spacer()
+                        
+                    }
+                    
+                    Spacer()
                 }
             }
         }

@@ -22,7 +22,7 @@ struct Emergency: View {
                     .fontWeight(.bold)
                 
                 Button("Call your parents?") {
-                    //put actioej haer
+                    AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
                 }
                 .foregroundColor(.white)
                 .frame(width: 300, height: 50)
@@ -30,7 +30,7 @@ struct Emergency: View {
                 .cornerRadius(10)
                 
                 Button("Find your parents!") {
-                    //put actioej haer
+                    AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
                 }
                 .foregroundColor(.white)
                 .frame(width: 300, height: 50)
@@ -40,6 +40,7 @@ struct Emergency: View {
                 Image("unsafe")
                     .resizable()
                     .frame(width: 170 , height: 150)
+                    .padding(.trailing, 100)
                 
                 Text("Feeling Unsafe?")
                     .font(.title2)
@@ -48,7 +49,7 @@ struct Emergency: View {
                 
                 
                 Button("Find security ") {
-                    //put actioej haer
+                    AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
                 }
                 .frame(width: 300, height: 50)
                 .foregroundColor(.white)
@@ -56,7 +57,7 @@ struct Emergency: View {
                 .cornerRadius(10)
                 
                 Button("Rescue") {
-                    //put actioej haer
+                    AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
                 }
                 .frame(width: 300, height: 50)
                 .foregroundColor(.white)
@@ -79,7 +80,9 @@ struct Emergency: View {
                     .padding()
                     .background(Color("Pink"))
                     .clipShape(Circle())
-            }
+            }.simultaneousGesture(TapGesture().onEnded {
+                AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+            })
             .padding(.trailing, 280)
             .padding(.bottom, 520)
             
@@ -88,20 +91,13 @@ struct Emergency: View {
                 
                 Image("Quokka_1")
                     .resizable()
-                    .frame(width: 200 , height: 280)
+                    .frame(width: 160 , height: 240)
                     .rotationEffect(Angle(degrees: -50))
                     .padding(.top, 100)
-                    .padding(.leading, 400)
+                    .padding(.leading, 300)
                 
             }
-           
-           
-                
-                
-
-            
         }
-        
     }
 }
 

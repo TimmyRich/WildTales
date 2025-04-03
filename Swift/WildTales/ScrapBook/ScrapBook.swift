@@ -8,25 +8,12 @@
 import SwiftUI
 
 struct ScrapBook: View {
+    
+    @Environment(\.presentationMode) var goBack
+    
     var body: some View {
         ZStack{
-            /*NavigationView{
-                HStack{
-                    VStack{
-                        NavigationLink(destination: Home().navigationBarBackButtonHidden(true)) {
-                            Image("homeButton")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 75, height: 75)
-                                .padding()
-                                
-                        }
-                        Spacer()
-                    }
-                    Spacer()
-                }
-            }
-            */
+            
             
             TabView {
                 
@@ -40,6 +27,30 @@ struct ScrapBook: View {
                         Label("Edit", systemImage: "scissors")
                     }
             }
+            
+            HStack{
+                VStack{
+                    Button {
+                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                        goBack.wrappedValue.dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                    }
+                    .font(.system(size: 24))
+                    .foregroundColor(.white)
+                    .frame(width: 60, height: 60)
+                    .background(Circle().fill(Color("Pink")))
+                    .shadow(radius: 5)
+                    .padding()
+                    .hapticOnTouch()
+                    
+                    Spacer()
+                    
+                }
+                
+                Spacer()
+            }
+            
             
 
         }

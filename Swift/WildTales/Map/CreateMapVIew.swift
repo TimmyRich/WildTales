@@ -15,6 +15,10 @@ struct CreateMapView: View {
     
     @EnvironmentObject var appState: AppState
     
+    @Environment(\.presentationMode) var goBack
+    
+    @State private var showEmergency = false
+    
     @StateObject private var locationManager = LocationManager()
     @State private var mapRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: -27.4705, longitude: 153.0260),
@@ -42,37 +46,46 @@ struct CreateMapView: View {
             .onChange(of: locationManager.userLocation) { newLocation in
                 if let newLocation = newLocation, !isMapInitialized {
                     mapRegion.center = newLocation.coordinate
-                    isMapInitialized = true 
+                    isMapInitialized = true
                 }
             }
             
             VStack {
                 HStack {
+
                     
-                    NavigationLink(destination: Home().navigationBarBackButtonHidden(true)) {
-                        Image("homeButton")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 75, height: 75)
-                            .padding()
-                            //.hapticOnTouch()
+                    Button {
+                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                        goBack.wrappedValue.dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
                     }
+                    .font(.system(size: 24))
+                    .foregroundColor(.white)
+                    .frame(width: 60, height: 60)
+                    .background(Circle().fill(Color("Pink")))
+                    .shadow(radius: 5)
+                    .padding()
+                    .hapticOnTouch()
+                    
+                    
                 
                     Spacer()
                     
-                    Button {
-                        if let userLocation = locationManager.userLocation {
-                            mapRegion.center = userLocation.coordinate
-                        }
-                    } label: {
-                        Image(systemName: "location.circle.fill")
+                    Button(action: {
+                        showEmergency = true
+                        AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
+                    }) {
+                        Image(systemName: "phone.connection.fill")
+                            .font(.system(size: 24))
+                            .foregroundColor(.white)
+                            .frame(width: 60, height: 60)
+                            .background(Circle().fill(Color.red))
+                            .shadow(radius: 5)
+                            .padding()
                     }
-                    .padding()
-                    .background(.black.opacity(0.5))
-                    .foregroundStyle(.white)
-                    .font(.title)
-                    .clipShape(Circle())
-                    .padding()
+                    
+                    
                 }
                 Spacer()
             }
@@ -90,11 +103,11 @@ struct CreateMapView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
-                    .padding()
-                    .background(.black.opacity(0.5))
-                    .foregroundStyle(.white)
-                    .font(.title)
-                    .clipShape(Circle())
+                    .font(.system(size: 24))
+                    .foregroundColor(.white)
+                    .frame(width: 60, height: 60)
+                    .background(Circle().fill(Color("Pink")))
+                    .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
                     
@@ -107,32 +120,66 @@ struct CreateMapView: View {
                     } label: {
                         Image(systemName: "book")
                     }
-                    .padding()
-                    .background(.black.opacity(0.5))
-                    .foregroundStyle(.white)
-                    .font(.title)
-                    .clipShape(Circle())
+                    .font(.system(size: 24))
+                    .foregroundColor(.white)
+                    .frame(width: 60, height: 60)
+                    .background(Circle().fill(Color("Pink")))
+                    .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
                     
                     Spacer()
                     
-                    // Settings Button
+                    Button {
+                        if let userLocation = locationManager.userLocation {
+                            mapRegion.center = userLocation.coordinate
+                        }
+                    } label: {
+                        Image(systemName: "location.circle.fill")
+                    }.simultaneousGesture(TapGesture().onEnded {
+                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                    })
+                    .font(.system(size: 24))
+                    .foregroundColor(.white)
+                    .frame(width: 60, height: 60)
+                    .background(Circle().fill(Color("Pink")))
+                    .shadow(radius: 5)
+                    .padding()
+                    .hapticOnTouch()
+                    
+                    
                     Button {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         showSettingsSheet.toggle()
                     } label: {
                         Image(systemName: "gear")
                     }
-                    .padding()
-                    .background(.black.opacity(0.5))
-                    .foregroundStyle(.white)
-                    .font(.title)
-                    .clipShape(Circle())
+                    .font(.system(size: 24))
+                    .foregroundColor(.white)
+                    .frame(width: 60, height: 60)
+                    .background(Circle().fill(Color("Pink")))
+                    .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
+                    
+                    
+                    
                 }
             }
+            .overlay(
+                Group {
+                    if showEmergency {
+                        ZStack {
+                            Color.black.opacity(0.4)
+                                .ignoresSafeArea()
+                                .onTapGesture { showEmergency = false }
+
+                            Emergency(showEmergency: $showEmergency)
+                                .transition(.scale)
+                        }
+                    }
+                }
+            )
         }
         .sheet(isPresented: $showSheet) {
             Stories()
@@ -146,3 +193,5 @@ struct CreateMapView: View {
 #Preview {
     CreateMapView()
 }
+
+

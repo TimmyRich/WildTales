@@ -14,6 +14,7 @@ import CoreHaptics
 struct MapChoice: View {
     
     @EnvironmentObject var appState: AppState
+    @Environment(\.presentationMode) var goBack
     
     @StateObject private var locationManager = LocationManager()
     @State private var mapRegion = MKCoordinateRegion(
@@ -27,62 +28,95 @@ struct MapChoice: View {
     @State private var isMapInitialized = false
     
     var body: some View {
-        ZStack {
-            Map(coordinateRegion: $mapRegion,
-                interactionModes: .all,
-                userTrackingMode: .none,
-                annotationItems: locations) { location in
-                MapMarker(coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude))
-            }
-            .ignoresSafeArea(.all)
-            .onAppear {
-                locationManager.requestLocation()
-            }
-            .onChange(of: locationManager.userLocation) { newLocation in
-                if let newLocation = newLocation, !isMapInitialized {
-                    mapRegion.center = newLocation.coordinate
-                    isMapInitialized = true 
+        
+        NavigationView{
+            ZStack {
+                Map(coordinateRegion: $mapRegion,
+                    interactionModes: .all,
+                    userTrackingMode: .none,
+                    annotationItems: locations) { location in
+                    MapMarker(coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude))
                 }
-            }
-            ZStack{
-                Rectangle()
-                    .foregroundColor(.white)
-                    .frame(width: 300, height: 500)
-                    .cornerRadius(20)
-                VStack{
-                    Button(action: {
-                        // Aaction
-                    }) {
-                        Image("community")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 250, height: 100)
+                    .ignoresSafeArea(.all)
+                    .onAppear {
+                        locationManager.requestLocation()
                     }
+                    .onChange(of: locationManager.userLocation) { newLocation in
+                        if let newLocation = newLocation, !isMapInitialized {
+                            mapRegion.center = newLocation.coordinate
+                            isMapInitialized = true
+                        }
+                    }
+                ZStack{
+                    Rectangle()
+                        .foregroundColor(.white)
+                        .frame(width: 300, height: 500)
+                        .cornerRadius(20)
+                    VStack{
+                        
+                        Text("Select or Create a Map!")
+
+                        NavigationLink(destination: CommunityMapView().navigationBarBackButtonHidden(true)) {
+                            Image("community")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 250, height: 100)
+                        }.simultaneousGesture(TapGesture().onEnded {
+                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                        })
+                        .padding()
+                        
+                        NavigationLink(destination: CommunityMapView().navigationBarBackButtonHidden(true)) {
+                            Image("create")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 250, height: 100)
+                        }.simultaneousGesture(TapGesture().onEnded {
+                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                        })
+                        .padding()
+                        
+                        NavigationLink(destination: MapView().navigationBarBackButtonHidden(true)) {
+                            Image("cexisting")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 250, height: 100)
+                        }.simultaneousGesture(TapGesture().onEnded {
+                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                        })
+                        .padding()
+                    }
+                    HStack{
+                        VStack{
+                            Button(action: {
+                                goBack.wrappedValue.dismiss()
+                                AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                            }) {
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 24))
+                                    .foregroundColor(.white)
+                                    .frame(width: 60, height: 60)
+                                    .background(Circle().fill(Color("Pink")))
+                                    .shadow(radius: 5)
+                                    //.hapticOnTouch()
+                                }
+                            Spacer()
+                            
+                        }
+                        .padding(.leading, 0.0)
+                        Spacer()
+                    }
+                    .padding(.leading)
                     
-                    Button(action: {
-                        // Aaction
-                    }) {
-                        Image("create")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 250, height: 100)
-                    }
                     
-                    Button(action: {
-                        // Aaction
-                    }) {
-                        Image("cexisting")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 250, height: 100)
-                    }
+                    
                 }
                 
                 
             }
-            
             
         }
+        
         .sheet(isPresented: $showSheet) {
             Stories()
         }

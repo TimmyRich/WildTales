@@ -28,7 +28,6 @@ struct Home: View {
                 
                 VStack {
                     HStack {
-                        
                         Spacer()
                         
                         Image("Quokka_2")
@@ -44,13 +43,16 @@ struct Home: View {
                 VStack {
                     HStack {
                         Button(action: {
+                            AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
                             showEmergency = true
                         }) {
                             Image(systemName: "phone.connection.fill")
+                                .font(.system(size: 24))
                                 .foregroundColor(.white)
+                                .frame(width: 60, height: 60)
+                                .background(Circle().fill(Color.red))
+                                .shadow(radius: 5)
                                 .padding()
-                                .background(Color.red)
-                                .clipShape(Circle())
                         }
                         .padding()
                         
@@ -68,57 +70,69 @@ struct Home: View {
                 
                 VStack {
                     HStack {
-                        NavigationLink(destination: MapView().navigationBarBackButtonHidden(true)) {
+                        NavigationLink(destination: MapChoice().navigationBarBackButtonHidden(true)) {
                             Image("homeButton2")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 75, height: 75)
-                        }
+                        }.simultaneousGesture(TapGesture().onEnded {
+                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                        })
                         
                         Group {
                             if hasSeenScrapBookGuide {
-                                NavigationLink(destination: ScrapBook()) {
+                                NavigationLink(destination: ScrapBook().navigationBarBackButtonHidden(true)) {
                                     Image("homeButton1")
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 75, height: 75)
                                         .padding(.top, 150)
-                                }
+                                }.simultaneousGesture(TapGesture().onEnded {
+                                    AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                                })
                             } else {
-                                NavigationLink(destination: ScrapBookGuide()) {
+                                NavigationLink(destination: ScrapBookGuide().navigationBarBackButtonHidden(true)) {
                                     Image("homeButton1")
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 75, height: 75)
                                         .padding(.top, 150)
-                                }
+                                }.simultaneousGesture(TapGesture().onEnded {
+                                    AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                                })
                             }
                         }
                         
-                        NavigationLink(destination: Intro()) {
+                        NavigationLink(destination: Intro().navigationBarBackButtonHidden(true)) {
                             Image("homeButton3")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 75, height: 75)
-                        }
+                        }.simultaneousGesture(TapGesture().onEnded {
+                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                        })
                     }
                     .padding(.top, 300)
                 }
-                
-                if showEmergency {
-                    ZStack {
-                        Color.black.opacity(0.4)
-                            .ignoresSafeArea()
-                            .onTapGesture { showEmergency = false }
-                        
-                        Emergency(showEmergency: $showEmergency)
-                            //.transition(.scale)
+            }
+            .overlay(
+                Group {
+                    if showEmergency {
+                        ZStack {
+                            Color.black.opacity(0.4)
+                                .ignoresSafeArea()
+                                .onTapGesture { showEmergency = false }
+                            
+                            Emergency(showEmergency: $showEmergency)
+                                .transition(.scale)
+                        }
                     }
                 }
-            }
+            )
             .onAppear {
                 AudioManager.startBackgroundMusic()
             }
+            
         }
     }
 }
