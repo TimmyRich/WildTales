@@ -25,7 +25,7 @@ class AppState: ObservableObject {
 
 
 @main
-struct SwiftUI_DemoApp: App {
+struct WildTales: App {
     
     @StateObject var appState = AppState()
     

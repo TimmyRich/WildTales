@@ -44,11 +44,43 @@ struct MapChoice: View {
                     isMapInitialized = true 
                 }
             }
+            ZStack{
+                Rectangle()
+                    .foregroundColor(.white)
+                    .frame(width: 300, height: 500)
+                    .cornerRadius(20)
+                VStack{
+                    Button(action: {
+                        // Aaction
+                    }) {
+                        Image("community")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 250, height: 100)
+                    }
+                    
+                    Button(action: {
+                        // Aaction
+                    }) {
+                        Image("create")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 250, height: 100)
+                    }
+                    
+                    Button(action: {
+                        // Aaction
+                    }) {
+                        Image("cexisting")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 250, height: 100)
+                    }
+                }
+                
+                
+            }
             
-            Rectangle()
-                .foregroundColor(.white)
-                .frame(width: 300, height: 500)
-                .cornerRadius(20)
             
         }
         .sheet(isPresented: $showSheet) {

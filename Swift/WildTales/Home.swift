@@ -11,16 +11,12 @@ import SwiftUI
 struct Home: View {
     @EnvironmentObject var appState: AppState
     
-    @State private var username: String = ""
-    @State private var password: String = ""
-    
-    @State private var showSignUp = false
-    @State private var showLogIn = false
+    @State private var showEmergency = false
     
     var hasSeenScrapBookGuide: Bool {
         UserDefaults.standard.bool(forKey: "hasSeenScrapBookGuide")
     }
-
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -29,25 +25,47 @@ struct Home: View {
                     .aspectRatio(contentMode: .fill)
                     .ignoresSafeArea(edges: .all)
                     .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-
+                
                 VStack {
                     HStack {
+                        
                         Spacer()
+                        
                         Image("Quokka_2")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(width: UIScreen.main.bounds.width / 4, height: UIScreen.main.bounds.height / 4)
                             .ignoresSafeArea(.all)
                     }
+                    
                     Spacer()
                 }
-
+                
+                VStack {
+                    HStack {
+                        Button(action: {
+                            showEmergency = true
+                        }) {
+                            Image(systemName: "phone.connection.fill")
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(Color.red)
+                                .clipShape(Circle())
+                        }
+                        .padding()
+                        
+                        Spacer()
+                    }
+                    
+                    Spacer()
+                }
+                
                 Image("logoTitle")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 200, height: 200)
                     .padding(.bottom, 200)
-
+                
                 VStack {
                     HStack {
                         NavigationLink(destination: MapView().navigationBarBackButtonHidden(true)) {
@@ -57,10 +75,9 @@ struct Home: View {
                                 .frame(width: 75, height: 75)
                         }
                         
-                        
                         Group {
                             if hasSeenScrapBookGuide {
-                                NavigationLink(destination: ScrapBook()/*.navigationBarBackButtonHidden(true)*/) {
+                                NavigationLink(destination: ScrapBook()) {
                                     Image("homeButton1")
                                         .resizable()
                                         .scaledToFit()
@@ -77,8 +94,8 @@ struct Home: View {
                                 }
                             }
                         }
-
-                        NavigationLink(destination: Intro()/*.navigationBarBackButtonHidden(true)*/) {
+                        
+                        NavigationLink(destination: Intro()) {
                             Image("homeButton3")
                                 .resizable()
                                 .scaledToFit()
@@ -86,6 +103,17 @@ struct Home: View {
                         }
                     }
                     .padding(.top, 300)
+                }
+                
+                if showEmergency {
+                    ZStack {
+                        Color.black.opacity(0.4)
+                            .ignoresSafeArea()
+                            .onTapGesture { showEmergency = false }
+                        
+                        Emergency(showEmergency: $showEmergency)
+                            //.transition(.scale)
+                    }
                 }
             }
             .onAppear {
@@ -96,8 +124,6 @@ struct Home: View {
 }
 
 
-
-#Preview {
+#Preview{
     Home()
 }
-

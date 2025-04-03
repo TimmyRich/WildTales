@@ -67,7 +67,7 @@ struct MapView: View {
                         Image(systemName: "location.circle.fill")
                     }
                     .padding()
-                    .background(.black.opacity(0.5))
+                    .background(Color("Pink").opacity(0.8))
                     .foregroundStyle(.white)
                     .font(.title)
                     .clipShape(Circle())
@@ -90,7 +90,7 @@ struct MapView: View {
                         Image(systemName: "plus")
                     }
                     .padding()
-                    .background(.black.opacity(0.5))
+                    .background(Color("Pink").opacity(0.8))
                     .foregroundStyle(.white)
                     .font(.title)
                     .clipShape(Circle())
@@ -107,7 +107,7 @@ struct MapView: View {
                         Image(systemName: "book")
                     }
                     .padding()
-                    .background(.black.opacity(0.5))
+                    .background(Color("Pink").opacity(0.8))
                     .foregroundStyle(.white)
                     .font(.title)
                     .clipShape(Circle())
@@ -124,7 +124,7 @@ struct MapView: View {
                         Image(systemName: "gear")
                     }
                     .padding()
-                    .background(.black.opacity(0.5))
+                    .background(Color("Pink").opacity(0.8))
                     .foregroundStyle(.white)
                     .font(.title)
                     .clipShape(Circle())
@@ -145,3 +145,5 @@ struct MapView: View {
 #Preview {
     MapView()
 }
+
+
