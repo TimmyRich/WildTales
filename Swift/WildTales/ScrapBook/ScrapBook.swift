@@ -7,14 +7,15 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct ScrapBook: View {
     
     @Environment(\.presentationMode) var goBack
     
     var body: some View {
         ZStack{
-            
-            
+            // TabView with custom accent color
             TabView {
                 
                 ScrapBookMemories()
@@ -27,6 +28,7 @@ struct ScrapBook: View {
                         Label("Edit", systemImage: "scissors")
                     }
             }
+            .accentColor(.white)  // Set the color of the tab items to blue (or any color you prefer)
             
             HStack{
                 VStack{
@@ -50,15 +52,12 @@ struct ScrapBook: View {
                 
                 Spacer()
             }
-            
-            
-
         }
-        
-        
     }
 }
 
 #Preview {
     ScrapBook()
 }
+
+
