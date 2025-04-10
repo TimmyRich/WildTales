@@ -10,25 +10,35 @@ import SwiftUI
 class AppState: ObservableObject {
     @Published var clickedGo: Bool
     @Published var showIntro: Bool
+    @Published var isLoggedIn: Bool {
+        didSet {
+            UserDefaults.standard.set(isLoggedIn, forKey: "isLoggedIn") 
+        }
+    }
     
-    init(clickedGo: Bool = false, showIntro: Bool = false) {
-        self.clickedGo = clickedGo
-        self.showIntro = showIntro
+    init() {
+        self.clickedGo = false
+        self.showIntro = false
+        self.isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
     }
 }
 
+
 @main
-struct SwiftUI_DemoApp: App {
+struct WildTales: App {
     
-    @StateObject var appState = AppState(clickedGo: false, showIntro: false)
+    @StateObject var appState = AppState()
     
     var body: some Scene {
         WindowGroup {
-            if appState.showIntro {
+            if appState.isLoggedIn {
+                Home()
+                    .environmentObject(appState)
+            } else if appState.showIntro {
                 Intro()
                     .environmentObject(appState)
             } else if appState.clickedGo {
-                MapView()
+                Home()
                     .environmentObject(appState)
             } else {
                 Landing()

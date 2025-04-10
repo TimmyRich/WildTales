@@ -13,11 +13,10 @@ class AudioManager {
 
     static func startBackgroundMusic() {
         if backgroundPlayer == nil {
-            guard let path = Bundle.main.path(forResource: "music1.m4a", ofType: nil) else {
+            guard let url = Bundle.main.url(forResource: "music2", withExtension: "m4a") else {
                 print("Background music file not found")
                 return
             }
-            let url = URL(fileURLWithPath: path)
             
             do {
                 backgroundPlayer = try AVAudioPlayer(contentsOf: url)
@@ -37,13 +36,12 @@ class AudioManager {
     }
 
     static func playSound(soundName: String, soundVol: Float) {
-        guard let path = Bundle.main.path(forResource: soundName, ofType: nil) else {
-            print("Sound path not created")
+        let soundPath = soundName
+        guard let url = Bundle.main.url(forResource: soundPath, withExtension: nil) else {
+            print("Sound file not found: \(soundPath)")
             return
         }
 
-        let url = URL(fileURLWithPath: path)
-        
         do {
             player = try AVAudioPlayer(contentsOf: url)
             player?.volume = soundVol

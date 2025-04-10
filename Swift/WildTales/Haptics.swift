@@ -10,7 +10,7 @@ import UIKit
 
 struct HapticOnTouch: ViewModifier {
     @State var isDragging: Bool = false
-
+    
     func body(content: Content) -> some View {
         content
             .simultaneousGesture(
@@ -20,7 +20,7 @@ struct HapticOnTouch: ViewModifier {
                             let impactLight = UIImpactFeedbackGenerator(style: .light)
                             impactLight.impactOccurred()
                         }
-
+                        
                         isDragging = true
                     }
                     .onEnded { _ in

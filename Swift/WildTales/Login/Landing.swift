@@ -17,10 +17,8 @@ struct Landing: View {
     @State private var showSignUp = false
     @State private var showLogIn = false
     
-    @State private var isMuted: Bool = false // Track mute state
     
     var body: some View {
-        
         NavigationView {
             ZStack {
                 Image("Background1")
@@ -43,7 +41,7 @@ struct Landing: View {
                     
                     Spacer()
                 }
-
+                
                 VStack {
                     Spacer()
                     
@@ -58,7 +56,7 @@ struct Landing: View {
                     
                     Spacer()
                 }
-
+                
                 VStack {
                     Spacer()
                     
@@ -75,34 +73,38 @@ struct Landing: View {
                         .cornerRadius(10)
                         .autocapitalization(.none)
                         .disableAutocorrection(true)
-
+                    
                     SecureField("Password", text: $password)
                         .padding(.leading)
                         .font(Font.custom("Inter", size: 15))
                         .frame(width: UIScreen.main.bounds.width - 150, height: 30)
-                        .foregroundColor(Color.gray)
+                        .foregroundColor(Color("Grey"))
                         .background(Color("LightGrey"))
                         .cornerRadius(10)
                         .autocapitalization(.none)
                         .disableAutocorrection(true)
                         .padding(.bottom, 20)
                         .keyboardShortcut(.defaultAction)
-
-                    Button("Login") {
+                    
+                    Button(action: {
+                        UserDefaults.standard.set(true, forKey: "isLoggedIn")
                         appState.clickedGo = true
+                    }) {
+                        Text("Login")
+                            .font(Font.custom("Inter", size: 15))
+                            .foregroundColor(Color.white)
+                            .frame(maxWidth: .infinity, minHeight: 20)
                     }
                     .frame(width: UIScreen.main.bounds.width-150, height: 30)
                     .background(Color("Pink"))
-                    .foregroundColor(Color.white)
                     .cornerRadius(10)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(Color("Pink"), lineWidth: 1)
                     )
                     .shadow(radius: 10)
-                    .font(Font.custom("Inter", size: 15))
                     .hapticOnTouch()
-
+                    
                     Text("───  Access Quickly  ───")
                         .font(Font.custom("Inter", size: 10))
                         .padding(.vertical, 10)
@@ -121,7 +123,7 @@ struct Landing: View {
                         )
                         .font(Font.custom("Inter", size: 10))
                         .hapticOnTouch()
-                    
+                        
                         Button("iCloud") {
                             AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         }
@@ -159,41 +161,23 @@ struct Landing: View {
                     
                 }
                 .padding(.bottom)
-                
-                HStack {
-                    
-                    
-                    VStack {
-                        
-                        Button(action: {
-                            isMuted.toggle()
-                            if isMuted {
-                                AudioManager.stopBackgroundMusic()
-                            } else {
-                                AudioManager.startBackgroundMusic()
-                            }
-                        }) {
-                            Image(systemName: isMuted ? "speaker.slash.fill" : "speaker.fill")
-                                .foregroundColor(.white)
-                                .font(.title)
-                                .padding(10)
-                                .frame(width: 44, height: 44)
-                                .background(Color.black.opacity(0.5))
-                                .clipShape(Circle())
-                        }
-                        .padding(.leading, UIScreen.main.bounds.width-100)
-                        .padding()
-                        Spacer()
-                    }
-                    
+                Button("Skip") {
+                    UserDefaults.standard.set(true, forKey: "isLoggedIn")
+                    appState.showIntro = true
+                    AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                 }
-
-
-                
-                
-            }.sheet(isPresented: $showSignUp) {
+                .frame(width: 100, height: 30)
+                .background(Color.white)
+                .foregroundColor(Color("Pink"))
+                .cornerRadius(10)
+                .font(Font.custom("Inter", size: 10))
+                .padding(.top, 600)
+                .hapticOnTouch()
+            }
+            .sheet(isPresented: $showSignUp) {
                 SignUp()
-            }.onAppear(){
+            }
+            .onAppear(){
                 AudioManager.startBackgroundMusic()
             }
         }
