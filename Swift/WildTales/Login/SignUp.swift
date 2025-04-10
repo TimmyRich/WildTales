@@ -19,21 +19,15 @@ struct SignUp: View {
     @State private var name: String = ""
     
     @Environment(\.dismiss) var dismiss
-    
-    
-    
+ 
     var body: some View {
-        
-        
-        
+
         ZStack {
             Image("Background1")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .ignoresSafeArea(edges: .all)
-            
-            
-            
+
             VStack {
                 Spacer()
                 
@@ -101,8 +95,6 @@ struct SignUp: View {
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
                     .padding(.bottom, 20)
-                
-                
                 
                 Button("Login") {
                     appState.showIntro = true
@@ -194,11 +186,7 @@ struct SignUp: View {
             print("Error playing sound: \(error.localizedDescription)")
         }
     }
-    
-    
 }
-
-
 #Preview {
     SignUp()
 }

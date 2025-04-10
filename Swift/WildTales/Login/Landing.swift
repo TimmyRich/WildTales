@@ -41,7 +41,7 @@ struct Landing: View {
                     
                     Spacer()
                 }
-
+                
                 VStack {
                     Spacer()
                     
@@ -56,7 +56,7 @@ struct Landing: View {
                     
                     Spacer()
                 }
-
+                
                 VStack {
                     Spacer()
                     
@@ -73,7 +73,7 @@ struct Landing: View {
                         .cornerRadius(10)
                         .autocapitalization(.none)
                         .disableAutocorrection(true)
-
+                    
                     SecureField("Password", text: $password)
                         .padding(.leading)
                         .font(Font.custom("Inter", size: 15))
@@ -85,7 +85,7 @@ struct Landing: View {
                         .disableAutocorrection(true)
                         .padding(.bottom, 20)
                         .keyboardShortcut(.defaultAction)
-
+                    
                     Button(action: {
                         UserDefaults.standard.set(true, forKey: "isLoggedIn")
                         appState.clickedGo = true
@@ -93,9 +93,9 @@ struct Landing: View {
                         Text("Login")
                             .font(Font.custom("Inter", size: 15))
                             .foregroundColor(Color.white)
-                            .frame(maxWidth: .infinity, minHeight: 20) 
+                            .frame(maxWidth: .infinity, minHeight: 20)
                     }
-                    .frame(width: UIScreen.main.bounds.width-150, height: 30) 
+                    .frame(width: UIScreen.main.bounds.width-150, height: 30)
                     .background(Color("Pink"))
                     .cornerRadius(10)
                     .overlay(
@@ -104,7 +104,7 @@ struct Landing: View {
                     )
                     .shadow(radius: 10)
                     .hapticOnTouch()
-
+                    
                     Text("───  Access Quickly  ───")
                         .font(Font.custom("Inter", size: 10))
                         .padding(.vertical, 10)
@@ -123,7 +123,7 @@ struct Landing: View {
                         )
                         .font(Font.custom("Inter", size: 10))
                         .hapticOnTouch()
-                    
+                        
                         Button("iCloud") {
                             AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         }

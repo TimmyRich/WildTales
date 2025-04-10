@@ -20,19 +20,19 @@ struct Intro: View {
                     .aspectRatio(contentMode: .fill)
                     .ignoresSafeArea(.all)
                     .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-
+                
                 HStack{
                     GIFView(gifName: "swipe")
                         .frame(width: 100, height: 100)
                         .padding(.bottom, UIScreen.main.bounds.height-200)
-                                }
+                }
                 Text("Swipe to view more!")
                     .padding(.bottom, UIScreen.main.bounds.height-320)
                     .font(Font.custom("Inter", size: 15))
                     .foregroundColor(/*@START_MENU_TOKEN@*/Color("Pink")/*@END_MENU_TOKEN@*/)
-                    
-                }
                 
+            }
+            
             Image("Narrative 2")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
@@ -122,11 +122,11 @@ struct Intro: View {
     }
 }
 
-                                                           
+
 //This part was written by ChatGPT, prompt "this is my code add it so I can add it to the add gif here part"
 struct GIFView: UIViewRepresentable {
     let gifName: String
-
+    
     func makeUIView(context: Context) -> WKWebView {
         let webView = WKWebView()
         webView.backgroundColor = .clear
@@ -137,10 +137,10 @@ struct GIFView: UIViewRepresentable {
             let request = URLRequest(url: url)
             webView.load(request)
         }
-
+        
         return webView
     }
-
+    
     func updateUIView(_ uiView: WKWebView, context: Context) {}
 }
 

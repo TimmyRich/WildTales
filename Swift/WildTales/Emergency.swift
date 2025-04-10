@@ -13,9 +13,7 @@ struct Emergency: View {
     var body: some View {
         
         ZStack{
-            
-            
-            
+
             VStack(spacing: 20) {
                 Text("Feeling Lost?")
                     .font(.title2)
