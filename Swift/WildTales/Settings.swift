@@ -10,13 +10,11 @@ import SwiftUI
 struct Settings: View {
     @Environment(\.dismiss) var dismiss
     @State private var isMusicEnabled: Bool = true
+    @State private var selectedTime: Date = Date() // Use for temporary notification
     
     var body: some View {
         VStack {
             
-            
-            
-        
             Text("Settings")
                 .font(.largeTitle)
                 .padding()
@@ -31,6 +29,24 @@ struct Settings: View {
                         }
                     }
                     .padding()
+                // Notification
+                VStack {
+                    DatePicker("Select Notification Time", selection: $selectedTime, displayedComponents: .hourAndMinute)
+                        .datePickerStyle(WheelDatePickerStyle())
+                        .padding()
+                
+                    Button("Schedule Notification") {
+                        let notificationDate = NotificationManager.getNotificationDate(from: selectedTime)
+                        NotificationManager.scheduleNotification(at: notificationDate)
+                        print("pressing ok")
+                    }
+                    .buttonStyle(.borderedProminent).tint(.green)
+                    Button("Test in 5s") {
+                        NotificationManager.scheduleImmediateNotification()
+                        print("test notification is scheduled")
+                    }
+                    .buttonStyle(.borderedProminent).tint(.blue)
+                }
                 
                 Toggle("Random ahh toggle", isOn: .constant(true))
                     .padding()
@@ -82,6 +98,10 @@ struct Settings: View {
             Spacer()
         }
         .padding()
+        .onAppear {
+            // request notification permissions
+            NotificationManager.requestPermissions()
+        }
     }
 }
 
