@@ -20,6 +20,8 @@ class AppState: ObservableObject {
         self.clickedGo = false
         self.showIntro = false
         self.isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
+        // Set up notification
+        NotificationManager.setupNotifications()
     }
 }
 

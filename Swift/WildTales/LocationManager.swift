@@ -12,6 +12,7 @@ import CoreLocation
 import Combine
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+    
     private var locationManager = CLLocationManager()
     
     @Published var userLocation: CLLocation? // To track user's location
