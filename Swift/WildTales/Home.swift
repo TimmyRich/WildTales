@@ -79,6 +79,17 @@ struct Home: View {
                             AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         })
                         
+                        NavigationLink(destination: ScrapBookGuide().navigationBarBackButtonHidden(true)) {
+                            Image("homeButton1")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 75, height: 75)
+                                .padding(.top, 150)
+                        }.simultaneousGesture(TapGesture().onEnded {
+                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                        })
+                        
+                        /* Past code, check hasSeenScrapBookGuid before navigating to Scrapbook
                         Group {
                             if hasSeenScrapBookGuide {
                                 NavigationLink(destination: ScrapBook().navigationBarBackButtonHidden(true)) {
@@ -102,6 +113,7 @@ struct Home: View {
                                 })
                             }
                         }
+                        */
                         
                         NavigationLink(destination: Intro()/*.navigationBarBackButtonHidden(true)*/) {
                             Image("homeButton3")
@@ -137,7 +149,8 @@ struct Home: View {
     }
 }
 
-
+/*
 #Preview{
     Home()
 }
+*/
