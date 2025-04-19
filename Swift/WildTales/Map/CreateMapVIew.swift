@@ -100,6 +100,13 @@ struct CreateMapView: View {
                 Spacer()
             }
             
+            ZStack{
+                Rectangle()
+                    .frame(width: 1, height: 40)
+                Rectangle()
+                    .frame(width: 40, height: 1)
+            }
+            
             VStack {
                 Spacer()
                 

@@ -60,6 +60,12 @@ struct MapView: View {
                 // Request permission for notifications
                 ProximityNotificationManager.shared.requestPermission()
                 
+                // Remove any notifications for old pins
+                // This was to fix a bug where removing a location would still leave its geofence
+                for location in locations {
+                    ProximityNotificationManager.shared.cancelNotifications(for: location)
+                }
+                
                 // Schedule proximity notifications for each location
                 for location in locations {
                     ProximityNotificationManager.shared.scheduleProximityNotification(for: location)

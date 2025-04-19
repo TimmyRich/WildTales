@@ -5,6 +5,7 @@
 //  Created by Kurt McCullough on 19/4/2025.
 //
 
+// ProximityNotificationManager.swift
 import Foundation
 import UserNotifications
 import CoreLocation
@@ -36,7 +37,7 @@ class ProximityNotificationManager {
             identifier: location.id.uuidString
         )
         region.notifyOnEntry = true
-        region.notifyOnExit = true  // notify on exit so it tells you when youre rentering
+        region.notifyOnExit = true  // This ensures it notifies when you leave and re-enter
         
         let trigger = UNLocationNotificationTrigger(region: region, repeats: false)
         let request = UNNotificationRequest(
