@@ -143,6 +143,7 @@ struct Home: View {
                 AudioManager.startBackgroundMusic()
             }
             
+            
         }
     }
 }

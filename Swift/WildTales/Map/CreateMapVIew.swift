@@ -143,6 +143,7 @@ struct CreateMapView: View {
                     Button {
                         if let userLocation = locationManager.userLocation {
                             mapRegion.center = userLocation.coordinate
+                            mapRegion.span = MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
                         }
                     } label: {
                         Image(systemName: "location.circle.fill")

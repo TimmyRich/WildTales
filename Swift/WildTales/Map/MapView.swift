@@ -56,7 +56,16 @@ struct MapView: View {
             .onAppear {
                 locationManager.requestLocation()
                 locations = LocationLoader.loadLocations()
+                
+                // Request permission for notifications
+                ProximityNotificationManager.shared.requestPermission()
+                
+                // Schedule proximity notifications for each location
+                for location in locations {
+                    ProximityNotificationManager.shared.scheduleProximityNotification(for: location)
+                }
             }
+
             .onChange(of: locationManager.userLocation) { newLocation in
                 if let newLocation = newLocation, !isMapInitialized {
                     mapRegion.center = newLocation.coordinate
@@ -122,7 +131,7 @@ struct MapView: View {
                         if let userLocation = locationManager.userLocation {
                             // Center map to user location with a zoom level
                             mapRegion.center = userLocation.coordinate
-                            mapRegion.span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01) // Adjust the zoom level here
+                            mapRegion.span = MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003) // Adjust the zoom level here
                         }
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                     } label: {
