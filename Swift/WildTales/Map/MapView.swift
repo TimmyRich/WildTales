@@ -4,6 +4,7 @@
 //
 //  Created by Kurt McCullough on 22/3/2025.
 //
+
 import SwiftUI
 import MapKit
 import AVFoundation
@@ -13,14 +14,13 @@ import CoreHaptics
 struct MapView: View {
     
     @EnvironmentObject var appState: AppState
-    
     @Environment(\.presentationMode) var goBack
     
     @State private var showEmergency = false
-    
     @StateObject private var locationManager = LocationManager()
+    
     @State private var mapRegion = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: -27.4705, longitude: 153.0260), 
+        center: CLLocationCoordinate2D(latitude: -27.4705, longitude: 153.0260),
         span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
     )
     
@@ -29,30 +29,43 @@ struct MapView: View {
     @State private var showSettingsSheet = false
     @State private var isMapInitialized = false
     
+    @State private var selectedLocation: Location?
+    
     var body: some View {
         ZStack {
             Map(coordinateRegion: $mapRegion,
                 interactionModes: .all,
-                showsUserLocation: true, // Show blue dot
+                showsUserLocation: true,
                 userTrackingMode: .none,
                 annotationItems: locations) { location in
-                MapMarker(coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude))
+                
+                MapAnnotation(coordinate: location.coordinate) {
+                    Button {
+                        withAnimation {
+                            selectedLocation = location
+                        }
+                    } label: {
+                        Image(systemName: "mappin.circle.fill")
+                            .font(.title)
+                            .foregroundColor(.red)
+                            .shadow(radius: 2)
+                    }
+                }
             }
             .ignoresSafeArea(.all)
             .onAppear {
                 locationManager.requestLocation()
+                locations = LocationLoader.loadLocations()
             }
             .onChange(of: locationManager.userLocation) { newLocation in
                 if let newLocation = newLocation, !isMapInitialized {
                     mapRegion.center = newLocation.coordinate
-                    isMapInitialized = true 
+                    isMapInitialized = true
                 }
             }
             
             VStack {
                 HStack {
-
-                    
                     Button {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         goBack.wrappedValue.dismiss()
@@ -65,10 +78,7 @@ struct MapView: View {
                     .background(Circle().fill(Color("Pink")))
                     .shadow(radius: 5)
                     .padding()
-                    //.hapticOnTouch()
                     
-                    
-                
                     Spacer()
                     
                     Button(action: {
@@ -83,8 +93,6 @@ struct MapView: View {
                             .shadow(radius: 5)
                             .padding()
                     }
-                    
-                    
                 }
                 Spacer()
             }
@@ -93,9 +101,6 @@ struct MapView: View {
                 Spacer()
                 
                 HStack {
-
-                    
-                    // Stories Button
                     Button {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         showSheet.toggle()
@@ -112,16 +117,17 @@ struct MapView: View {
                     
                     Spacer()
                     
-                    
+                    // Location Button with zoom level adjustment
                     Button {
                         if let userLocation = locationManager.userLocation {
+                            // Center map to user location with a zoom level
                             mapRegion.center = userLocation.coordinate
+                            mapRegion.span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01) // Adjust the zoom level here
                         }
+                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                     } label: {
                         Image(systemName: "location.circle.fill")
-                    }.simultaneousGesture(TapGesture().onEnded {
-                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                    })
+                    }
                     .font(.system(size: 24))
                     .foregroundColor(.white)
                     .frame(width: 60, height: 60)
@@ -129,26 +135,44 @@ struct MapView: View {
                     .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
-
-                    
-                    
-                    
                 }
             }
-            .overlay(
-                Group {
-                    if showEmergency {
-                        ZStack {
-                            Color.black.opacity(0.4)
-                                .ignoresSafeArea()
-                                .onTapGesture { showEmergency = false }
-
-                            Emergency(showEmergency: $showEmergency)
-                                .transition(.scale)
+            
+            if let location = selectedLocation {
+                VStack {
+                    Spacer()
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(location.name)
+                            .font(.headline)
+                        Text(location.description)
+                            .font(.subheadline)
+                        
+                        Button("Close") {
+                            withAnimation {
+                                selectedLocation = nil
+                            }
                         }
+                        .font(.caption)
+                        .padding(.top, 4)
                     }
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
+                    .shadow(radius: 8)
+                    .padding()
                 }
-            )
+                .transition(.move(edge: .bottom))
+            }
+            
+            if showEmergency {
+                ZStack {
+                    Color.black.opacity(0.4)
+                        .ignoresSafeArea()
+                        .onTapGesture { showEmergency = false }
+
+                    Emergency(showEmergency: $showEmergency)
+                        .transition(.scale)
+                }
+            }
         }
         .sheet(isPresented: $showSheet) {
             Stories()
@@ -156,11 +180,11 @@ struct MapView: View {
         .sheet(isPresented: $showSettingsSheet) {
             Settings()
         }
+        .animation(.easeInOut, value: selectedLocation)
     }
 }
 
 #Preview {
     MapView()
 }
-
 
