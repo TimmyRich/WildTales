@@ -152,17 +152,13 @@ struct MapView: View {
                         Text(location.description)
                             .font(.subheadline)
                         
-                        Toggle(isOn: Binding(
-                            get: { location.visited == 1 },
-                            set: { newValue in
-                                if let index = locations.firstIndex(where: { $0.id == location.id }) {
-                                    locations[index].visited = newValue ? 1 : 0
-                                    LocationLoader.saveLocations(locations)
-                                    selectedLocation = locations[index]
-                                }
-                            }
-                        )) {
-                            Text("Visited")
+                        HStack {
+                            Text("Visited:")
+                                .font(.subheadline)
+                                .bold()
+                            Image(systemName: location.visited == 1 ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                .foregroundColor(location.visited == 1 ? .green : .red)
+                                .font(.title3)
                         }
                         .padding(.top)
                         
