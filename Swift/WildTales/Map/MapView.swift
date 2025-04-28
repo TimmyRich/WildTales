@@ -47,7 +47,7 @@ struct MapView: View {
                     } label: {
                         Image(systemName: "mappin.circle.fill")
                             .font(.title)
-                            .foregroundColor(.red)
+                            .foregroundColor(location.visited == 1 ? .green : .red)
                             .shadow(radius: 2)
                     }
                 }
@@ -57,21 +57,13 @@ struct MapView: View {
                 locationManager.requestLocation()
                 locations = LocationLoader.loadLocations()
                 
-                // Request permission for notifications
                 ProximityNotificationManager.shared.requestPermission()
                 
-                // Remove any notifications for old pins
-                // This was to fix a bug where removing a location would still leave its geofence
                 for location in locations {
                     ProximityNotificationManager.shared.cancelNotifications(for: location)
-                }
-                
-                // Schedule proximity notifications for each location
-                for location in locations {
                     ProximityNotificationManager.shared.scheduleProximityNotification(for: location)
                 }
             }
-
             .onChange(of: locationManager.userLocation) { newLocation in
                 if let newLocation = newLocation, !isMapInitialized {
                     mapRegion.center = newLocation.coordinate
@@ -132,12 +124,10 @@ struct MapView: View {
                     
                     Spacer()
                     
-                    // Location Button with zoom level adjustment
                     Button {
                         if let userLocation = locationManager.userLocation {
-                            // Center map to user location with a zoom level
                             mapRegion.center = userLocation.coordinate
-                            mapRegion.span = MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003) // Adjust the zoom level here
+                            mapRegion.span = MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
                         }
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                     } label: {
@@ -161,6 +151,20 @@ struct MapView: View {
                             .font(.headline)
                         Text(location.description)
                             .font(.subheadline)
+                        
+                        Toggle(isOn: Binding(
+                            get: { location.visited == 1 },
+                            set: { newValue in
+                                if let index = locations.firstIndex(where: { $0.id == location.id }) {
+                                    locations[index].visited = newValue ? 1 : 0
+                                    LocationLoader.saveLocations(locations)
+                                    selectedLocation = locations[index]
+                                }
+                            }
+                        )) {
+                            Text("Visited")
+                        }
+                        .padding(.top)
                         
                         Button("Close") {
                             withAnimation {
@@ -202,4 +206,3 @@ struct MapView: View {
 #Preview {
     MapView()
 }
-

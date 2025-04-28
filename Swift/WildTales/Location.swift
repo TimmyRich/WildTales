@@ -15,6 +15,7 @@ struct Location: Identifiable, Codable, Equatable {
     var description: String
     let latitude: Double
     let longitude: Double
+    var visited: Int 
     
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)

@@ -1,5 +1,5 @@
 //
-//  CreateMapVIew.swift
+//  CreateMapView.swift
 //  WildTales
 //
 //  Created by Kurt McCullough on 1/4/2025.
@@ -29,16 +29,16 @@ struct CreateMapView: View {
     @State private var isMapInitialized = false
     
     @State private var showLocationForm = false
-    @State private var newLocationName = "" // inputs for the name and description
+    @State private var newLocationName = ""
     @State private var newLocationDescription = ""
     
-    @State private var selectedLocation: Location? // where we hold which location is selected
+    @State private var selectedLocation: Location?
     
     var body: some View {
         ZStack {
             Map(coordinateRegion: $mapRegion,
                 interactionModes: .all,
-                showsUserLocation: true, // show the users location in real time
+                showsUserLocation: true,
                 userTrackingMode: .none,
                 annotationItems: locations) { location in
                 MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)) {
@@ -49,7 +49,7 @@ struct CreateMapView: View {
                     }) {
                         Image(systemName: "mappin.circle.fill")
                             .font(.title)
-                            .foregroundColor(.red)
+                            .foregroundColor(location.visited == 1 ? .green : .red) // Color changes!
                             .shadow(radius: 2)
                     }
                 }
@@ -57,7 +57,7 @@ struct CreateMapView: View {
             .ignoresSafeArea(.all)
             .onAppear {
                 locationManager.requestLocation()
-                locations = LocationLoader.loadLocations()  // uses locationloader to load location into the map
+                locations = LocationLoader.loadLocations()
             }
             .onChange(of: locationManager.userLocation) { newLocation in
                 if let newLocation = newLocation, !isMapInitialized {
@@ -100,7 +100,7 @@ struct CreateMapView: View {
                 Spacer()
             }
             
-            ZStack{
+            ZStack {
                 Rectangle()
                     .frame(width: 1, height: 40)
                 Rectangle()
@@ -111,11 +111,8 @@ struct CreateMapView: View {
                 Spacer()
                 
                 HStack {
-                    // Add Location Button
                     Button {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        
-                        // show the sheet for adding a new location
                         showLocationForm.toggle()
                     } label: {
                         Image(systemName: "plus")
@@ -130,7 +127,6 @@ struct CreateMapView: View {
                     
                     Spacer()
                     
-                    // Stories Button
                     Button {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         showSheet.toggle()
@@ -154,7 +150,8 @@ struct CreateMapView: View {
                         }
                     } label: {
                         Image(systemName: "location.circle.fill")
-                    }.simultaneousGesture(TapGesture().onEnded {
+                    }
+                    .simultaneousGesture(TapGesture().onEnded {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                     })
                     .font(.system(size: 24))
@@ -187,7 +184,7 @@ struct CreateMapView: View {
                             Color.black.opacity(0.4)
                                 .ignoresSafeArea()
                                 .onTapGesture { showEmergency = false }
-
+                            
                             Emergency(showEmergency: $showEmergency)
                                 .transition(.scale)
                         }
@@ -195,7 +192,6 @@ struct CreateMapView: View {
                 }
             )
             
-            // sheet for the selected location
             if let location = selectedLocation {
                 VStack {
                     Spacer()
@@ -205,12 +201,26 @@ struct CreateMapView: View {
                         Text(location.description)
                             .font(.subheadline)
                         
+                        Toggle(isOn: Binding(
+                            get: { location.visited == 1 },
+                            set: { newValue in
+                                if let index = locations.firstIndex(where: { $0.id == location.id }) {
+                                    locations[index].visited = newValue ? 1 : 0
+                                    LocationLoader.saveLocations(locations)
+                                    selectedLocation = locations[index]
+                                }
+                            }
+                        )) {
+                            Text("Visited")
+                        }
+                        .padding(.top)
+                        
                         HStack {
                             Button("Remove") {
                                 if let index = locations.firstIndex(where: { $0.id == location.id }) {
-                                    locations.remove(at: index) // remove enty at index
-                                    LocationLoader.saveLocations(locations) // save the removal
-                                    selectedLocation = nil // Deselect location after removal
+                                    locations.remove(at: index)
+                                    LocationLoader.saveLocations(locations)
+                                    selectedLocation = nil
                                 }
                             }
                             .foregroundColor(.red)
@@ -241,7 +251,7 @@ struct CreateMapView: View {
         .sheet(isPresented: $showSettingsSheet) {
             Settings()
         }
-        .sheet(isPresented: $showLocationForm) { // add lcoations sheet
+        .sheet(isPresented: $showLocationForm) {
             VStack {
                 Text("New Location")
                     .font(.headline)
@@ -257,20 +267,20 @@ struct CreateMapView: View {
                 
                 HStack {
                     Button("Save") {
-                        // saves to the json file
                         let newLocation = Location(
                             id: UUID(),
                             name: newLocationName,
                             description: newLocationDescription,
                             latitude: mapRegion.center.latitude,
-                            longitude: mapRegion.center.longitude
+                            longitude: mapRegion.center.longitude,
+                            visited: 0 // Set default visited
                         )
                         
                         locations.append(newLocation)
-                        LocationLoader.saveLocations(locations)  // save
-                        newLocationName = ""  // reset values
+                        LocationLoader.saveLocations(locations)
+                        newLocationName = ""
                         newLocationDescription = ""
-                        showLocationForm = false // close the sheet
+                        showLocationForm = false
                     }
                     .padding()
                     

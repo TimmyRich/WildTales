@@ -46,6 +46,7 @@ class ProximityNotificationManager {
             trigger: trigger
         )
         
+        // If there was an error with notifying user
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 print("Error scheduling proximity notification: \(error.localizedDescription)")
