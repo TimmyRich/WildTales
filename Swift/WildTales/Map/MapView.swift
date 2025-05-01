@@ -4,11 +4,13 @@
 //
 //  Created by Kurt McCullough on 1/4/2025.
 //
+
 import SwiftUI
 import MapKit
 import AVFoundation
 import SpriteKit
 import CoreHaptics
+import CoreLocation
 
 struct MapView: View {
     
@@ -33,7 +35,16 @@ struct MapView: View {
     // Quiz state
     @State private var isQuizFinished = false
     @State private var isAnswerCorrect = false
-    @State private var completedQuizLocationIDs: Set<UUID> = []
+    
+    // Proximity check for quiz
+    var isUserNearSelectedLocation: Bool {
+        guard let selected = selectedLocation,
+              let userLocation = locationManager.userLocation else {
+            return false
+        }
+        let distance = userLocation.coordinate.distance(to: selected.coordinate)
+        return distance < 50
+    }
 
     var body: some View {
         ZStack {
@@ -60,7 +71,7 @@ struct MapView: View {
             .ignoresSafeArea()
             .onAppear {
                 locationManager.requestLocation()
-                locations = LocationLoader.loadLocations()
+                locations = LocationLoader.loadLocations() // Load locations
                 
                 ProximityNotificationManager.shared.requestPermission()
                 for location in locations {
@@ -69,9 +80,24 @@ struct MapView: View {
                 }
             }
             .onChange(of: locationManager.userLocation) { newLocation in
-                if let newLocation = newLocation, !isMapInitialized {
-                    mapRegion.center = newLocation.coordinate
-                    isMapInitialized = true
+                if let newLocation = newLocation {
+                    if !isMapInitialized {
+                        mapRegion.center = newLocation.coordinate
+                        isMapInitialized = true
+                    }
+                    
+                    let userCoordinate = newLocation.coordinate
+                    
+                    // Update location visit state based on proximity
+                    for index in locations.indices {
+                        let locationCoord = locations[index].coordinate
+                        let distance = locationCoord.distance(to: userCoordinate)
+                        
+                        if distance < 50 && locations[index].visited != 1 {
+                            locations[index].visited = 1
+                            AudioManager.playSound(soundName: "visited.wav", soundVol: 0.5)
+                        }
+                    }
                 }
             }
             
@@ -146,6 +172,7 @@ struct MapView: View {
                 }
             }
             
+            // Location detail panel with quiz
             if let location = selectedLocation {
                 VStack {
                     Spacer()
@@ -165,20 +192,11 @@ struct MapView: View {
                         }
                         .padding(.top)
                         
-                        if let question = location.quizQuestion,
-                           let answers = location.quizAnswers,
-                           let correctIndex = location.correctAnswerIndex {
-                            
-                            if completedQuizLocationIDs.contains(location.id) {
-                                HStack {
-                                    Image(systemName: "checkmark.seal.fill")
-                                        .foregroundColor(.green)
-                                    Text("Quiz Completed!")
-                                        .font(.subheadline)
-                                        .foregroundColor(.green)
-                                }
-                                .padding(.top)
-                            } else {
+                        // Show quiz only if the location is visited
+                        if location.visited == 1 {
+                            if let question = location.quizQuestion,
+                               let answers = location.quizAnswers, let correctIndex = location.correctAnswerIndex {
+                                
                                 Text(question)
                                     .font(.headline)
                                     .padding(.top)
@@ -188,7 +206,10 @@ struct MapView: View {
                                         if index == correctIndex {
                                             isAnswerCorrect = true
                                             AudioManager.playSound(soundName: "correct.wav", soundVol: 0.5)
-                                            completedQuizLocationIDs.insert(location.id)
+                                            // Mark quiz as completed and update the array
+                                            if let selectedIndex = locations.firstIndex(where: { $0.id == location.id }) {
+                                                locations[selectedIndex].quizCompleted = true
+                                            }
                                         } else {
                                             isAnswerCorrect = false
                                             AudioManager.playSound(soundName: "wrong.wav", soundVol: 0.5)
@@ -211,8 +232,18 @@ struct MapView: View {
                                         .transition(.opacity)
                                 }
                             }
+                        } else if location.visited == 0 {
+                            // Display message if location is not yet visited
+                            HStack {
+                                Image(systemName: "location.slash")
+                                    .foregroundColor(.orange)
+                                Text("Get closer to the location to take the quiz!")
+                                    .font(.footnote)
+                                    .foregroundColor(.orange)
+                            }
+                            .padding(.top)
                         }
-
+                        
                         Button("Close") {
                             AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                             withAnimation {
@@ -230,6 +261,7 @@ struct MapView: View {
                 .transition(.move(edge: .bottom))
             }
             
+            // Emergency overlay
             if showEmergency {
                 ZStack {
                     Color.black.opacity(0.4)
@@ -252,6 +284,14 @@ struct MapView: View {
             isQuizFinished = false
             isAnswerCorrect = false
         }
+    }
+}
+
+extension CLLocationCoordinate2D {
+    func distance(to coordinate: CLLocationCoordinate2D) -> CLLocationDistance {
+        let fromLocation = CLLocation(latitude: self.latitude, longitude: self.longitude)
+        let toLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        return fromLocation.distance(from: toLocation)
     }
 }
 

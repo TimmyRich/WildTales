@@ -1,157 +1,62 @@
 [
-    {
-        "id": "E4F7A951-5FCD-4C2D-AB5B-63E4FD91E9CC",
-        "name": "South Bank",
-        "description": "A riverside park and cultural precinct.",
-        "latitude": -27.4748,
-        "longitude": 153.0176
-    },
-    {
-        "id": "C9D1D58A-1B7B-4D84-9C1C-937A6E3F4C5F",
-        "name": "Story Bridge",
-        "description": "A heritage-listed steel cantilever bridge.",
-        "latitude": -27.4594,
-        "longitude": 153.0351
-    },
-    {
-        "id": "ef7db8d2-b243-4b26-b671-d726ede4f861",
-        "name": "Kangaroo Point Cliffs",
-        "description": "Scenic views over the Brisbane River.",
-        "latitude": -27.4812,
-        "longitude": 153.0351
-      },
-      {
-        "id": "f43555f4-8cc6-41cc-90b7-730157ac1a5a",
-        "name": "Roma Street Parkland",
-        "description": "Beautiful urban gardens and walkways.",
-        "latitude": -27.4634,
-        "longitude": 153.0171
-      },
-      {
-        "id": "0e42060d-4d20-42d7-a06f-9cdac9e3e4d5",
-        "name": "South Bank Parklands",
-        "description": "Riverfront park with swimming and eateries.",
-        "latitude": -27.4808,
-        "longitude": 153.0226
-      },
-      {
-        "id": "d820a15d-d202-4382-bb41-64de4b497875",
-        "name": "Brisbane City Botanic Gardens",
-        "description": "Lush gardens in the heart of the city.",
-        "latitude": -27.4749,
-        "longitude": 153.0302
-      },
-      {
-        "id": "157bbd86-c2d4-4356-9102-8c5eb028c65a",
-        "name": "Queen Street Mall",
-        "description": "Bustling shopping and dining precinct.",
-        "latitude": -27.4685,
-        "longitude": 153.0262
-      },
-      {
-        "id": "c82e59c3-55a4-4c90-a6c4-c8c54c243e4f",
-        "name": "Mount Coot-tha Lookout",
-        "description": "Panoramic views over Brisbane.",
-        "latitude": -27.4741,
-        "longitude": 152.9583
-      },
-      {
-        "id": "be6f0b86-597c-4d3c-bc93-e99df6743195",
-        "name": "Brisbane Powerhouse",
-        "description": "Arts and performance venue in New Farm.",
-        "latitude": -27.4683,
-        "longitude": 153.0572
-      },
-      {
-        "id": "bdf471b3-3c0e-4e45-8973-9ef9c3b1051a",
-        "name": "New Farm Park",
-        "description": "Riverside park with rose gardens and playgrounds.",
-        "latitude": -27.4689,
-        "longitude": 153.0567
-      },
-      {
-        "id": "7d1295a7-2850-4861-b49e-d2eaed14522c",
-        "name": "Lone Pine Koala Sanctuary",
-        "description": "Get close with native wildlife.",
-        "latitude": -27.5306,
-        "longitude": 152.9758
-      },
-      {
-        "id": "b679f4e7-2f40-413f-89b4-fb58f3c23825",
-        "name": "Brisbane City Hall",
-        "description": "Historic building with free museum and tours.",
-        "latitude": -27.4689,
-        "longitude": 153.0235
-      },
-      {
-          "id": "bb093a72-07d6-4fa9-8ad7-2d59c9d3b8c9",
-          "name": "Brisbane Botanical Gardens at Mount Coot-tha",
-          "description": "A vast garden featuring native plants, tropical landscapes, and walking trails with panoramic views.",
-          "latitude": -27.4685,
-          "longitude": 152.9625
-        },
-        {
-          "id": "276f223d-6fbd-46d3-8a0d-dc1fcfc6d393",
-          "name": "The Wheel of Brisbane",
-          "description": "A giant observation wheel offering 360-degree views of Brisbane's skyline, the river, and beyond.",
-          "latitude": -27.4670,
-          "longitude": 153.0216
-        },
-        {
-          "id": "bf8b1982-8788-4cf2-a3b2-cab2b17e83a4",
-          "name": "Fort Lytton National Park",
-          "description": "A historic military fort that offers guided tours and educational exhibits about Brisbane's history during World War II.",
-          "latitude": -27.4087,
-          "longitude": 153.0902
-        },
-        {
-          "id": "16e24276-dc9b-401a-b5b4-38309b77d56b",
-          "name": "Brisbane Museum",
-          "description": "A museum featuring exhibits on the city's history, art, and natural sciences.",
-          "latitude": -27.4667,
-          "longitude": 153.0283
-        },
-        {
-          "id": "03f22390-5b6a-463f-80f1-02d6f7b77d99",
-          "name": "Brisbane Riverwalk",
-          "description": "A scenic pedestrian bridge that extends along the river for walking, cycling, and beautiful views of the city.",
-          "latitude": -27.4575,
-          "longitude": 153.0235
-        },
-        {
-          "id": "2f23b3b1-5379-4db2-b227-9c1fcf3b97c9",
-          "name": "Story Bridge Adventure Climb",
-          "description": "An iconic bridge climb offering stunning 360-degree views of Brisbane, including the river and surrounding areas.",
-          "latitude": -27.4582,
-          "longitude": 153.0281
-        },
-        {
-          "id": "06a5a1a0-5d18-4ab0-b706-b6c9a1d31c0c",
-          "name": "Queensland Museum and Sciencentre",
-          "description": "A family-friendly museum with interactive exhibits on science, dinosaurs, and Queensland's heritage.",
-          "latitude": -27.4722,
-          "longitude": 153.0194
-        },
-        {
-          "id": "23bcfd5e-5869-4b3d-b517-7ca97c410c35",
-          "name": "Boggo Road Gaol (Jail)",
-          "description": "A historic prison that offers guided tours to explore its history and the infamous criminals it housed.",
-          "latitude": -27.5437,
-          "longitude": 153.0286
-        },
-        {
-          "id": "27a9468c-befb-4c9a-b22e-3f515bdc51d5",
-          "name": "Moreton Island",
-          "description": "A beautiful island located just off the coast, known for its crystal-clear waters, sand dunes, and wildlife, including dolphins.",
-          "latitude": -27.4933,
-          "longitude": 153.4074
-        },
-        {
-          "id": "cf2a597b-f8f0-40a4-a9b9-d77a00d33445",
-          "name": "Tangalooma Resort",
-          "description": "A resort on Moreton Island that offers activities like dolphin feeding, snorkeling, and guided tours of the island's natural beauty.",
-          "latitude": -27.5030,
-          "longitude": 153.3810
-        }
+  {
+    "id": "1",
+    "name": "South Bank Parklands",
+    "description": "A vibrant park area with cultural attractions and great dining options along the Brisbane River.",
+    "latitude": -27.4705,
+    "longitude": 153.0251,
+    "visited": 0,
+    "quizQuestion": "What river runs through Brisbane?",
+    "quizAnswers": ["Sydney River", "Yarra River", "Brisbane River", "Murray River"],
+    "correctAnswerIndex": 2,
+    "quizCompleted": false
+  },
+  {
+    "id": "2",
+    "name": "Story Bridge",
+    "description": "An iconic Brisbane bridge offering stunning views of the city and a great spot for adventure.",
+    "latitude": -27.4592,
+    "longitude": 153.0351,
+    "visited": 0,
+    "quizQuestion": "What is the name of this Brisbane landmark?",
+    "quizAnswers": ["Sydney Harbour Bridge", "Story Bridge", "Golden Gate Bridge", "Eiffel Tower"],
+    "correctAnswerIndex": 1,
+    "quizCompleted": false
+  },
+  {
+    "id": "3",
+    "name": "Mount Coot-tha Lookout",
+    "description": "Offering panoramic views of Brisbane and its surrounding areas, this spot is a must-visit for tourists and locals alike.",
+    "latitude": -27.4670,
+    "longitude": 152.9870,
+    "visited": 0,
+    "quizQuestion": "Which lookout provides panoramic views of Brisbane?",
+    "quizAnswers": ["Mount Coot-tha Lookout", "Table Mountain", "Kangaroo Point Cliffs", "Brisbane Eye"],
+    "correctAnswerIndex": 0,
+    "quizCompleted": false
+  },
+  {
+    "id": "4",
+    "name": "Lone Pine Koala Sanctuary",
+    "description": "The world’s first and largest koala sanctuary, home to more than 130 koalas.",
+    "latitude": -27.4889,
+    "longitude": 152.9610,
+    "visited": 0,
+    "quizQuestion": "What animal is the Lone Pine Koala Sanctuary most famous for?",
+    "quizAnswers": ["Kangaroo", "Koala", "Platypus", "Dingo"],
+    "correctAnswerIndex": 1,
+    "quizCompleted": false
+  },
+  {
+    "id": "5",
+    "name": "Brisbane City Botanic Gardens",
+    "description": "A lush green space located near the city center, perfect for a peaceful walk or a picnic.",
+    "latitude": -27.4689,
+    "longitude": 153.0220,
+    "visited": 0,
+    "quizQuestion": "What is the name of Brisbane's central botanic gardens?",
+    "quizAnswers": ["Royal Botanic Gardens", "Brisbane City Botanic Gardens", "Sydney Botanic Gardens", "Melbourne Botanic Gardens"],
+    "correctAnswerIndex": 1,
+    "quizCompleted": false
+  }
 ]
-
