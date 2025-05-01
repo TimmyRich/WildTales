@@ -35,7 +35,7 @@ struct CreateMapView: View {
     @State private var showSettingsSheet = false
     @State private var isMapInitialized = false
     
-    // variables to be overqritten later for forms
+    // variables to be overwritten later for forms
     @State private var showLocationForm = false
     @State private var newLocationName = ""
     @State private var newLocationDescription = ""
@@ -51,7 +51,7 @@ struct CreateMapView: View {
     
     var body: some View {
         ZStack {
-            // this is the map initialisation
+            // this is the map initialization
             Map(coordinateRegion: $mapRegion,
                 interactionModes: .all,
                 showsUserLocation: true,
@@ -213,7 +213,7 @@ struct CreateMapView: View {
                 VStack {
                     Spacer()
                     VStack(alignment: .leading, spacing: 12) {
-                        Text(location.name).font(.headline) // gets location name and desciption
+                        Text(location.name).font(.headline) // gets location name and description
                         Text(location.description).font(.subheadline)
                         
                         // gets location quiz parts
@@ -248,7 +248,8 @@ struct CreateMapView: View {
                                         .padding()
                                         .frame(maxWidth: .infinity)
                                         .background(Color.pink.opacity(0.1))
-                                        .cornerRadius(8)
+                                        .cornerRadius(5)
+                                        .foregroundColor(.black)
                                 }
                             }
                         }
@@ -274,7 +275,7 @@ struct CreateMapView: View {
                             }
                         ))
 
-                        // this toggle hasnt been finished yet
+                        // this toggle hasn't been finished yet
                         Toggle("Quiz Completed", isOn: Binding(
                             get: { location.quizCompleted },
                             set: { _ in }
@@ -318,72 +319,105 @@ struct CreateMapView: View {
             Settings()
         }
         .sheet(isPresented: $showLocationForm) {
-            VStack {
-                //input text fields for user input
-                Text("New Location").font(.headline).padding()
-                TextField("Enter name", text: $newLocationName) // save name
-                    .padding().textFieldStyle(RoundedBorderTextFieldStyle())
-                TextField("Enter description", text: $newLocationDescription) // save description
-                    .padding().textFieldStyle(RoundedBorderTextFieldStyle())
-                
-                Text("Quiz Question")
-                TextField("Enter question", text: $quizQuestion) // save question title
-                    .padding().textFieldStyle(RoundedBorderTextFieldStyle())
+            ScrollView { // some of the stuff didnt show on the screen so made it scrollable so they keyboards nots in they way
+                VStack(spacing: 16) {
+                    Text("New Location")
+                        .font(.title2)
+                        .bold()
+                        .padding(.top)
 
-                ForEach(0..<4, id: \.self) { i in
-                    HStack {
-                        TextField("Answer \(i + 1)", text: $quizAnswers[i]) // save the answers
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                        Button(action: {
-                            correctAnswerIndex = i // gets the index from a button to the right of the aswwer boxes
-                        }) {
-                            Image(systemName: correctAnswerIndex == i ? "largecircle.fill.circle" : "circle") // fills the correct answer fill when selcted
+                    TextField("Enter name", text: $newLocationName)
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+
+                    TextField("Enter description", text: $newLocationDescription)
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+
+                    Text("Quiz Question")
+                        .font(.headline)
+
+                    TextField("Enter question", text: $quizQuestion)
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+
+                    // for each of the answers possible
+                    ForEach(0..<4, id: \.self) { i in
+                        HStack {
+                            TextField("Answer \(i + 1)", text: $quizAnswers[i])
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+
+                            Button(action: {
+                                correctAnswerIndex = i // correct answer index to check against
+                            }) {
+                                Image(systemName: correctAnswerIndex == i ? "largecircle.fill.circle" : "circle")
+                                    .foregroundColor(correctAnswerIndex == i ? Color("Pink") : .gray)
+                                    .imageScale(.large)
+                                    .padding(.leading, 8)
+                            }
                         }
-                    }.padding(.horizontal)
-                }
-                
-                HStack {
-                    Button("Save") { // this button appands to the array the location info when clicking save, it then resets the variables so they can be changed again for adding a ewn location
-                        let newLocation = Location(
-                            id: UUID(),
-                            name: newLocationName,
-                            description: newLocationDescription,
-                            latitude: mapRegion.center.latitude,
-                            longitude: mapRegion.center.longitude,
-                            visited: 0,
-                            quizQuestion: quizQuestion.isEmpty ? nil : quizQuestion,
-                            quizAnswers: quizAnswers.contains(where: { !$0.isEmpty }) ? quizAnswers : nil,
-                            correctAnswerIndex: correctAnswerIndex,
-                            quizCompleted: false
-                        )
-                        // reset variables so they can be changed again
-                        locations.append(newLocation)
-                        LocationLoader.saveLocations(locations)
-                        newLocationName = ""
-                        newLocationDescription = ""
-                        quizQuestion = ""
-                        quizAnswers = ["", "", "", ""]
-                        correctAnswerIndex = nil
-                        showLocationForm = false
+                        .padding(.horizontal)
                     }
-                    .padding()
-                    
-                    Spacer()
-                    
-                    // resets variabels when cancelled
-                    Button("Cancel") {
-                        newLocationName = ""
-                        newLocationDescription = ""
-                        quizQuestion = ""
-                        quizAnswers = ["", "", "", ""]
-                        correctAnswerIndex = nil
-                        showLocationForm = false
+
+                    HStack {
+                        Button("Save") {
+                            let newLocation = Location(
+                                id: UUID(),
+                                name: newLocationName,
+                                description: newLocationDescription,
+                                latitude: mapRegion.center.latitude,
+                                longitude: mapRegion.center.longitude,
+                                visited: 0,
+                                quizQuestion: quizQuestion.isEmpty ? nil : quizQuestion,
+                                quizAnswers: quizAnswers.contains(where: { !$0.isEmpty }) ? quizAnswers : nil,
+                                correctAnswerIndex: correctAnswerIndex,
+                                quizCompleted: false
+                            )
+                            locations.append(newLocation)
+                            LocationLoader.saveLocations(locations)
+                            newLocationName = ""
+                            newLocationDescription = ""
+                            quizQuestion = ""
+                            quizAnswers = ["", "", "", ""]
+                            correctAnswerIndex = nil
+                            showLocationForm = false
+                        }
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color("Pink"))
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+
+                        Button("Cancel") {
+                            newLocationName = ""
+                            newLocationDescription = ""
+                            quizQuestion = ""
+                            quizAnswers = ["", "", "", ""]
+                            correctAnswerIndex = nil
+                            showLocationForm = false
+                        }
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.gray)
+                        .cornerRadius(10)
+                        .padding(.horizontal)
                     }
-                    .padding()
+                    .padding(.bottom)
                 }
+                .padding()
             }
-            .padding()
         }
+
     }
 }
 

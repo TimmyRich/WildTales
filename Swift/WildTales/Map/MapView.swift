@@ -176,11 +176,17 @@ struct MapView: View {
             if let location = selectedLocation {
                 VStack {
                     Spacer()
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .center, spacing: 12) {
                         Text(location.name)
-                            .font(.headline)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                        
                         Text(location.description)
                             .font(.subheadline)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
                         
                         HStack {
                             Text("Visited:")
@@ -190,7 +196,8 @@ struct MapView: View {
                                 .foregroundColor(location.visited == 1 ? .green : .red)
                                 .font(.title3)
                         }
-                        .padding(.top)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 4)
                         
                         // users have to visit the location to view the quiz
                         if location.visited == 1 {
@@ -202,6 +209,8 @@ struct MapView: View {
                                 Text(question)
                                     .font(.headline)
                                     .padding(.top)
+                                    .multilineTextAlignment(.center)
+                                    .frame(maxWidth: .infinity)
                                 
                                 ForEach(answers.indices, id: \.self) { index in
                                     Button {
@@ -227,6 +236,7 @@ struct MapView: View {
                                             .frame(maxWidth: .infinity)
                                             .background(Color.pink.opacity(0.1))
                                             .cornerRadius(5)
+                                            .foregroundColor(.black)
                                     }
                                 }
                                 
@@ -258,8 +268,10 @@ struct MapView: View {
                                 selectedLocation = nil
                             }
                         }
-                        .font(.caption)
-                        .padding(.top, 4)
+                        .font(.body)
+                        //.fontWeight(.semibold)
+                        .padding(.top, 6)
+                        .frame(maxWidth: .infinity)
                     }
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
