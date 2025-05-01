@@ -24,10 +24,11 @@ struct MapView: View {
     
     @State private var selectedLocation: Location?
     
-    // Quiz state variables
+    // Quiz state
     @State private var isQuizFinished = false
     @State private var isAnswerCorrect = false
-    
+    @State private var completedQuizLocationIDs: Set<UUID> = []
+
     var body: some View {
         ZStack {
             Map(coordinateRegion: $mapRegion,
@@ -35,12 +36,10 @@ struct MapView: View {
                 showsUserLocation: true,
                 userTrackingMode: .none,
                 annotationItems: locations) { location in
-                            
+                
                 MapAnnotation(coordinate: location.coordinate) {
                     Button {
-                        // Play the boing sound when a pin is clicked
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        
                         withAnimation {
                             selectedLocation = location
                         }
@@ -52,14 +51,12 @@ struct MapView: View {
                     }
                 }
             }
-
-            .ignoresSafeArea(.all)
+            .ignoresSafeArea()
             .onAppear {
                 locationManager.requestLocation()
                 locations = LocationLoader.loadLocations()
                 
                 ProximityNotificationManager.shared.requestPermission()
-                
                 for location in locations {
                     ProximityNotificationManager.shared.cancelNotifications(for: location)
                     ProximityNotificationManager.shared.scheduleProximityNotification(for: location)
@@ -89,10 +86,10 @@ struct MapView: View {
                     
                     Spacer()
                     
-                    Button(action: {
+                    Button {
                         showEmergency = true
                         AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
-                    }) {
+                    } label: {
                         Image(systemName: "phone.connection.fill")
                             .font(.system(size: 24))
                             .foregroundColor(.white)
@@ -107,7 +104,6 @@ struct MapView: View {
             
             VStack {
                 Spacer()
-                
                 HStack {
                     Button {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
@@ -163,53 +159,62 @@ struct MapView: View {
                         }
                         .padding(.top)
                         
-                        // shos up the quiz if available
                         if let question = location.quizQuestion,
                            let answers = location.quizAnswers,
                            let correctIndex = location.correctAnswerIndex {
                             
-                            Text(question).font(.headline).padding(.top)
-                            ForEach(answers.indices, id: \.self) { index in
-                                Button(action: {
-                                    if index == correctIndex {
-                                        isAnswerCorrect = true
-                                        AudioManager.playSound(soundName: "correct.wav", soundVol: 0.5)
-                                    } else {
-                                        isAnswerCorrect = false
-                                        AudioManager.playSound(soundName: "wrong.wav", soundVol: 0.5)
+                            if completedQuizLocationIDs.contains(location.id) {
+                                HStack {
+                                    Image(systemName: "checkmark.seal.fill")
+                                        .foregroundColor(.green)
+                                    Text("Quiz Completed!")
+                                        .font(.subheadline)
+                                        .foregroundColor(.green)
+                                }
+                                .padding(.top)
+                            } else {
+                                Text(question)
+                                    .font(.headline)
+                                    .padding(.top)
+                                
+                                ForEach(answers.indices, id: \.self) { index in
+                                    Button {
+                                        if index == correctIndex {
+                                            isAnswerCorrect = true
+                                            AudioManager.playSound(soundName: "correct.wav", soundVol: 0.5)
+                                            completedQuizLocationIDs.insert(location.id)
+                                        } else {
+                                            isAnswerCorrect = false
+                                            AudioManager.playSound(soundName: "wrong.wav", soundVol: 0.5)
+                                        }
+                                        isQuizFinished = true
+                                    } label: {
+                                        Text(answers[index])
+                                            .padding()
+                                            .frame(maxWidth: .infinity)
+                                            .background(Color.blue.opacity(0.1))
+                                            .cornerRadius(8)
                                     }
-                                    // mark the quiz as finished
-                                    isQuizFinished = true
-                                }) {
-                                    Text(answers[index])
+                                }
+                                
+                                if isQuizFinished {
+                                    Text(isAnswerCorrect ? "That's right!" : "Oops, try again!")
+                                        .font(.headline)
+                                        .foregroundColor(isAnswerCorrect ? .green : .red)
                                         .padding()
-                                        .frame(maxWidth: .infinity)
-                                        .background(Color.blue.opacity(0.1))
-                                        .cornerRadius(8)
+                                        .transition(.opacity)
                                 }
                             }
                         }
 
-                        // display the result messsage
-                        if isQuizFinished {
-                            Text(isAnswerCorrect ? "That's right!" : "Oops, try again!")
-                                .font(.headline)
-                                .foregroundColor(isAnswerCorrect ? .green : .red)
-                                .padding()
-                                .transition(.opacity) // Fade effect
-                        }
-
                         Button("Close") {
-                            // Play the boing sound when the Close button is clicked
                             AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                            
                             withAnimation {
                                 selectedLocation = nil
                             }
                         }
                         .font(.caption)
                         .padding(.top, 4)
-                        
                     }
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
@@ -237,6 +242,10 @@ struct MapView: View {
             Settings()
         }
         .animation(.easeInOut, value: selectedLocation)
+        .onChange(of: selectedLocation) { _ in
+            isQuizFinished = false
+            isAnswerCorrect = false
+        }
     }
 }
 

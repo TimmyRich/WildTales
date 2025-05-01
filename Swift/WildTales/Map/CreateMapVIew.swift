@@ -30,7 +30,6 @@ struct CreateMapView: View {
     
     @State private var selectedLocation: Location?
     
-    // Quiz state variables
     @State private var isQuizFinished = false
     @State private var isAnswerCorrect = false
     
@@ -49,7 +48,7 @@ struct CreateMapView: View {
                     }) {
                         Image(systemName: "mappin.circle.fill")
                             .font(.title)
-                            .foregroundColor(location.visited == 1 ? .green : .red) // Color changes!
+                            .foregroundColor(location.visited == 1 ? .green : .red)
                             .shadow(radius: 2)
                     }
                 }
@@ -209,11 +208,17 @@ struct CreateMapView: View {
                                     if index == correctIndex {
                                         isAnswerCorrect = true
                                         AudioManager.playSound(soundName: "correct.wav", soundVol: 0.5)
+                                        if let i = locations.firstIndex(where: { $0.id == location.id }) {
+                                            if !locations[i].quizCompleted {
+                                                locations[i].quizCompleted = true
+                                                LocationLoader.saveLocations(locations)
+                                                selectedLocation = locations[i]
+                                            }
+                                        }
                                     } else {
                                         isAnswerCorrect = false
                                         AudioManager.playSound(soundName: "wrong.wav", soundVol: 0.5)
                                     }
-                                    // Mark the quiz as finished
                                     isQuizFinished = true
                                 }) {
                                     Text(answers[index])
@@ -225,13 +230,12 @@ struct CreateMapView: View {
                             }
                         }
 
-                        // Display the result message
                         if isQuizFinished {
                             Text(isAnswerCorrect ? "That's right!" : "Oops, try again!")
                                 .font(.headline)
                                 .foregroundColor(isAnswerCorrect ? .green : .red)
                                 .padding()
-                                .transition(.opacity) // Fade effect
+                                .transition(.opacity)
                         }
 
                         Toggle("Visited", isOn: Binding(
@@ -244,6 +248,12 @@ struct CreateMapView: View {
                                 }
                             }
                         ))
+
+                        Toggle("Quiz Completed", isOn: Binding(
+                            get: { location.quizCompleted },
+                            set: { _ in } // prevent manual changes, might change it so you can change it lol
+                        ))
+                        .disabled(true)
 
                         HStack {
                             Button("Remove") {
@@ -260,6 +270,7 @@ struct CreateMapView: View {
                             Button("Close") {
                                 withAnimation {
                                     selectedLocation = nil
+                                    isQuizFinished = false
                                 }
                             }
                         }
@@ -280,22 +291,15 @@ struct CreateMapView: View {
         }
         .sheet(isPresented: $showLocationForm) {
             VStack {
-                Text("New Location")
-                    .font(.headline)
-                    .padding()
-                
+                Text("New Location").font(.headline).padding()
                 TextField("Enter name", text: $newLocationName)
-                    .padding()
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                
+                    .padding().textFieldStyle(RoundedBorderTextFieldStyle())
                 TextField("Enter description", text: $newLocationDescription)
-                    .padding()
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding().textFieldStyle(RoundedBorderTextFieldStyle())
                 
                 Text("Quiz Question")
                 TextField("Enter question", text: $quizQuestion)
-                    .padding()
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding().textFieldStyle(RoundedBorderTextFieldStyle())
 
                 ForEach(0..<4, id: \.self) { i in
                     HStack {
@@ -306,8 +310,7 @@ struct CreateMapView: View {
                         }) {
                             Image(systemName: correctAnswerIndex == i ? "largecircle.fill.circle" : "circle")
                         }
-                    }
-                    .padding(.horizontal)
+                    }.padding(.horizontal)
                 }
                 
                 HStack {
@@ -321,9 +324,9 @@ struct CreateMapView: View {
                             visited: 0,
                             quizQuestion: quizQuestion.isEmpty ? nil : quizQuestion,
                             quizAnswers: quizAnswers.contains(where: { !$0.isEmpty }) ? quizAnswers : nil,
-                            correctAnswerIndex: correctAnswerIndex
+                            correctAnswerIndex: correctAnswerIndex,
+                            quizCompleted: false
                         )
-                        
                         locations.append(newLocation)
                         LocationLoader.saveLocations(locations)
                         newLocationName = ""

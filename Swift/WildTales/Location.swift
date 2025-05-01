@@ -19,6 +19,7 @@ struct Location: Identifiable, Codable, Equatable {
     var quizQuestion: String?
     var quizAnswers: [String]?
     var correctAnswerIndex: Int?
+    var quizCompleted: Bool
     
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)

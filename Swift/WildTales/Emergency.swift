@@ -9,6 +9,7 @@ import SwiftUI
 
 struct Emergency: View {
     @Binding var showEmergency: Bool
+    @State private var showAlert = false
     
     var body: some View {
         
@@ -21,6 +22,9 @@ struct Emergency: View {
                 
                 Button("Call your parents?") {
                     AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
+                    if let url = URL(string: "tel://0434797833") {
+                            UIApplication.shared.open(url)
+                        }
                 }
                 .foregroundColor(.white)
                 .frame(width: 300, height: 50)
@@ -29,6 +33,13 @@ struct Emergency: View {
                 
                 Button("Find your parents!") {
                     AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
+                    
+                    if let url = URL(string: "findmy://") {
+                            if UIApplication.shared.canOpenURL(url) {
+                                UIApplication.shared.open(url)
+                            }
+                        }
+                    
                 }
                 .foregroundColor(.white)
                 .frame(width: 300, height: 50)
@@ -48,6 +59,12 @@ struct Emergency: View {
                 
                 Button("Find security ") {
                     AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
+                    let searchQuery = "security"
+                        if let url = URL(string: "maps://?q=\(searchQuery)") {
+                            if UIApplication.shared.canOpenURL(url) {
+                                UIApplication.shared.open(url)
+                            }
+                        }
                 }
                 .frame(width: 300, height: 50)
                 .foregroundColor(.white)
@@ -55,12 +72,20 @@ struct Emergency: View {
                 .cornerRadius(10)
                 
                 Button("Rescue") {
-                    AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
+                    showAlert = true
                 }
                 .frame(width: 300, height: 50)
                 .foregroundColor(.white)
                 .background(Color.red)
                 .cornerRadius(10)
+                .alert(isPresented: $showAlert) {
+                    Alert(
+                        title: Text("WARNING: THIS WILL CALL 000"),
+                        message: Text("Press the side button 5 times to trigger the emergency call.\n \nThen swipe the red slider to confirm."),
+                        primaryButton: .default(Text("OK")),
+                        secondaryButton: .cancel()
+                    )
+                }
                 
             }
             .frame(width: 350, height: 600)
