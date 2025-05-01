@@ -1,10 +1,3 @@
-//
-//  CreateMapView.swift
-//  WildTales
-//
-//  Created by Kurt McCullough on 1/4/2025.
-//
-
 import SwiftUI
 import MapKit
 import AVFoundation
@@ -31,8 +24,15 @@ struct CreateMapView: View {
     @State private var showLocationForm = false
     @State private var newLocationName = ""
     @State private var newLocationDescription = ""
+    @State private var quizQuestion = ""
+    @State private var quizAnswers = ["", "", "", ""]
+    @State private var correctAnswerIndex: Int? = nil
     
     @State private var selectedLocation: Location?
+    
+    // Quiz state variables
+    @State private var isQuizFinished = false
+    @State private var isAnswerCorrect = false
     
     var body: some View {
         ZStack {
@@ -195,13 +195,46 @@ struct CreateMapView: View {
             if let location = selectedLocation {
                 VStack {
                     Spacer()
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(location.name)
-                            .font(.headline)
-                        Text(location.description)
-                            .font(.subheadline)
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(location.name).font(.headline)
+                        Text(location.description).font(.subheadline)
                         
-                        Toggle(isOn: Binding(
+                        if let question = location.quizQuestion,
+                           let answers = location.quizAnswers,
+                           let correctIndex = location.correctAnswerIndex {
+
+                            Text(question).font(.headline).padding(.top)
+                            ForEach(answers.indices, id: \.self) { index in
+                                Button(action: {
+                                    if index == correctIndex {
+                                        isAnswerCorrect = true
+                                        AudioManager.playSound(soundName: "correct.wav", soundVol: 0.5)
+                                    } else {
+                                        isAnswerCorrect = false
+                                        AudioManager.playSound(soundName: "wrong.wav", soundVol: 0.5)
+                                    }
+                                    // Mark the quiz as finished
+                                    isQuizFinished = true
+                                }) {
+                                    Text(answers[index])
+                                        .padding()
+                                        .frame(maxWidth: .infinity)
+                                        .background(Color.blue.opacity(0.1))
+                                        .cornerRadius(8)
+                                }
+                            }
+                        }
+
+                        // Display the result message
+                        if isQuizFinished {
+                            Text(isAnswerCorrect ? "That's right!" : "Oops, try again!")
+                                .font(.headline)
+                                .foregroundColor(isAnswerCorrect ? .green : .red)
+                                .padding()
+                                .transition(.opacity) // Fade effect
+                        }
+
+                        Toggle("Visited", isOn: Binding(
                             get: { location.visited == 1 },
                             set: { newValue in
                                 if let index = locations.firstIndex(where: { $0.id == location.id }) {
@@ -210,11 +243,8 @@ struct CreateMapView: View {
                                     selectedLocation = locations[index]
                                 }
                             }
-                        )) {
-                            Text("Visited")
-                        }
-                        .padding(.top)
-                        
+                        ))
+
                         HStack {
                             Button("Remove") {
                                 if let index = locations.firstIndex(where: { $0.id == location.id }) {
@@ -224,17 +254,14 @@ struct CreateMapView: View {
                                 }
                             }
                             .foregroundColor(.red)
-                            .padding(.top, 4)
-                            
+
                             Spacer()
-                            
+
                             Button("Close") {
                                 withAnimation {
                                     selectedLocation = nil
                                 }
                             }
-                            .font(.caption)
-                            .padding(.top, 4)
                         }
                     }
                     .padding()
@@ -265,6 +292,24 @@ struct CreateMapView: View {
                     .padding()
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                 
+                Text("Quiz Question")
+                TextField("Enter question", text: $quizQuestion)
+                    .padding()
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+
+                ForEach(0..<4, id: \.self) { i in
+                    HStack {
+                        TextField("Answer \(i + 1)", text: $quizAnswers[i])
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                        Button(action: {
+                            correctAnswerIndex = i
+                        }) {
+                            Image(systemName: correctAnswerIndex == i ? "largecircle.fill.circle" : "circle")
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                
                 HStack {
                     Button("Save") {
                         let newLocation = Location(
@@ -273,13 +318,19 @@ struct CreateMapView: View {
                             description: newLocationDescription,
                             latitude: mapRegion.center.latitude,
                             longitude: mapRegion.center.longitude,
-                            visited: 0 // Set default visited
+                            visited: 0,
+                            quizQuestion: quizQuestion.isEmpty ? nil : quizQuestion,
+                            quizAnswers: quizAnswers.contains(where: { !$0.isEmpty }) ? quizAnswers : nil,
+                            correctAnswerIndex: correctAnswerIndex
                         )
                         
                         locations.append(newLocation)
                         LocationLoader.saveLocations(locations)
                         newLocationName = ""
                         newLocationDescription = ""
+                        quizQuestion = ""
+                        quizAnswers = ["", "", "", ""]
+                        correctAnswerIndex = nil
                         showLocationForm = false
                     }
                     .padding()
@@ -289,6 +340,9 @@ struct CreateMapView: View {
                     Button("Cancel") {
                         newLocationName = ""
                         newLocationDescription = ""
+                        quizQuestion = ""
+                        quizAnswers = ["", "", "", ""]
+                        correctAnswerIndex = nil
                         showLocationForm = false
                     }
                     .padding()

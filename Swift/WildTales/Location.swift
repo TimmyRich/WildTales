@@ -10,12 +10,15 @@ import Foundation
 import CoreLocation
 
 struct Location: Identifiable, Codable, Equatable {
-    let id: UUID
+    var id: UUID
     var name: String
     var description: String
-    let latitude: Double
-    let longitude: Double
-    var visited: Int 
+    var latitude: Double
+    var longitude: Double
+    var visited: Int
+    var quizQuestion: String?
+    var quizAnswers: [String]?
+    var correctAnswerIndex: Int?
     
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)

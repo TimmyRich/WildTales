@@ -1,10 +1,3 @@
-//
-//  MapView.swift
-//  WildTales
-//
-//  Created by Kurt McCullough on 22/3/2025.
-//
-
 import SwiftUI
 import MapKit
 import AVFoundation
@@ -31,6 +24,10 @@ struct MapView: View {
     
     @State private var selectedLocation: Location?
     
+    // Quiz state variables
+    @State private var isQuizFinished = false
+    @State private var isAnswerCorrect = false
+    
     var body: some View {
         ZStack {
             Map(coordinateRegion: $mapRegion,
@@ -38,9 +35,12 @@ struct MapView: View {
                 showsUserLocation: true,
                 userTrackingMode: .none,
                 annotationItems: locations) { location in
-                
+                            
                 MapAnnotation(coordinate: location.coordinate) {
                     Button {
+                        // Play the boing sound when a pin is clicked
+                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                        
                         withAnimation {
                             selectedLocation = location
                         }
@@ -52,6 +52,7 @@ struct MapView: View {
                     }
                 }
             }
+
             .ignoresSafeArea(.all)
             .onAppear {
                 locationManager.requestLocation()
@@ -162,13 +163,53 @@ struct MapView: View {
                         }
                         .padding(.top)
                         
+                        // shos up the quiz if available
+                        if let question = location.quizQuestion,
+                           let answers = location.quizAnswers,
+                           let correctIndex = location.correctAnswerIndex {
+                            
+                            Text(question).font(.headline).padding(.top)
+                            ForEach(answers.indices, id: \.self) { index in
+                                Button(action: {
+                                    if index == correctIndex {
+                                        isAnswerCorrect = true
+                                        AudioManager.playSound(soundName: "correct.wav", soundVol: 0.5)
+                                    } else {
+                                        isAnswerCorrect = false
+                                        AudioManager.playSound(soundName: "wrong.wav", soundVol: 0.5)
+                                    }
+                                    // mark the quiz as finished
+                                    isQuizFinished = true
+                                }) {
+                                    Text(answers[index])
+                                        .padding()
+                                        .frame(maxWidth: .infinity)
+                                        .background(Color.blue.opacity(0.1))
+                                        .cornerRadius(8)
+                                }
+                            }
+                        }
+
+                        // display the result messsage
+                        if isQuizFinished {
+                            Text(isAnswerCorrect ? "That's right!" : "Oops, try again!")
+                                .font(.headline)
+                                .foregroundColor(isAnswerCorrect ? .green : .red)
+                                .padding()
+                                .transition(.opacity) // Fade effect
+                        }
+
                         Button("Close") {
+                            // Play the boing sound when the Close button is clicked
+                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                            
                             withAnimation {
                                 selectedLocation = nil
                             }
                         }
                         .font(.caption)
                         .padding(.top, 4)
+                        
                     }
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
