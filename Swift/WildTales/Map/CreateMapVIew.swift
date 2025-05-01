@@ -1,3 +1,10 @@
+//
+//  CreateMapVIew.swift
+//  WildTales
+//
+//  Created by Kurt McCullough on 1/4/2025.
+//
+
 import SwiftUI
 import MapKit
 import AVFoundation

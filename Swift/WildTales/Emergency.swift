@@ -59,7 +59,7 @@ struct Emergency: View {
                 
                 Button("Find security ") {
                     AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
-                    let searchQuery = "security"
+                    let searchQuery = "police"
                         if let url = URL(string: "maps://?q=\(searchQuery)") {
                             if UIApplication.shared.canOpenURL(url) {
                                 UIApplication.shared.open(url)
