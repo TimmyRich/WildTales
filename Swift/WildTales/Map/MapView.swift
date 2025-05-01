@@ -5,6 +5,9 @@
 //  Created by Kurt McCullough on 1/4/2025.
 //
 
+// This is the main map view, it is the one that will notify the user when they get close to a location and mark it as visited as well
+// They can also do the quizzes when the go up to a location
+
 import SwiftUI
 import MapKit
 import AVFoundation
@@ -20,9 +23,10 @@ struct MapView: View {
     @State private var showEmergency = false
     @StateObject private var locationManager = LocationManager()
     
+    // where default map view is when no location (its brisbane city)
     @State private var mapRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: -27.4705, longitude: 153.0260),
-        span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
+        span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003) // this part is just the zoom
     )
     
     @State private var locations = [Location]()
@@ -32,22 +36,13 @@ struct MapView: View {
     
     @State private var selectedLocation: Location?
     
-    // Quiz state
+    // state of quiz for showing
     @State private var isQuizFinished = false
     @State private var isAnswerCorrect = false
-    
-    // Proximity check for quiz
-    var isUserNearSelectedLocation: Bool {
-        guard let selected = selectedLocation,
-              let userLocation = locationManager.userLocation else {
-            return false
-        }
-        let distance = userLocation.coordinate.distance(to: selected.coordinate)
-        return distance < 50
-    }
 
     var body: some View {
         ZStack {
+            // map with user dot
             Map(coordinateRegion: $mapRegion,
                 interactionModes: .all,
                 showsUserLocation: true,
@@ -71,8 +66,9 @@ struct MapView: View {
             .ignoresSafeArea()
             .onAppear {
                 locationManager.requestLocation()
-                locations = LocationLoader.loadLocations() // Load locations
+                locations = LocationLoader.loadLocations() // load locations
                 
+                // removes old ones and sets up a notification for each location on the map
                 ProximityNotificationManager.shared.requestPermission()
                 for location in locations {
                     ProximityNotificationManager.shared.cancelNotifications(for: location)
@@ -91,10 +87,13 @@ struct MapView: View {
                     // Update location visit state based on proximity
                     for index in locations.indices {
                         let locationCoord = locations[index].coordinate
+                        // distance from user to map pin
                         let distance = locationCoord.distance(to: userCoordinate)
                         
+                        // if distance is under 50m and isnt already visted it will mark it as visited and save with the addition of a sound effect
                         if distance < 50 && locations[index].visited != 1 {
                             locations[index].visited = 1
+                            LocationLoader.saveLocations(locations)
                             AudioManager.playSound(soundName: "visited.wav", soundVol: 0.5)
                         }
                     }
@@ -103,7 +102,7 @@ struct MapView: View {
             
             VStack {
                 HStack {
-                    Button {
+                    Button { // back button goes to the previous page
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         goBack.wrappedValue.dismiss()
                     } label: {
@@ -118,6 +117,7 @@ struct MapView: View {
                     
                     Spacer()
                     
+                    // emergency button shows the emergency view overlay
                     Button {
                         showEmergency = true
                         AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
@@ -137,9 +137,9 @@ struct MapView: View {
             VStack {
                 Spacer()
                 HStack {
-                    Button {
+                    Button { // this is where a feature will be later hehehe
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        showSheet.toggle()
+                        showSheet.toggle() // sheet is an easy way to show a new view so we used a lot of these
                     } label: {
                         Image(systemName: "book")
                     }
@@ -149,11 +149,11 @@ struct MapView: View {
                     .background(Circle().fill(Color("Pink")))
                     .shadow(radius: 5)
                     .padding()
-                    .hapticOnTouch()
+                    .hapticOnTouch() // haptics when touched, dont use it much bc its kinda buggy
                     
                     Spacer()
                     
-                    Button {
+                    Button { // simply centers the map and zooms in to default
                         if let userLocation = locationManager.userLocation {
                             mapRegion.center = userLocation.coordinate
                             mapRegion.span = MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
@@ -172,7 +172,7 @@ struct MapView: View {
                 }
             }
             
-            // Location detail panel with quiz
+            // location detail panel with quiz
             if let location = selectedLocation {
                 VStack {
                     Spacer()
@@ -192,10 +192,12 @@ struct MapView: View {
                         }
                         .padding(.top)
                         
-                        // Show quiz only if the location is visited
+                        // users have to visit the location to view the quiz
                         if location.visited == 1 {
+                            // initialise quiz question and answer text and correct index
                             if let question = location.quizQuestion,
-                               let answers = location.quizAnswers, let correctIndex = location.correctAnswerIndex {
+                               let answers = location.quizAnswers,
+                               let correctIndex = location.correctAnswerIndex {
                                 
                                 Text(question)
                                     .font(.headline)
@@ -203,14 +205,18 @@ struct MapView: View {
                                 
                                 ForEach(answers.indices, id: \.self) { index in
                                     Button {
+                                        // check of the clicked index matches the correct index
                                         if index == correctIndex {
                                             isAnswerCorrect = true
                                             AudioManager.playSound(soundName: "correct.wav", soundVol: 0.5)
+                                            
                                             // Mark quiz as completed and update the array
                                             if let selectedIndex = locations.firstIndex(where: { $0.id == location.id }) {
                                                 locations[selectedIndex].quizCompleted = true
+                                                LocationLoader.saveLocations(locations)
                                             }
                                         } else {
+                                            // if the index does not match the correct one
                                             isAnswerCorrect = false
                                             AudioManager.playSound(soundName: "wrong.wav", soundVol: 0.5)
                                         }
@@ -219,13 +225,15 @@ struct MapView: View {
                                         Text(answers[index])
                                             .padding()
                                             .frame(maxWidth: .infinity)
-                                            .background(Color.blue.opacity(0.1))
-                                            .cornerRadius(8)
+                                            .background(Color.pink.opacity(0.1))
+                                            .cornerRadius(5)
                                     }
                                 }
                                 
+                                // if the quiz has been attempted, it will show the user if they got the asnwer wrong or right
+                                // This just changes it depending on correct, colours included
                                 if isQuizFinished {
-                                    Text(isAnswerCorrect ? "That's right!" : "Oops, try again!")
+                                    Text(isAnswerCorrect ? "That's right!" : "Oops, try again!") // colour change
                                         .font(.headline)
                                         .foregroundColor(isAnswerCorrect ? .green : .red)
                                         .padding()
@@ -233,7 +241,7 @@ struct MapView: View {
                                 }
                             }
                         } else if location.visited == 0 {
-                            // Display message if location is not yet visited
+                            // message if location is not yet visited
                             HStack {
                                 Image(systemName: "location.slash")
                                     .foregroundColor(.orange)
@@ -243,7 +251,7 @@ struct MapView: View {
                             }
                             .padding(.top)
                         }
-                        
+                        // closes the location map pin sheet
                         Button("Close") {
                             AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                             withAnimation {
@@ -287,6 +295,7 @@ struct MapView: View {
     }
 }
 
+// small extention to calculate distance between two coordinates, courtesy (https://stackoverflow.com/questions/11077425/finding-distance-between-cllocationcoordinate2d-points/28683508)
 extension CLLocationCoordinate2D {
     func distance(to coordinate: CLLocationCoordinate2D) -> CLLocationDistance {
         let fromLocation = CLLocation(latitude: self.latitude, longitude: self.longitude)

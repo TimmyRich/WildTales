@@ -6,6 +6,11 @@
 //
 
 // ProximityNotificationManager.swift
+// some exampels were provided and used from (https://developer.apple.com/documentation/usernotifications/unusernotificationcenter)
+//
+// This pretty much just sets up the notifications for the user when they get close to a spot, unusernotificationceter makes it easy to do this
+// Just have to do it for each location when loading the map
+
 import Foundation
 import UserNotifications
 import CoreLocation

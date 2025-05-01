@@ -5,6 +5,8 @@
 //  Created by Kurt McCullough on 19/4/2025.
 //
 
+// help to load the locations from locations.json that sotres all the locatons on device
+
 import Foundation
 
 class LocationLoader {
@@ -24,7 +26,7 @@ class LocationLoader {
         }
     }
     
-    // addds the locations to the json file using json encoder
+    // call when any chages are made to save the changes on the file
     static func saveLocations(_ locations: [Location]) {
         guard let url = getFileURL() else { return }
         

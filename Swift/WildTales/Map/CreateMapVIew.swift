@@ -5,6 +5,11 @@
 //  Created by Kurt McCullough on 1/4/2025.
 //
 
+// This page allows the user to create pins on the map.
+// Pressing the plus will add a location to the middle of the screen.
+// It then prompts the user for a name, description, and quiz elements of the map.
+// None of these elements are as each location is stored with a unique ID
+
 import SwiftUI
 import MapKit
 import AVFoundation
@@ -17,7 +22,9 @@ struct CreateMapView: View {
     @Environment(\.presentationMode) var goBack
     
     @State private var showEmergency = false
-    @StateObject private var locationManager = LocationManager()
+    
+    @StateObject private var locationManager = LocationManager() // this helps load the locations from the json in addition to adding and saving to the arrays
+    
     @State private var mapRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: -27.4705, longitude: 153.0260),
         span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
@@ -28,6 +35,7 @@ struct CreateMapView: View {
     @State private var showSettingsSheet = false
     @State private var isMapInitialized = false
     
+    // variables to be overqritten later for forms
     @State private var showLocationForm = false
     @State private var newLocationName = ""
     @State private var newLocationDescription = ""
@@ -37,11 +45,13 @@ struct CreateMapView: View {
     
     @State private var selectedLocation: Location?
     
+    // quiz stuff for later
     @State private var isQuizFinished = false
     @State private var isAnswerCorrect = false
     
     var body: some View {
         ZStack {
+            // this is the map initialisation
             Map(coordinateRegion: $mapRegion,
                 interactionModes: .all,
                 showsUserLocation: true,
@@ -50,7 +60,7 @@ struct CreateMapView: View {
                 MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)) {
                     Button(action: {
                         withAnimation {
-                            selectedLocation = location
+                            selectedLocation = location // each location map pin is a button, when pressed, the selected location is the one pressed on
                         }
                     }) {
                         Image(systemName: "mappin.circle.fill")
@@ -74,7 +84,7 @@ struct CreateMapView: View {
             
             VStack {
                 HStack {
-                    Button {
+                    Button { // back button to go to map views
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         goBack.wrappedValue.dismiss()
                     } label: {
@@ -90,7 +100,7 @@ struct CreateMapView: View {
                     
                     Spacer()
                     
-                    Button(action: {
+                    Button(action: { // emergency button
                         showEmergency = true
                         AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
                     }) {
@@ -106,7 +116,7 @@ struct CreateMapView: View {
                 Spacer()
             }
             
-            ZStack {
+            ZStack { // crosshairs in the middle of the screen for point accuracy
                 Rectangle()
                     .frame(width: 1, height: 40)
                 Rectangle()
@@ -117,9 +127,9 @@ struct CreateMapView: View {
                 Spacer()
                 
                 HStack {
-                    Button {
+                    Button { // add button
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        showLocationForm.toggle()
+                        showLocationForm.toggle() // shows up the form to add location
                     } label: {
                         Image(systemName: "plus")
                     }
@@ -133,7 +143,7 @@ struct CreateMapView: View {
                     
                     Spacer()
                     
-                    Button {
+                    Button { // for later additions
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         showSheet.toggle()
                     } label: {
@@ -149,7 +159,7 @@ struct CreateMapView: View {
                     
                     Spacer()
                     
-                    Button {
+                    Button { // center location
                         if let userLocation = locationManager.userLocation {
                             mapRegion.center = userLocation.coordinate
                             mapRegion.span = MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
@@ -168,7 +178,7 @@ struct CreateMapView: View {
                     .padding()
                     .hapticOnTouch()
                     
-                    Button {
+                    Button { // setting menu
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         showSettingsSheet.toggle()
                     } label: {
@@ -185,7 +195,7 @@ struct CreateMapView: View {
             }
             .overlay(
                 Group {
-                    if showEmergency {
+                    if showEmergency { // this just toggles the emergency menu if the button has been pressed
                         ZStack {
                             Color.black.opacity(0.4)
                                 .ignoresSafeArea()
@@ -198,24 +208,29 @@ struct CreateMapView: View {
                 }
             )
             
+            // this is if a location has been selected (map pin pressed)
             if let location = selectedLocation {
                 VStack {
                     Spacer()
                     VStack(alignment: .leading, spacing: 12) {
-                        Text(location.name).font(.headline)
+                        Text(location.name).font(.headline) // gets location name and desciption
                         Text(location.description).font(.subheadline)
                         
+                        // gets location quiz parts
                         if let question = location.quizQuestion,
                            let answers = location.quizAnswers,
                            let correctIndex = location.correctAnswerIndex {
 
+                            // displays the quiz info
                             Text(question).font(.headline).padding(.top)
                             ForEach(answers.indices, id: \.self) { index in
                                 Button(action: {
+                                    // check for correct answer and what not
                                     if index == correctIndex {
                                         isAnswerCorrect = true
                                         AudioManager.playSound(soundName: "correct.wav", soundVol: 0.5)
                                         if let i = locations.firstIndex(where: { $0.id == location.id }) {
+                                            // says if the quiz has successfully been completed (used later)
                                             if !locations[i].quizCompleted {
                                                 locations[i].quizCompleted = true
                                                 LocationLoader.saveLocations(locations)
@@ -223,6 +238,7 @@ struct CreateMapView: View {
                                             }
                                         }
                                     } else {
+                                        // if the answer selected is wrong)
                                         isAnswerCorrect = false
                                         AudioManager.playSound(soundName: "wrong.wav", soundVol: 0.5)
                                     }
@@ -231,12 +247,13 @@ struct CreateMapView: View {
                                     Text(answers[index])
                                         .padding()
                                         .frame(maxWidth: .infinity)
-                                        .background(Color.blue.opacity(0.1))
+                                        .background(Color.pink.opacity(0.1))
                                         .cornerRadius(8)
                                 }
                             }
                         }
 
+                        // if the quiz has been attempted, a right or wrong will show
                         if isQuizFinished {
                             Text(isAnswerCorrect ? "That's right!" : "Oops, try again!")
                                 .font(.headline)
@@ -244,7 +261,8 @@ struct CreateMapView: View {
                                 .padding()
                                 .transition(.opacity)
                         }
-
+                        
+                        // This is the visited toggle, it can change if the location has been visited or not then save it to the array
                         Toggle("Visited", isOn: Binding(
                             get: { location.visited == 1 },
                             set: { newValue in
@@ -256,13 +274,15 @@ struct CreateMapView: View {
                             }
                         ))
 
+                        // this toggle hasnt been finished yet
                         Toggle("Quiz Completed", isOn: Binding(
                             get: { location.quizCompleted },
-                            set: { _ in } // prevent manual changes, might change it so you can change it lol
+                            set: { _ in }
                         ))
                         .disabled(true)
 
                         HStack {
+                            // This button removes the location by ID then updates the array
                             Button("Remove") {
                                 if let index = locations.firstIndex(where: { $0.id == location.id }) {
                                     locations.remove(at: index)
@@ -274,6 +294,7 @@ struct CreateMapView: View {
 
                             Spacer()
 
+                            // removes selected location so nothing shows
                             Button("Close") {
                                 withAnimation {
                                     selectedLocation = nil
@@ -298,30 +319,31 @@ struct CreateMapView: View {
         }
         .sheet(isPresented: $showLocationForm) {
             VStack {
+                //input text fields for user input
                 Text("New Location").font(.headline).padding()
-                TextField("Enter name", text: $newLocationName)
+                TextField("Enter name", text: $newLocationName) // save name
                     .padding().textFieldStyle(RoundedBorderTextFieldStyle())
-                TextField("Enter description", text: $newLocationDescription)
+                TextField("Enter description", text: $newLocationDescription) // save description
                     .padding().textFieldStyle(RoundedBorderTextFieldStyle())
                 
                 Text("Quiz Question")
-                TextField("Enter question", text: $quizQuestion)
+                TextField("Enter question", text: $quizQuestion) // save question title
                     .padding().textFieldStyle(RoundedBorderTextFieldStyle())
 
                 ForEach(0..<4, id: \.self) { i in
                     HStack {
-                        TextField("Answer \(i + 1)", text: $quizAnswers[i])
+                        TextField("Answer \(i + 1)", text: $quizAnswers[i]) // save the answers
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                         Button(action: {
-                            correctAnswerIndex = i
+                            correctAnswerIndex = i // gets the index from a button to the right of the aswwer boxes
                         }) {
-                            Image(systemName: correctAnswerIndex == i ? "largecircle.fill.circle" : "circle")
+                            Image(systemName: correctAnswerIndex == i ? "largecircle.fill.circle" : "circle") // fills the correct answer fill when selcted
                         }
                     }.padding(.horizontal)
                 }
                 
                 HStack {
-                    Button("Save") {
+                    Button("Save") { // this button appands to the array the location info when clicking save, it then resets the variables so they can be changed again for adding a ewn location
                         let newLocation = Location(
                             id: UUID(),
                             name: newLocationName,
@@ -334,6 +356,7 @@ struct CreateMapView: View {
                             correctAnswerIndex: correctAnswerIndex,
                             quizCompleted: false
                         )
+                        // reset variables so they can be changed again
                         locations.append(newLocation)
                         LocationLoader.saveLocations(locations)
                         newLocationName = ""
@@ -347,6 +370,7 @@ struct CreateMapView: View {
                     
                     Spacer()
                     
+                    // resets variabels when cancelled
                     Button("Cancel") {
                         newLocationName = ""
                         newLocationDescription = ""

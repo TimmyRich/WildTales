@@ -107,9 +107,7 @@ struct MapChoice: View {
                         Spacer()
                     }
                     .padding(.leading)
-                    
-                    
-                    
+ 
                 }
                 
                 
