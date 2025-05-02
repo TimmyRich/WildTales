@@ -71,7 +71,7 @@ struct Home: View {
                 VStack {
                     HStack {
                         NavigationLink(destination: MapChoice().navigationBarBackButtonHidden(true)) {
-                            Image("homebutton2")
+                            Image("homeButton2")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 75, height: 75)
@@ -80,7 +80,7 @@ struct Home: View {
                         })
                         
                         NavigationLink(destination: ScrapBookGuide().navigationBarBackButtonHidden(true)) {
-                            Image("homebutton1")
+                            Image("homeButton1")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 75, height: 75)
@@ -115,7 +115,7 @@ struct Home: View {
                          */
                         
                         NavigationLink(destination: Intro()/*.navigationBarBackButtonHidden(true)*/) {
-                            Image("homebutton3")
+                            Image("homeButton3")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 75, height: 75)
