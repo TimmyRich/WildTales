@@ -13,7 +13,7 @@ class AudioManager {
 
     static func startBackgroundMusic() {
         if backgroundPlayer == nil {
-            guard let url = Bundle.main.url(forResource: "music2", withExtension: "m4a") else {
+            guard let url = Bundle.main.url(forResource: "music1", withExtension: "m4a") else {
                 print("Background music file not found")
                 return
             }

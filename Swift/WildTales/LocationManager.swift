@@ -15,7 +15,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     private var locationManager = CLLocationManager()
     
-    @Published var userLocation: CLLocation? // To track user's location
+    @Published var userLocation: CLLocation? // To track users location
     
     override init() {
         super.init()

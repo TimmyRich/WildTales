@@ -4,6 +4,11 @@
 //
 //  Created by Kurt McCullough on 1/4/2025.
 //
+
+// This view has not been changed mutch, it just is a basic view of the map and doesnt show any pins yet. The MapLocations are the pins that need to be preloaded onto this map.
+
+
+
 import SwiftUI
 import MapKit
 import AVFoundation
@@ -51,8 +56,6 @@ struct CommunityMapView: View {
             
             VStack {
                 HStack {
-
-                    
                     Button {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         goBack.wrappedValue.dismiss()
