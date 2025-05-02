@@ -70,7 +70,7 @@ Map functionality not fully supported on Xcode simulator. This functionality req
 
 ---
 
-### To Run Natively (Full Functionali
+### To Run Natively (Full Functionality)
 1. Ensure device compatibility with Xcode version 16.3
 2. Add an Apple developer account
 3. Connect device via usb
