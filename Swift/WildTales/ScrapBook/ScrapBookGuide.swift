@@ -96,10 +96,21 @@ struct ScrapBookGuide: View {
                                 popupManager.present()
                             }
                         }
+                        .frame(width: UIScreen.main.bounds.width-220, height: 25)
+                        .foregroundColor(.black)
+                        .cornerRadius(10)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color(.black), lineWidth: 0.5)
+                        )
+                        .shadow(radius: 10)
+                        .font(Font.custom("Inter", size: 12))
+                        /*
                         .background(Color.blue)
                         .foregroundColor(.white)
                         .cornerRadius(10)
                         .font(Font.custom("Inter", size: 12))
+                          */
                     }
                     
                     HStack{
