@@ -1,42 +1,57 @@
-# WildTales
+# 🌿 WildTales
 
-**WildTales** is a whimsical iOS app that lets users explore nature-themed trails, decorate photos with interactive badges, and save their creations in a scrapbook. It’s built using SwiftUI and designed with young explorers in mind.
-
----
-
-## 📸 Screenshots
-
-| Home | Intro | Map | Emergency |
-|------|-------|-----|-----------|
-| ![Home](screenshots/home.png) | ![Intro](screenshots/intro.png) | ![Map](screenshots/map.png) | ![Emergency](screenshots/emergency.png) |
-
-| Scrapbook | Scrapbook Guide | Gallery | Badge Decorator |
-|-----------|------------------|---------|------------------|
-| ![Scrapbook](screenshots/scrapbook.png) | ![Scrapbook Guide](screenshots/scrapbookGuide.png) | ![Gallery](screenshots/gallery.png) | ![Badge Decorator](screenshots/badgeDecorator.png) |
+**WildTales** is an interactive SwiftUI app that helps users explore trails, take photos, decorate memories with badges, and keep track of adventures in a digital scrapbook.
 
 ---
 
-## ✨ Features
+## 🚀 Features
 
-- Browse unique trails like the “Botanical Gardens”
-- Add, rotate, and scale collectible badges on trail images
-- Automatically delete badges dragged offscreen
-- Save and revisit decorated photos in a scrapbook
-- Polished UI with sound and haptic feedback
+- 🗺️ Trail map with themed locations
+- 📸 Interactive photo badge decoration
+- 📖 Scrapbook to save trail memories
+- 🆘 Emergency button with quick access
+- 🎓 Intro guide for first-time users
 
 ---
 
-## 🚀 Getting Started
+## 📱 Screenshots
 
-### Prerequisites
+<p float="left">
+  <img src="screenshots/home.png" width="220" />
+  <img src="screenshots/intro.png" width="220" />
+  <img src="screenshots/map.png" width="220" />
+</p>
 
-- macOS with Xcode 15+
-- iOS 17.0+ target
-- SwiftUI-based project setup
+<p float="left">
+  <img src="screenshots/emergency.png" width="220" />
+  <img src="screenshots/scrapbook.png" width="220" />
+  <img src="screenshots/scrapbookGuide.png" width="220" />
+</p>
 
-### Installation
+<p float="left">
+  <img src="screenshots/gallery.png" width="220" />
+  <img src="screenshots/badgeDecorator.png" width="220" />
+</p>
 
-```bash
-git clone https://github.com/TimmyRich/WildTales.git
-cd WildTales
-open WildTales.xcodeproj
+---
+
+## 🛠️ Technologies
+
+- SwiftUI
+- AVFoundation (for sound)
+- CoreGraphics / UIKit integration
+- Local file storage
+- Haptics & animations
+
+---
+
+## 🧭 Getting Started
+
+### Requirements
+- Xcode 15+
+- iOS 17 simulator or later
+
+### To Run
+1. Clone this repo:
+   ```bash
+   git clone https://github.com/yourusername/WildTales.git
