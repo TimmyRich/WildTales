@@ -32,7 +32,9 @@
   <img src="screenshots/photopicker.png" width="220" />
   <img src="screenshots/scrapbookGuide.png" width="220" />
   <img src="screenshots/gallery.png" width="220" />
-  <img src="screenshots/badgeDecorator.png" width="220" />
+</p>
+<p float="left">
+    <img src="screenshots/badgeDecorator.png" width="220" />
 </p>
 
 
