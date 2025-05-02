@@ -10,8 +10,7 @@ struct GalleryView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color(.systemGreen)
-                    .opacity(0.2)
+                Color(red: 191/255, green: 209/255, blue: 161/255)
                     .ignoresSafeArea()
                 
                 // Quokka image, moved upwards so its bottom is hidden
@@ -31,31 +30,32 @@ struct GalleryView: View {
                     
                     TabView(selection: $selectedIndex) {
                         ForEach(0..<imageNames.count, id: \.self) { index in
-                            ZStack {
-                                // Background rectangle
-                                RoundedRectangle(cornerRadius: 15)
-                                    .fill(Color.white)
-                                    .frame(width: 320, height: 660)
+                            NavigationLink(destination: BadgeDecoratorView(imageName: imageNames[index])) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 15)
+                                        .fill(Color.white)
+                                        .frame(width: 320, height: 660)
                                     
-                                VStack {
-                                    Text("The \(imageNames[selectedIndex]) trail")
-                                        .padding(.bottom, 10)
-                                        .font(.headline)
-                                    
-                                    // Visible trail
-                                    Image(imageNames[index])
-                                        .resizable()
-                                        .frame(width: 300, height: 600)
-                                        .padding(.top, 0)
-                                        .cornerRadius(10)
+                                    VStack {
+                                        Text("The \(imageNames[selectedIndex]) trail")
+                                            .padding(.bottom, 10)
+                                            .font(.headline)
+                                        
+                                        Image(imageNames[index])
+                                            .resizable()
+                                            .frame(width: 300, height: 600)
+                                            .cornerRadius(10)
+                                    }
                                 }
+                                .tag(index)
+                                .shadow(radius: 10)
                             }
-                            .tag(index)
-                            .shadow(radius: 10)
+                            .buttonStyle(PlainButtonStyle())
                         }
                     }
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .frame(height: 800)
+
                 }
                 
                 // Left and right buttons to control carousel
