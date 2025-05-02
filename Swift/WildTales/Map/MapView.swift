@@ -69,11 +69,11 @@ struct MapView: View {
                 locations = LocationLoader.loadLocations() // load locations
                 
                 // removes old ones and sets up a notification for each location on the map
-                ProximityNotificationManager.shared.requestPermission()
+                ProximityNotificationManager.shared.requestPermission()/*
                 for location in locations {
                     ProximityNotificationManager.shared.cancelNotifications(for: location)
-                    ProximityNotificationManager.shared.scheduleProximityNotification(for: location)
-                }
+                    /*ProximityNotificationManager.shared.scheduleProximityNotification(for: location)*/
+                }*/
             }
             .onChange(of: locationManager.userLocation) { newLocation in
                 if let newLocation = newLocation {
@@ -92,10 +92,29 @@ struct MapView: View {
                         
                         // if distance is under 50m and isnt already visted it will mark it as visited and save with the addition of a sound effect
                         if distance < 50 && locations[index].visited != 1 {
+                            let content = UNMutableNotificationContent()
+                            content.title = "You're Close!"
+                            content.body = "You're close to \(locations[index].name)"
+                            content.sound = UNNotificationSound.default
+
+                            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+
+                            let request = UNNotificationRequest(identifier: "noticication", content: content, trigger: trigger)
+
+                            UNUserNotificationCenter.current().add(request) { error in
+                                if let error = error {
+                                    print("Error scheduling notification: \(error.localizedDescription)")
+                                }
+                            }
+                            
                             locations[index].visited = 1
                             LocationLoader.saveLocations(locations)
                             AudioManager.playSound(soundName: "visited.wav", soundVol: 0.5)
+                            
+                            
                         }
+                        
+                        
                     }
                 }
             }

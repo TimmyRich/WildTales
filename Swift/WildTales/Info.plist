@@ -11,6 +11,8 @@
 		<string>location</string>
 		<string>processing</string>
 		<string>nearby-interaction</string>
+		<string>fetch</string>
+		<string>remote-notification</string>
 	</array>
 </dict>
 </plist>
