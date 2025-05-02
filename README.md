@@ -40,10 +40,9 @@
 - SwiftUI
 - AVFoundation (for sound)
 - CoreGraphics / UIKit integration
-- CoreLocation
-- CoreHaptics
+- CoreLocation / Geolocation tracking
+- CoreHaptics (for haptics
 - Local file storage
-- Haptics & animations
 
 ---
 
@@ -52,8 +51,9 @@
 ### Requirements
 - Xcode 15+
 - iOS 17 simulator or later
+- (optional) iPhone running iOS 17 or later
 
-### To Run
+### To Run on Simulator (Partial Functionality)
 1. Clone this repo:
    ```bash
    git clone https://github.com/TimmyRich/WildTales.git
@@ -64,3 +64,15 @@
 3. Run the app in a simulator
    ```bash
    cmd + r
+
+### Partial Functionality
+Adding map locations not fully supported on Xcode simulator. This functionality requires a physyical device.
+
+---
+
+### To Run Natively (Full Functionali
+1. Ensure device compatibility with Xcode version 16.3
+2. Add an Apple developer account
+3. Connect device via usb
+4. Trust yourself
+5. Build and run application from your connected device in Xcode
