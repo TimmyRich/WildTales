@@ -40,6 +40,8 @@
 - SwiftUI
 - AVFoundation (for sound)
 - CoreGraphics / UIKit integration
+- CoreLocation
+- CoreHaptics
 - Local file storage
 - Haptics & animations
 
@@ -54,4 +56,6 @@
 ### To Run
 1. Clone this repo:
    ```bash
-   git clone https://github.com/yourusername/WildTales.git
+   git clone https://github.com/TimmyRich/WildTales.git
+   cd Wildtales
+   open WildTales.xcodeproj
