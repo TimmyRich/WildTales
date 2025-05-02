@@ -24,7 +24,7 @@
 
 <p float="left">
   <img src="screenshots/emergency.png" width="220" />
-  <img src="screenshots/scrapbook.png" width="220" />
+  <img src="screenshots/photopicker.png" width="220" />
   <img src="screenshots/image gallery.png" width="220" />
 </p>
 
