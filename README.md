@@ -38,11 +38,16 @@
 ## 🛠️ Technologies
 
 - SwiftUI
+- MapKit
+- WebKit
 - AVFoundation 
 - CoreGraphics 
 - CoreLocation 
 - CoreHaptics 
-- Local file storage
+- SpriteKit
+- UserNotifications
+- Foundation
+- Combine
 
 ---
 
