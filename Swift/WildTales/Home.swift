@@ -113,7 +113,17 @@ struct Home: View {
                             }
                         }
                         */
+                        
                         NavigationLink(destination: Intro()/*.navigationBarBackButtonHidden(true)*/) {
+                            Image("homeButton3")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 75, height: 75)
+                        }.simultaneousGesture(TapGesture().onEnded {
+                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                        })
+                        
+                        NavigationLink(destination: GalleryView().navigationBarBackButtonHidden(true)) {
                             Image("homeButton3")
                                 .resizable()
                                 .scaledToFit()

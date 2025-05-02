@@ -13,7 +13,7 @@ struct GalleryView: View {
                 Color(red: 191/255, green: 209/255, blue: 161/255)
                     .ignoresSafeArea()
                 
-                // Quokka image, moved upwards so its bottom is hidden
+                // Quokka image
                 Image("quokka")
                     .resizable()
                     .scaledToFit()
@@ -26,7 +26,7 @@ struct GalleryView: View {
                     .offset(y: 30)
 
                 VStack {
-                    Spacer().frame(height:200)
+                    Spacer().frame(height: 200)
                     
                     TabView(selection: $selectedIndex) {
                         ForEach(0..<imageNames.count, id: \.self) { index in
@@ -55,14 +55,12 @@ struct GalleryView: View {
                     }
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .frame(height: 800)
-
                 }
-                
-                // Left and right buttons to control carousel
+
+                // Carousel navigation buttons
                 VStack {
                     HStack {
                         Button(action: {
-                            // Go to the previous image in the carousel
                             if selectedIndex > 0 {
                                 selectedIndex -= 1
                             }
@@ -72,11 +70,10 @@ struct GalleryView: View {
                                 .frame(width: 40, height: 40)
                                 .padding(.leading, -10)
                         }
-                        
+
                         Spacer()
-                        
+
                         Button(action: {
-                            // Go to the next image in the carousel
                             if selectedIndex < imageNames.count - 1 {
                                 selectedIndex += 1
                             }
@@ -89,6 +86,27 @@ struct GalleryView: View {
                     }
                     .padding()
                 }
+
+                // 🏠 Home Button (Top-left)
+                HStack {
+                    VStack(alignment: .leading) {
+                        NavigationLink(destination: Home().navigationBarBackButtonHidden(true)) {
+                            Image("homeButtonGreen")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                        }
+                        .simultaneousGesture(TapGesture().onEnded {
+                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                        })
+                        .padding(.top, 75)
+                        .hapticOnTouch()
+
+                        Spacer()
+                    }
+
+                    Spacer()
+                }
+                .padding()
             }
         }
     }
