@@ -57,5 +57,10 @@
 1. Clone this repo:
    ```bash
    git clone https://github.com/TimmyRich/WildTales.git
-   cd Wildtales
+2. Open project in Xcode
+   ```bash
+   cd Wildtales/Swift
    open WildTales.xcodeproj
+3. Run the app in a simulator
+   ```bash
+   cmd + r
