@@ -66,7 +66,7 @@
    cmd + r
 
 ### Partial Functionality
-Adding map locations not fully supported on Xcode simulator. This functionality requires a physyical device.
+Map functionality not fully supported on Xcode simulator. This functionality requires a physyical device.
 
 ---
 
