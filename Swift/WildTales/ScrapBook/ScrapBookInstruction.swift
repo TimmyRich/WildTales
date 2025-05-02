@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ScrapBookInstruction: View {
+    @Environment(\.presentationMode) var goBack
+    
     var body: some View {
         ZStack {
             Color("Green2")
@@ -46,7 +48,10 @@ struct ScrapBookInstruction: View {
                                         Text("Take a picture of the place you visited or upload it from your album folder").multilineTextAlignment(.center).foregroundColor(.white).font(Font.custom("Inter", size: 14)).frame(maxWidth: UIScreen.main.bounds.width-170)
                                         Text("Edit it! Cut, change size, add text, stickers, etc").multilineTextAlignment(.center).foregroundColor(.white).font(Font.custom("Inter", size: 14)).frame(maxWidth: UIScreen.main.bounds.width-170)
                                         Text("Collect all in your scrapbook and keep the memories ").multilineTextAlignment(.center).foregroundColor(.white).font(Font.custom("Inter", size: 14)).frame(maxWidth: UIScreen.main.bounds.width-170).padding(.bottom, 25)
-                                        NavigationLink(destination: ScrapBookGuide().navigationBarBackButtonHidden(true)) {
+                                        Button {
+                                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                                            goBack.wrappedValue.dismiss()
+                                        } label: {
                                             Text("Go Back")
                                                 .frame(width: UIScreen.main.bounds.width-270, height: 30).background(Color(.white))
                                                 .foregroundColor(.black)
@@ -55,10 +60,9 @@ struct ScrapBookInstruction: View {
                                                     RoundedRectangle(cornerRadius: 10)
                                                         .stroke(Color(.black), lineWidth: 0.5)).font(Font.custom("Inter", size: 16))
                                         }.hapticOnTouch()
-                                        
+                
                                     }
                                 )
-                            
                         })
                 Spacer()
             }
@@ -69,6 +73,6 @@ struct ScrapBookInstruction: View {
 #Preview {
     ScrapBookInstruction()
 }
-                                                
+                    
                                                                                 
                                                                                

@@ -30,18 +30,21 @@ class AppState: ObservableObject {
 struct WildTales: App {
     
     @StateObject var appState = AppState()
+    @StateObject var popupManager = PopupManager()
     
     var body: some Scene {
         WindowGroup {
             if appState.isLoggedIn {
                 Home()
                     .environmentObject(appState)
+                    .environmentObject(popupManager)
             } else if appState.showIntro {
                 Intro()
                     .environmentObject(appState)
             } else if appState.clickedGo {
                 Home()
                     .environmentObject(appState)
+                    .environmentObject(popupManager)
             } else {
                 Landing()
                     .environmentObject(appState)

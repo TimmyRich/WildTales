@@ -3,7 +3,7 @@
 //  WildTales
 //
 //  Created by Kurt McCullough on 31/3/2025.
-//
+//  Old version of Scrapbook
 
 import SwiftUI
 
