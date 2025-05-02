@@ -18,7 +18,7 @@
 
 ## ✨ Features
 
-- Browse unique trails like “Sunny Fields” or “Botanical Gardens”
+- Browse unique trails like the “Botanical Gardens”
 - Add, rotate, and scale collectible badges on trail images
 - Automatically delete badges dragged offscreen
 - Save and revisit decorated photos in a scrapbook
@@ -37,6 +37,6 @@
 ### Installation
 
 ```bash
-git clone https://github.com/yourusername/WildTales.git
+git clone https://github.com/TimmyRich/WildTales.git
 cd WildTales
 open WildTales.xcodeproj
