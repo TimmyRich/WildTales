@@ -6,6 +6,7 @@ struct GalleryView: View {
     let buttonImages = ["forward_button", "back_button"]
     
     @State private var selectedIndex = 0
+    @Environment(\.presentationMode) var goBack
     
     var body: some View {
         NavigationView {
@@ -14,13 +15,13 @@ struct GalleryView: View {
                     .ignoresSafeArea()
                 
                 // Quokka image
-                Image("quokka")
+                /*Image("quokka")
                     .resizable()
                     .scaledToFit()
                     .scaleEffect(0.2)
-                    .offset(x: 100, y: -370)
+                    .offset(x: 100, y: -370)*/
 
-                Image("GalleryBackgroundRect")
+               Image("GalleryBackgroundRect")
                     .resizable()
                     .scaledToFit()
                     .offset(y: 30)
@@ -90,16 +91,19 @@ struct GalleryView: View {
                 // 🏠 Home Button (Top-left)
                 HStack {
                     VStack(alignment: .leading) {
-                        NavigationLink(destination: Home().navigationBarBackButtonHidden(true)) {
-                            Image("homeButtonGreen")
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                        }
-                        .simultaneousGesture(TapGesture().onEnded {
+                        Button { // back button goes to the previous page
                             AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        })
-                        .padding(.top, 75)
-                        .hapticOnTouch()
+                            goBack.wrappedValue.dismiss()
+                        } label: {
+                            Image(systemName: "x.circle.fill").resizable()
+                        }
+                        
+                        .font(.system(size: 24))
+                        .foregroundColor(.red)
+                        .frame(width: 20, height: 20)
+                        .shadow(radius: 5)
+                        .padding(.top, 150)
+                        
 
                         Spacer()
                     }

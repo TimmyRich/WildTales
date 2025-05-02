@@ -313,7 +313,7 @@ struct CreateMapView: View {
             }
         }
         .sheet(isPresented: $showSheet) {
-            Stories()
+            GalleryView()
         }
         .sheet(isPresented: $showSettingsSheet) {
             Settings()

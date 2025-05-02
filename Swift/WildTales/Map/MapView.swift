@@ -102,6 +102,8 @@ struct MapView: View {
             
             VStack {
                 HStack {
+                    
+                    
                     Button { // back button goes to the previous page
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         goBack.wrappedValue.dismiss()
@@ -137,6 +139,7 @@ struct MapView: View {
             VStack {
                 Spacer()
                 HStack {
+                    
                     Button { // this is where a feature will be later hehehe
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         showSheet.toggle() // sheet is an easy way to show a new view so we used a lot of these
@@ -189,12 +192,20 @@ struct MapView: View {
                             .frame(maxWidth: .infinity)
                         
                         HStack {
+                            // visited shows if it has been visited or not
                             Text("Visited:")
                                 .font(.subheadline)
                                 .bold()
                             Image(systemName: location.visited == 1 ? "checkmark.circle.fill" : "xmark.circle.fill")
                                 .foregroundColor(location.visited == 1 ? .green : .red)
                                 .font(.title3)
+                            
+                           /* Text("Quiz:")
+                                .font(.subheadline)
+                                .bold()
+                            Image(systemName: location.quizCompleted == true ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                .foregroundColor(location.quizCompleted == 1 ? .green : .red)
+                                .font(.title3)*/
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.top, 4)
@@ -294,7 +305,7 @@ struct MapView: View {
             }
         }
         .sheet(isPresented: $showSheet) {
-            Stories()
+            GalleryView()
         }
         .sheet(isPresented: $showSettingsSheet) {
             Settings()
