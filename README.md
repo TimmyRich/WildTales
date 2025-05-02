@@ -6,9 +6,13 @@
 
 ## 📸 Screenshots
 
-| Gallery | Badge Decoration | Scrapbook |
-|--------|------------------|-----------|
-| ![Gallery](screenshots/gallery.png) | ![Badge](screenshots/badge.png) | ![Scrapbook](screenshots/scrapbook.png) |
+| Home | Intro | Map | Emergency |
+|------|-------|-----|-----------|
+| ![Home](screenshots/home.png) | ![Intro](screenshots/intro.png) | ![Map](screenshots/map.png) | ![Emergency](screenshots/emergency.png) |
+
+| Scrapbook | Scrapbook Guide | Gallery | Badge Decorator |
+|-----------|------------------|---------|------------------|
+| ![Scrapbook](screenshots/scrapbook.png) | ![Scrapbook Guide](screenshots/scrapbookGuide.png) | ![Gallery](screenshots/gallery.png) | ![Badge Decorator](screenshots/badgeDecorator.png) |
 
 ---
 
