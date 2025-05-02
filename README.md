@@ -38,10 +38,10 @@
 ## 🛠️ Technologies
 
 - SwiftUI
-- AVFoundation (for sound)
-- CoreGraphics / UIKit integration
-- CoreLocation / Geolocation tracking
-- CoreHaptics (for haptics
+- AVFoundation 
+- CoreGraphics 
+- CoreLocation 
+- CoreHaptics 
 - Local file storage
 
 ---
