@@ -56,9 +56,9 @@ struct MapView: View {
                             selectedLocation = location
                         }
                     } label: {
-                        Image(systemName: "mappin.circle.fill")
-                            .font(.title)
-                            .foregroundColor(location.visited == 1 ? .green : .red)
+                        Image(uiImage: UIImage(named: pinImageName(for: location)) ?? UIImage())
+                            .resizable()
+                            .frame(width: 40, height: 40)
                             .shadow(radius: 2)
                     }
                 }
@@ -281,15 +281,36 @@ struct MapView: View {
                                 }
                             }
                         } else if location.visited == 0 {
-                            // message if location is not yet visited
-                            HStack {
-                                Image(systemName: "location.slash")
-                                    .foregroundColor(.orange)
-                                Text("Get closer to the location to take the quiz!")
-                                    .font(.footnote)
-                                    .foregroundColor(.orange)
+                            
+                            
+                            if location.quizQuestion != nil {
+                                HStack {
+                                    Image(systemName: "dot.radiowaves.up.forward")
+                                        .foregroundColor(.red)
+                                    Text("Get closer to the location to take the quiz!")
+                                        .font(.footnote)
+                                        .foregroundColor(.red)
+                                    
+                                }
+                                .padding(.top)
+                                
                             }
-                            .padding(.top)
+                            // message if location is not yet visited
+                            
+                            else {
+                                HStack {
+                                    Image(systemName: "pencil.slash")
+                                        .foregroundColor(.orange)
+                                    Text("No quiz for this location!")
+                                        .font(.footnote)
+                                        .foregroundColor(.orange)
+                                    
+                                }
+                                .padding(.top)
+                                
+                            }
+                            
+                          
                         }
                         // closes the location map pin sheet
                         Button("Close") {
@@ -335,6 +356,18 @@ struct MapView: View {
             isAnswerCorrect = false
         }
     }
+    
+    func pinImageName(for location: Location) -> String {
+        switch location.category {
+        case .animal:
+            return location.visited == 1 ? "map_animal" : "map_animal_blank"
+        case .plant:
+            return location.visited == 1 ? "map_plant" : "map_plant_blank"
+        case .location:
+            return location.visited == 1 ? "map_place" : "map_place_blank"
+        }
+    }
+
 }
 
 // small extention to calculate distance between two coordinates, courtesy (https://stackoverflow.com/questions/11077425/finding-distance-between-cllocationcoordinate2d-points/28683508)

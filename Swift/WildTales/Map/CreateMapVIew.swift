@@ -43,6 +43,8 @@ struct CreateMapView: View {
     @State private var quizAnswers = ["", "", "", ""]
     @State private var correctAnswerIndex: Int? = nil
     
+    @State private var selectedCategory: LocationCategory = .location
+    
     @State private var selectedLocation: Location?
     
     // quiz stuff for later
@@ -63,9 +65,9 @@ struct CreateMapView: View {
                             selectedLocation = location // each location map pin is a button, when pressed, the selected location is the one pressed on
                         }
                     }) {
-                        Image(systemName: "mappin.circle.fill")
-                            .font(.title)
-                            .foregroundColor(location.visited == 1 ? .green : .red)
+                        Image(uiImage: UIImage(named: pinImageName(for: location)) ?? UIImage())
+                            .resizable()
+                            .frame(width: 40, height: 40)
                             .shadow(radius: 2)
                     }
                 }
@@ -337,6 +339,15 @@ struct CreateMapView: View {
                         .background(Color(.systemGray6))
                         .cornerRadius(10)
                         .padding(.horizontal)
+                    
+                    Picker("Category", selection: $selectedCategory) {
+                        ForEach(LocationCategory.allCases) { category in
+                            Text(category.rawValue.capitalized).tag(category)
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .cornerRadius(10)
+                    .padding(.horizontal)
 
                     Text("Quiz Question")
                         .font(.headline)
@@ -356,7 +367,7 @@ struct CreateMapView: View {
                                 .cornerRadius(10)
 
                             Button(action: {
-                                correctAnswerIndex = i // correct answer index to check against
+                                correctAnswerIndex = i
                             }) {
                                 Image(systemName: correctAnswerIndex == i ? "largecircle.fill.circle" : "circle")
                                     .foregroundColor(correctAnswerIndex == i ? Color("Pink") : .gray)
@@ -379,7 +390,9 @@ struct CreateMapView: View {
                                 quizQuestion: quizQuestion.isEmpty ? nil : quizQuestion,
                                 quizAnswers: quizAnswers.contains(where: { !$0.isEmpty }) ? quizAnswers : nil,
                                 correctAnswerIndex: correctAnswerIndex,
-                                quizCompleted: false
+                                quizCompleted: false,
+                                category: selectedCategory
+                                
                             )
                             locations.append(newLocation)
                             LocationLoader.saveLocations(locations)
@@ -387,6 +400,7 @@ struct CreateMapView: View {
                             newLocationDescription = ""
                             quizQuestion = ""
                             quizAnswers = ["", "", "", ""]
+                            selectedCategory = .location
                             correctAnswerIndex = nil
                             showLocationForm = false
                         }
@@ -402,6 +416,7 @@ struct CreateMapView: View {
                             newLocationDescription = ""
                             quizQuestion = ""
                             quizAnswers = ["", "", "", ""]
+                            selectedCategory = .location
                             correctAnswerIndex = nil
                             showLocationForm = false
                         }
@@ -418,6 +433,17 @@ struct CreateMapView: View {
             }
         }
 
+    }
+    
+    func pinImageName(for location: Location) -> String {
+        switch location.category {
+        case .animal:
+            return location.visited == 1 ? "map_animal" : "map_animal_blank"
+        case .plant:
+            return location.visited == 1 ? "map_plant" : "map_plant_blank"
+        case .location:
+            return location.visited == 1 ? "map_place" : "map_place_blank"
+        }
     }
 }
 

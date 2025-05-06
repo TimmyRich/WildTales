@@ -20,9 +20,18 @@ struct Location: Identifiable, Codable, Equatable {
     var quizAnswers: [String]?
     var correctAnswerIndex: Int?
     var quizCompleted: Bool
+    var category: LocationCategory
     
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
+}
+
+enum LocationCategory: String, Codable, CaseIterable, Identifiable {
+    case plant
+    case animal
+    case location
+
+    var id: String { self.rawValue }
 }
 
