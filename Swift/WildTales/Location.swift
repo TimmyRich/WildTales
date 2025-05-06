@@ -31,6 +31,7 @@ enum LocationCategory: String, Codable, CaseIterable, Identifiable {
     case plant
     case animal
     case location
+    case fence
 
     var id: String { self.rawValue }
 }

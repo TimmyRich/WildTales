@@ -62,16 +62,25 @@ struct CreateMapView: View {
                 MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)) {
                     Button(action: {
                         withAnimation {
-                            selectedLocation = location // each location map pin is a button, when pressed, the selected location is the one pressed on
+                            selectedLocation = location
                         }
                     }) {
-                        Image(uiImage: UIImage(named: pinImageName(for: location)) ?? UIImage())
-                            .resizable()
-                            .frame(width: 40, height: 40)
-                            .shadow(radius: 2)
+                        if location.category == .fence {
+                            Image(systemName: "dot.radiowaves.left.and.right")
+                                .font(.system(size: 28))
+                                .foregroundColor(.red)
+                                .shadow(radius: 2)
+                        } else {
+                            Image(uiImage: UIImage(named: pinImageName(for: location)) ?? UIImage())
+                                .resizable()
+                                .frame(width: 40, height: 40)
+                                .shadow(radius: 2)
+                        }
                     }
                 }
+
             }
+            
             .ignoresSafeArea(.all)
             .onAppear {
                 locationManager.requestLocation()
@@ -95,7 +104,7 @@ struct CreateMapView: View {
                     .font(.system(size: 24))
                     .foregroundColor(.white)
                     .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
+                    .background(Circle().fill(Color("HunterGreen")))
                     .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
@@ -138,28 +147,45 @@ struct CreateMapView: View {
                     .font(.system(size: 24))
                     .foregroundColor(.white)
                     .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
+                    .background(Circle().fill(Color("HunterGreen")))
                     .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
                     
-                    Spacer()
-                    
-                    Button { // for later additions
+                    Button {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        showSheet.toggle()
+
+                        // Remove existing fence if any
+                        locations.removeAll { $0.category == .fence }
+
+                        // Create and add new fence
+                        let newFence = Location(
+                            id: UUID(),
+                            name: "Geofence",
+                            description: "An alarm will ring if your child isn't within 500 meters of this pin.",
+                            latitude: mapRegion.center.latitude,
+                            longitude: mapRegion.center.longitude,
+                            visited: 0,
+                            quizQuestion: nil,
+                            quizAnswers: nil,
+                            correctAnswerIndex: nil,
+                            quizCompleted: false,
+                            category: .fence
+                        )
+                        locations.append(newFence)
+                        LocationLoader.saveLocations(locations)
                     } label: {
-                        Image(systemName: "book")
+                        Image(systemName: "person.2.wave.2.fill")
                     }
                     .font(.system(size: 24))
                     .foregroundColor(.white)
                     .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
+                    .background(Circle().fill(Color("HunterGreen")))
                     .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
+                
                     
-                    Spacer()
                     
                     Button { // center location
                         if let userLocation = locationManager.userLocation {
@@ -175,7 +201,7 @@ struct CreateMapView: View {
                     .font(.system(size: 24))
                     .foregroundColor(.white)
                     .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
+                    .background(Circle().fill(Color("HunterGreen")))
                     .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
@@ -189,7 +215,7 @@ struct CreateMapView: View {
                     .font(.system(size: 24))
                     .foregroundColor(.white)
                     .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
+                    .background(Circle().fill(Color("HunterGreen")))
                     .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
@@ -209,6 +235,7 @@ struct CreateMapView: View {
                     }
                 }
             )
+            
             
             // this is if a location has been selected (map pin pressed)
             if let location = selectedLocation {
@@ -341,7 +368,7 @@ struct CreateMapView: View {
                         .padding(.horizontal)
                     
                     Picker("Category", selection: $selectedCategory) {
-                        ForEach(LocationCategory.allCases) { category in
+                        ForEach(LocationCategory.allCases.filter { $0 != .fence }) { category in
                             Text(category.rawValue.capitalized).tag(category)
                         }
                     }
@@ -443,6 +470,8 @@ struct CreateMapView: View {
             return location.visited == 1 ? "map_plant" : "map_plant_blank"
         case .location:
             return location.visited == 1 ? "map_place" : "map_place_blank"
+        case .fence:
+            return location.visited == 1 ? "blank" : "blank"
         }
     }
 }

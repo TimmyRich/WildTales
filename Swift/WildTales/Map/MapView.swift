@@ -49,19 +49,26 @@ struct MapView: View {
                 userTrackingMode: .none,
                 annotationItems: locations) { location in
                 
-                MapAnnotation(coordinate: location.coordinate) {
-                    Button {
-                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        withAnimation {
-                            selectedLocation = location
-                        }
-                    } label: {
-                        Image(uiImage: UIImage(named: pinImageName(for: location)) ?? UIImage())
-                            .resizable()
-                            .frame(width: 40, height: 40)
+                MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)) {
+                    if location.category == .fence {
+                        Image(systemName: "dot.radiowaves.left.and.right")
+                            .font(.system(size: 28))
+                            .foregroundColor(.red)
                             .shadow(radius: 2)
+                    } else {
+                        Button(action: {
+                            withAnimation {
+                                selectedLocation = location
+                            }
+                        }) {
+                            Image(uiImage: UIImage(named: pinImageName(for: location)) ?? UIImage())
+                                .resizable()
+                                .frame(width: 40, height: 40)
+                                .shadow(radius: 2)
+                        }
                     }
                 }
+
             }
             .ignoresSafeArea()
             .onAppear {
@@ -69,11 +76,8 @@ struct MapView: View {
                 locations = LocationLoader.loadLocations() // load locations
                 
                 // removes old ones and sets up a notification for each location on the map
-                ProximityNotificationManager.shared.requestPermission()/*
-                for location in locations {
-                    ProximityNotificationManager.shared.cancelNotifications(for: location)
-                    /*ProximityNotificationManager.shared.scheduleProximityNotification(for: location)*/
-                }*/
+                ProximityNotificationManager.shared.requestPermission()
+
             }
             .onChange(of: locationManager.userLocation) { newLocation in
                 if let newLocation = newLocation {
@@ -89,6 +93,29 @@ struct MapView: View {
                         let locationCoord = locations[index].coordinate
                         // distance from user to map pin
                         let distance = locationCoord.distance(to: userCoordinate)
+                        
+                        if locations[index].category == LocationCategory.fence && distance > 500{
+                            let content = UNMutableNotificationContent()
+                            content.title = "You're Too Far Away!"
+                            content.body = "Move closer home, you could be in danger!"
+                            content.sound = UNNotificationSound.default
+
+                            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+
+                            let request = UNNotificationRequest(identifier: "noticication", content: content, trigger: trigger)
+
+                            UNUserNotificationCenter.current().add(request) { error in
+                                if let error = error {
+                                    print("Error scheduling notification: \(error.localizedDescription)")
+                                }
+                            }
+                            
+                            AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
+                            
+                            
+                            
+                            
+                        }
                         
                         // if distance is under 50m and isnt already visted it will mark it as visited and save with the addition of a sound effect
                         if distance < 50 && locations[index].visited != 1 {
@@ -346,6 +373,8 @@ struct MapView: View {
             return location.visited == 1 ? "map_plant" : "map_plant_blank"
         case .location:
             return location.visited == 1 ? "map_place" : "map_place_blank"
+        case .fence:
+            return location.visited == 1 ? "blank" : "blank"
         }
     }
 
