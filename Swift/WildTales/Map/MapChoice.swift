@@ -93,10 +93,10 @@ struct MapChoice: View {
                                 AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                             }) {
                                 Image(systemName: "chevron.left")
-                                    .font(.system(size: 24))
-                                    .foregroundColor(.white)
+                                    .font(.system(size: 40))
+                                    .foregroundColor(Color("HunterGreen"))
                                     .frame(width: 60, height: 60)
-                                    .background(Circle().fill(Color("Pink")))
+                                    
                                     .shadow(radius: 5)
                                     //.hapticOnTouch()
                                 }

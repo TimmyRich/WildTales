@@ -129,12 +129,30 @@ struct MapView: View {
                     } label: {
                         Image(systemName: "chevron.left")
                     }
+                    .font(.system(size: 40))
+                    .foregroundColor(Color("HunterGreen"))
+
+                    .shadow(radius: 5)
+                    .padding(.leading, 30.0)
+                    
+                    Spacer()
+                    
+                    Button { // simply centers the map and zooms in to default
+                        if let userLocation = locationManager.userLocation {
+                            mapRegion.center = userLocation.coordinate
+                            mapRegion.span = MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
+                        }
+                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                    } label: {
+                        Image(systemName: "location.circle.fill")
+                    }
                     .font(.system(size: 24))
                     .foregroundColor(.white)
                     .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
+                    .background(Circle().fill(Color("HunterGreen")))
                     .shadow(radius: 5)
                     .padding()
+                    .hapticOnTouch()
                     
                     Spacer()
                     
@@ -155,44 +173,7 @@ struct MapView: View {
                 Spacer()
             }
             
-            VStack {
-                Spacer()
-                HStack {
-                    
-                    Button { // this is where a feature will be later hehehe
-                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        showSheet.toggle() // sheet is an easy way to show a new view so we used a lot of these
-                    } label: {
-                        Image(systemName: "book")
-                    }
-                    .font(.system(size: 24))
-                    .foregroundColor(.white)
-                    .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
-                    .shadow(radius: 5)
-                    .padding()
-                    .hapticOnTouch() // haptics when touched, dont use it much bc its kinda buggy
-                    
-                    Spacer()
-                    
-                    Button { // simply centers the map and zooms in to default
-                        if let userLocation = locationManager.userLocation {
-                            mapRegion.center = userLocation.coordinate
-                            mapRegion.span = MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
-                        }
-                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                    } label: {
-                        Image(systemName: "location.circle.fill")
-                    }
-                    .font(.system(size: 24))
-                    .foregroundColor(.white)
-                    .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
-                    .shadow(radius: 5)
-                    .padding()
-                    .hapticOnTouch()
-                }
-            }
+
             
             // location detail panel with quiz
             if let location = selectedLocation {

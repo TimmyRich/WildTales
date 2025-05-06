@@ -65,65 +65,57 @@ struct Home: View {
                 Image("logoTitle")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(width: 200, height: 200)
+                    .frame(width: 180, height: 180)
                     .padding(.bottom, 200)
                 
                 VStack {
                     HStack {
-                        NavigationLink(destination: MapChoice().navigationBarBackButtonHidden(true)) {
-                            Image("homebutton2")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 75, height: 75)
-                        }.simultaneousGesture(TapGesture().onEnded {
-                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        })
+                        Spacer()
+                        VStack{
+                            NavigationLink(destination: MapChoice().navigationBarBackButtonHidden(true)) {
+                                Image("homeButton2")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 100, height: 100)
+                            }.simultaneousGesture(TapGesture().onEnded {
+                                AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                            })
+                            
+                            NavigationLink(destination: Home().navigationBarBackButtonHidden(true)) {
+                                Image("homeButton4")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 100, height: 100)
+                            }.simultaneousGesture(TapGesture().onEnded {
+                                AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                            })
+                        }
+                        Spacer()
                         
-                        NavigationLink(destination: ScrapBookGuide().navigationBarBackButtonHidden(true)) {
-                            Image("homebutton1")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 75, height: 75)
-                                .padding(.top, 150)
-                        }.simultaneousGesture(TapGesture().onEnded {
-                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        })
-                        /* Past code, check hasSeenScrapBookGuid before navigating to Scrapbook
-                         Group {
-                         if hasSeenScrapBookGuide {
-                         NavigationLink(destination: ScrapBook().navigationBarBackButtonHidden(true)) {
-                         Image("homeButton1")
-                         .resizable()
-                         .scaledToFit()
-                         .frame(width: 75, height: 75)
-                         .padding(.top, 150)
-                         }.simultaneousGesture(TapGesture().onEnded {
-                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                         })
-                         } else {
-                         NavigationLink(destination: ScrapBookGuide().navigationBarBackButtonHidden(true)) {
-                         Image("homeButton1")
-                         .resizable()
-                         .scaledToFit()
-                         .frame(width: 75, height: 75)
-                         .padding(.top, 150)
-                         }.simultaneousGesture(TapGesture().onEnded {
-                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                         })
-                         }
-                         }
-                         */
-                        
-                        NavigationLink(destination: Intro()/*.navigationBarBackButtonHidden(true)*/) {
-                            Image("homebutton3")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 75, height: 75)
-                        }.simultaneousGesture(TapGesture().onEnded {
-                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        })
+                        VStack{
+                            
+                            NavigationLink(destination: Home().navigationBarBackButtonHidden(true)) {
+                                Image("homeButton1")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 100, height: 100)
+                            }.simultaneousGesture(TapGesture().onEnded {
+                                AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                            })
+                            
+                            NavigationLink(destination: Learn().navigationBarBackButtonHidden(true)) {
+                                Image("homeButton3")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 100, height: 100)
+                            }.simultaneousGesture(TapGesture().onEnded {
+                                AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                            })
+                            
+                        }
+                        Spacer()
                     }
-                    .padding(.top, 300)
+                    .padding(.top, 350)
                 }
             }
             .overlay(
