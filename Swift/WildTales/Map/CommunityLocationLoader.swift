@@ -8,43 +8,39 @@
 import Foundation
 
 class CommunityLocationLoader {
-    static let fileName = "MapLocations.json" // your JSON file name
-
-    // Load bundled locations from the app bundle
+    
     static func loadLocations() -> [Location] {
-        guard let url = Bundle.main.url(forResource: "MapLocations", withExtension: "json") else {
-            print("MapLocations.json not found in bundle")
+        guard let url = Bundle.main.url(forResource: "CommunityLocations", withExtension: "json") else {
+            print("Error: Could not find CommunityLocations.json")
             return []
         }
         
         do {
             let data = try Data(contentsOf: url)
             let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
             let locations = try decoder.decode([Location].self, from: data)
             return locations
         } catch {
-            print("Failed to decode MapLocations.json: \(error)")
+            print("Error: Could not decode CommunityLocations.json, \(error)")
             return []
         }
     }
-
-    // Save locations to user's documents folder if you want to support editing
+    
     static func saveLocations(_ locations: [Location]) {
-        guard let url = getFileURL() else { return }
-
+        guard let url = Bundle.main.url(forResource: "CommunityLocations", withExtension: "json") else {
+            print("Error: Could not find CommunityLocations.json")
+            return
+        }
+        
         do {
             let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted
             let data = try encoder.encode(locations)
             try data.write(to: url)
         } catch {
-            print("Failed to save locations: \(error)")
+            print("Error: Could not save CommunityLocations.json, \(error)")
         }
     }
-
-    // Save location data to documents directory (for edits)
-    static private func getFileURL() -> URL? {
-        let fileManager = FileManager.default
-        let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first
-        return directory?.appendingPathComponent(fileName)
-    }
 }
+
