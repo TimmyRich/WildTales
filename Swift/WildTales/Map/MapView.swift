@@ -20,11 +20,14 @@ struct MapView: View {
 
     @EnvironmentObject var appState: AppState
     @Environment(\.presentationMode) var goBack
-    
+
+    @State private var isShowingFullImage = false
+
+    @State private var wikipediaImageURL: URL? = nil
+
     @State private var showUsageAlert = false
     @State private var usageStartTime: Date? = nil
     @State private var usageTimer: Timer? = nil
-
 
     @State private var showEmergency = false
     @StateObject private var locationManager = LocationManager()
@@ -276,6 +279,71 @@ struct MapView: View {
             // location detail panel with quiz
             if let location = selectedLocation {
                 VStack(alignment: .center, spacing: 12) {
+                    ZStack(alignment: .topTrailing) {
+                        if let url = wikipediaImageURL {
+                            AsyncImage(url: url) { phase in
+                                switch phase {
+                                case .empty:
+                                    Image("PawIcon")
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(height: 150)
+                                        .clipped()
+                                        .cornerRadius(8)
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(height: 150)
+                                        .clipped()
+                                        .cornerRadius(8)
+                                        .onTapGesture {
+                                            isShowingFullImage = true
+                                        }
+                                case .failure:
+                                    Image("PawIcon")
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(height: 150)
+                                        .clipped()
+                                        .cornerRadius(8)
+                                        .onTapGesture {
+                                            isShowingFullImage = true
+                                        }
+                                @unknown default:
+                                    EmptyView()
+                                }
+                            }
+                        } else {
+                            Image("PawIcon")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(height: 150)
+                                .clipped()
+                                .cornerRadius(8)
+                                .onTapGesture {
+                                    isShowingFullImage = true
+                                }
+                        }
+
+                        Button(action: {
+                            let query =
+                                location.name.addingPercentEncoding(
+                                    withAllowedCharacters: .urlQueryAllowed
+                                ) ?? ""
+                            if let url = URL(
+                                string: "https://en.wikipedia.org/wiki/\(query)"
+                            ) {
+                                UIApplication.shared.open(url)
+                            }
+                        }) {
+                            Image(systemName: "questionmark.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.blue)
+                                .padding(8)
+                        }
+                    }
+
                     Text(location.name)
                         .font(.title2)
                         .fontWeight(.bold)
@@ -414,6 +482,7 @@ struct MapView: View {
                     .font(.body)
                     .padding(.top, 6)
                     .frame(maxWidth: .infinity)
+
                 }
                 .padding()
                 .background(
@@ -423,6 +492,9 @@ struct MapView: View {
                 .frame(maxWidth: 300)
                 .transition(.opacity)
                 .zIndex(100)
+                .onAppear {
+                    fetchWikipediaImage(for: location.name)
+                }
             }
 
             // Emergency overlay
@@ -503,6 +575,47 @@ struct MapView: View {
         .sheet(isPresented: $showSheet) {
             GalleryView()
         }
+        .fullScreenCover(isPresented: $isShowingFullImage) {
+            ZStack {
+                // Background color set to MapGreen
+                Color.mapGreen.ignoresSafeArea()
+
+                if let url = wikipediaImageURL {
+                    AsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .ignoresSafeArea()
+                    } placeholder: {
+                        ProgressView()
+                    }
+                } else {
+                    Image("PawIcon")  // Default image if no Wikipedia image
+                        .resizable()
+                        .scaledToFit()
+                        .ignoresSafeArea()
+                }
+
+                // Close button in the top-left corner with HunterGreen background
+                VStack {
+                    HStack {
+                        Button(action: {
+                            isShowingFullImage = false
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(.white)
+                                .padding(12)  // Adds space around the X icon
+                                .background(Color.hunterGreen)  // HunterGreen background
+                                .clipShape(Circle())  // Makes the button round
+                        }
+                        Spacer()
+                    }
+                    Spacer()
+                }
+            }
+        }
+
         .sheet(isPresented: $showSettingsSheet) {
             Settings()
         }
@@ -511,13 +624,16 @@ struct MapView: View {
             isQuizFinished = false
             isAnswerCorrect = false
         }.preferredColorScheme(.light)
-            .alert("You've been using the app for a while!", isPresented: $showUsageAlert) {
-                Button("Okay") {
-                    startUsageTimer() // Reset timer when user acknowledges
-                }
-            } message: {
-                Text("Time to take a break!")
+        .alert(
+            "You've been using the app for a while!",
+            isPresented: $showUsageAlert
+        ) {
+            Button("Okay") {
+                startUsageTimer()  // Reset timer when user acknowledges
             }
+        } message: {
+            Text("Time to take a break!")
+        }
 
     }
 
@@ -533,12 +649,15 @@ struct MapView: View {
             return location.visited == 1 ? "blank" : "blank"
         }
     }
-    
+
     func startUsageTimer() {
         usageStartTime = Date()
         usageTimer?.invalidate()  // Cancel previous timer if any
 
-        usageTimer = Timer.scheduledTimer(withTimeInterval: 1800, repeats: false) { _ in
+        usageTimer = Timer.scheduledTimer(
+            withTimeInterval: 1800,
+            repeats: false
+        ) { _ in
             showUsageAlert = true
         }
     }
@@ -548,6 +667,37 @@ struct MapView: View {
         usageTimer = nil
     }
 
+    func fetchWikipediaImage(for title: String) {
+        // Reset the image to nil so the previous one is cleared immediately
+        DispatchQueue.main.async {
+            self.wikipediaImageURL = nil
+        }
+
+        let query =
+            title.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+            ?? ""
+        guard
+            let url = URL(
+                string:
+                    "https://en.wikipedia.org/api/rest_v1/page/summary/\(query)"
+            )
+        else { return }
+
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            guard let data = data,
+                let result = try? JSONDecoder().decode(
+                    WikipediaSummary.self,
+                    from: data
+                ),
+                let imageUrlString = result.thumbnail?.source,
+                let imageUrl = URL(string: imageUrlString)
+            else { return }
+
+            DispatchQueue.main.async {
+                self.wikipediaImageURL = imageUrl
+            }
+        }.resume()
+    }
 
 }
 
@@ -566,7 +716,12 @@ extension CLLocationCoordinate2D {
     }
 }
 
-
+struct WikipediaSummary: Decodable {
+    struct Thumbnail: Decodable {
+        let source: String
+    }
+    let thumbnail: Thumbnail?
+}
 
 #Preview {
     MapView(zone: "Southbank Parklands")
