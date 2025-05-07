@@ -20,6 +20,11 @@ struct MapView: View {
 
     @EnvironmentObject var appState: AppState
     @Environment(\.presentationMode) var goBack
+    
+    @State private var showUsageAlert = false
+    @State private var usageStartTime: Date? = nil
+    @State private var usageTimer: Timer? = nil
+
 
     @State private var showEmergency = false
     @StateObject private var locationManager = LocationManager()
@@ -100,6 +105,7 @@ struct MapView: View {
             .ignoresSafeArea()
             .onAppear {
                 locationManager.requestLocation()
+                startUsageTimer()
                 let allLocations = LocationLoader.loadLocations()
                 locations = allLocations.filter { $0.zone == zone }
 
@@ -220,6 +226,9 @@ struct MapView: View {
 
                     }
                 }
+            }
+            .onDisappear {
+                stopUsageTimer()
             }
 
             VStack {
@@ -502,6 +511,14 @@ struct MapView: View {
             isQuizFinished = false
             isAnswerCorrect = false
         }.preferredColorScheme(.light)
+            .alert("You've been using the app for a while!", isPresented: $showUsageAlert) {
+                Button("Okay") {
+                    startUsageTimer() // Reset timer when user acknowledges
+                }
+            } message: {
+                Text("Time to take a break!")
+            }
+
     }
 
     func pinImageName(for location: Location) -> String {
@@ -516,6 +533,21 @@ struct MapView: View {
             return location.visited == 1 ? "blank" : "blank"
         }
     }
+    
+    func startUsageTimer() {
+        usageStartTime = Date()
+        usageTimer?.invalidate()  // Cancel previous timer if any
+
+        usageTimer = Timer.scheduledTimer(withTimeInterval: 1800, repeats: false) { _ in
+            showUsageAlert = true
+        }
+    }
+
+    func stopUsageTimer() {
+        usageTimer?.invalidate()
+        usageTimer = nil
+    }
+
 
 }
 
@@ -533,6 +565,8 @@ extension CLLocationCoordinate2D {
         return fromLocation.distance(from: toLocation)
     }
 }
+
+
 
 #Preview {
     MapView(zone: "Southbank Parklands")
