@@ -485,7 +485,7 @@ struct CreateMapView: View {
                 }
                 .padding()
             }
-        }
+        }  .preferredColorScheme(.light)
 
     }
     

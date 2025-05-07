@@ -410,7 +410,7 @@ struct MapView: View {
         .onChange(of: selectedLocation) { _ in
             isQuizFinished = false
             isAnswerCorrect = false
-        }
+        }  .preferredColorScheme(.light)
     }
     
     func pinImageName(for location: Location) -> String {

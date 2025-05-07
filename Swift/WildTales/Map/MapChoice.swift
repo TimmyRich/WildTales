@@ -113,7 +113,7 @@ struct MapChoice: View {
                 
             }
             
-        }
+        }  .preferredColorScheme(.light)
         
         .sheet(isPresented: $showSheet) {
             Stories()
