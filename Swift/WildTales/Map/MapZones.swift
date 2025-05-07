@@ -1,0 +1,48 @@
+//
+//  MapZones.swift
+//  WildTales
+//
+//  Created by Kurt McCullough on 7/5/2025.
+//
+
+import SwiftUI
+import WebKit
+
+struct MapZones: View {
+    
+    @EnvironmentObject var appState: AppState
+    
+    var body: some View {
+        TabView {
+            
+            MapCardView(image: Image("PawIcon"), // Add this image to Assets
+                     title: "Mt Coot-tha Botanic Gardens",
+                     description: "The Brisbane Botanic Gardens at Mount Coot-tha is a beautiful garden full of different plants from around the world. You can explore tropical plants in a big dome, see cool bonsai trees, visit a Japanese garden, and even walk through a bamboo grove.",
+                     photoCount: 12)
+            
+            MapCardView(image: Image("PawIcon"), // Add this image to Assets
+                     title: "University of Queensland",
+                     description: "The University of Queensland (UQ) is a big, beautiful university in Brisbane where students go to learn and study. It has lots of green spaces, cool buildings, and even a famous library. UQ is a great place for exploring, with lots of exciting things to see and do, like visiting the nearby botanical gardens and learning about science, animals, and nature!",
+                     photoCount: 12)
+            
+            MapCardView(image: Image("PawIcon"), // Add this image to Assets
+                     title: "Southbank Parklands",
+                     description: "South Bank Parklands is a fun place in Brisbane where kids can play, swim, and explore. You can build sandcastles at Streets Beach, splash around at Aquativity, or play on the giant slides at Riverside Green Playground . There’s also a big wheel called the Wheel of Brisbane that gives you a bird’s-eye view of the city . It’s a great spot for families to enjoy the outdoors and have fun together!",
+                     photoCount: 12)
+            
+            MapCardView(image: Image("PawIcon"), // Add this image to Assets
+                     title: "Custom Map",
+                     description: "Walk through a custom map that your parents have created for you. Don't forget to stay safe!",
+                     photoCount: 12)
+        
+        }
+        .tabViewStyle(.page)
+        .indexViewStyle(.page(backgroundDisplayMode: .always))
+        .ignoresSafeArea(.all)
+    }
+}
+
+
+#Preview {
+    MapZones()
+}

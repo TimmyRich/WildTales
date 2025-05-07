@@ -94,6 +94,7 @@ struct MapView: View {
                         // distance from user to map pin
                         let distance = locationCoord.distance(to: userCoordinate)
                         
+                        //if the location is a fence and they go past 500 meters of it
                         if locations[index].category == LocationCategory.fence && distance > 500{
                             let content = UNMutableNotificationContent()
                             content.title = "You're Too Far Away!"
@@ -118,7 +119,7 @@ struct MapView: View {
                         }
                         
                         // if distance is under 50m and isnt already visted it will mark it as visited and save with the addition of a sound effect
-                        if distance < 50 && locations[index].visited != 1 {
+                        if distance < 50 && locations[index].visited != 1 && locations[index].category != LocationCategory.fence {
                             let content = UNMutableNotificationContent()
                             content.title = "You're Close!"
                             content.body = "You're close to \(locations[index].name)"
