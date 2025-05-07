@@ -156,13 +156,21 @@ struct MapView: View {
                             
                             locations[index].visited = 1
                             var allLocations = LocationLoader.loadLocations()
+
+                            // Update the locations efficiently
                             for updated in locations {
                                 if let index = allLocations.firstIndex(where: { $0.id == updated.id }) {
+                                    // If location exists, update it
                                     allLocations[index] = updated
                                 } else {
+                                    // Otherwise, append the new location
                                     allLocations.append(updated)
                                 }
                             }
+
+                            // Save the updated locations back
+                            LocationLoader.saveLocations(allLocations)
+
                             LocationLoader.saveLocations(allLocations)
                             AudioManager.playSound(soundName: "visited.wav", soundVol: 0.5)
                             

@@ -88,7 +88,8 @@ struct CreateMapView: View {
             .ignoresSafeArea(.all)
             .onAppear {
                 locationManager.requestLocation()
-                locations = LocationLoader.loadLocations()
+                let allLocations = LocationLoader.loadLocations()
+                locations = allLocations.filter { $0.zone == "Custom" }
             }
             .onChange(of: locationManager.userLocation) { newLocation in
                 if let newLocation = newLocation, !isMapInitialized {
@@ -180,7 +181,21 @@ struct CreateMapView: View {
 
                         )
                         locations.append(newFence)
-                        LocationLoader.saveLocations(locations)
+                        var allLocations = LocationLoader.loadLocations()
+
+                        // Update the locations efficiently
+                        for updated in locations {
+                            if let index = allLocations.firstIndex(where: { $0.id == updated.id }) {
+                                // If location exists, update it
+                                allLocations[index] = updated
+                            } else {
+                                // Otherwise, append the new location
+                                allLocations.append(updated)
+                            }
+                        }
+
+                        // Save the updated locations back
+                        LocationLoader.saveLocations(allLocations)
                     } label: {
                         Image(systemName: "person.2.wave.2.fill")
                     }
@@ -269,7 +284,21 @@ struct CreateMapView: View {
                                             // says if the quiz has successfully been completed (used later)
                                             if !locations[i].quizCompleted {
                                                 locations[i].quizCompleted = true
-                                                LocationLoader.saveLocations(locations)
+                                                var allLocations = LocationLoader.loadLocations()
+
+                                                // Update the locations efficiently
+                                                for updated in locations {
+                                                    if let index = allLocations.firstIndex(where: { $0.id == updated.id }) {
+                                                        // If location exists, update it
+                                                        allLocations[index] = updated
+                                                    } else {
+                                                        // Otherwise, append the new location
+                                                        allLocations.append(updated)
+                                                    }
+                                                }
+
+                                                // Save the updated locations back
+                                                LocationLoader.saveLocations(allLocations)
                                                 selectedLocation = locations[i]
                                             }
                                         }
@@ -305,7 +334,21 @@ struct CreateMapView: View {
                             set: { newValue in
                                 if let index = locations.firstIndex(where: { $0.id == location.id }) {
                                     locations[index].visited = newValue ? 1 : 0
-                                    LocationLoader.saveLocations(locations)
+                                    var allLocations = LocationLoader.loadLocations()
+
+                                    // Update the locations efficiently
+                                    for updated in locations {
+                                        if let index = allLocations.firstIndex(where: { $0.id == updated.id }) {
+                                            // If location exists, update it
+                                            allLocations[index] = updated
+                                        } else {
+                                            // Otherwise, append the new location
+                                            allLocations.append(updated)
+                                        }
+                                    }
+
+                                    // Save the updated locations back
+                                    LocationLoader.saveLocations(allLocations)
                                     selectedLocation = locations[index]
                                 }
                             }
@@ -322,12 +365,26 @@ struct CreateMapView: View {
                             // This button removes the location by ID then updates the array
                             Button("Remove") {
                                 if let index = locations.firstIndex(where: { $0.id == location.id }) {
+                                    // Remove location from locations array
                                     locations.remove(at: index)
-                                    LocationLoader.saveLocations(locations)
+
+                                    // Load all locations from persistent storage
+                                    var allLocations = LocationLoader.loadLocations()
+
+                                    // Remove the location from allLocations as well
+                                    if let allIndex = allLocations.firstIndex(where: { $0.id == location.id }) {
+                                        allLocations.remove(at: allIndex)
+                                    }
+
+                                    // Save the updated allLocations back to persistent storage
+                                    LocationLoader.saveLocations(allLocations)
+
+                                    // Deselect the location
                                     selectedLocation = nil
                                 }
                             }
                             .foregroundColor(.red)
+
 
                             Spacer()
 
@@ -382,21 +439,6 @@ struct CreateMapView: View {
                     .pickerStyle(SegmentedPickerStyle())
                     .cornerRadius(10)
                     .padding(.horizontal)
-                    
-                    Text("Zone")
-                        .font(.headline)
-
-                    Picker("Zone", selection: $selectedZone) {
-                        Text("Southbank Parklands").tag("Southbank Parklands")
-                        Text("University of Queensland").tag("University of Queensland")
-                        Text("Botanical Gardens").tag("Botanical Gardens")
-                        Text("Custom").tag("Custom")
-                    }
-                    .pickerStyle(MenuPickerStyle())
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(10)
-                    .padding(.horizontal)
 
                     Text("Quiz Question")
                         .font(.headline)
@@ -445,7 +487,21 @@ struct CreateMapView: View {
                             )
 
                             locations.append(newLocation)
-                            LocationLoader.saveLocations(locations)
+                            var allLocations = LocationLoader.loadLocations()
+
+                            // Update the locations efficiently
+                            for updated in locations {
+                                if let index = allLocations.firstIndex(where: { $0.id == updated.id }) {
+                                    // If location exists, update it
+                                    allLocations[index] = updated
+                                } else {
+                                    // Otherwise, append the new location
+                                    allLocations.append(updated)
+                                }
+                            }
+
+                            // Save the updated locations back
+                            LocationLoader.saveLocations(allLocations)
                             newLocationName = ""
                             newLocationDescription = ""
                             quizQuestion = ""
