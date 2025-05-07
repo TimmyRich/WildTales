@@ -104,7 +104,7 @@ struct MapView: View {
                         mapRegion.center = newLocation.coordinate
                         isMapInitialized = true
                     }
-                    /*
+                    
                     let userCoordinate = newLocation.coordinate
                     
                     // Update location visit state based on proximity
@@ -155,14 +155,22 @@ struct MapView: View {
                             }
                             
                             locations[index].visited = 1
-                            LocationLoader.saveLocations(locations)
+                            var allLocations = LocationLoader.loadLocations()
+                            for updated in locations {
+                                if let index = allLocations.firstIndex(where: { $0.id == updated.id }) {
+                                    allLocations[index] = updated
+                                } else {
+                                    allLocations.append(updated)
+                                }
+                            }
+                            LocationLoader.saveLocations(allLocations)
                             AudioManager.playSound(soundName: "visited.wav", soundVol: 0.5)
                             
                             
                         }
                         
                         
-                    }*/
+                    }
                 }
             }
             
@@ -250,7 +258,15 @@ struct MapView: View {
                                         AudioManager.playSound(soundName: "correct.wav", soundVol: 0.5)
                                         if let selectedIndex = locations.firstIndex(where: { $0.id == location.id }) {
                                             locations[selectedIndex].quizCompleted = true
-                                            LocationLoader.saveLocations(locations)
+                                            var allLocations = LocationLoader.loadLocations()
+                                            for updated in locations {
+                                                if let index = allLocations.firstIndex(where: { $0.id == updated.id }) {
+                                                    allLocations[index] = updated
+                                                } else {
+                                                    allLocations.append(updated)
+                                                }
+                                            }
+                                            LocationLoader.saveLocations(allLocations)
                                         }
                                     } else {
                                         isAnswerCorrect = false
