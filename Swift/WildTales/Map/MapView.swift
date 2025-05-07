@@ -124,6 +124,31 @@ struct MapView: View {
 
                     let userCoordinate = newLocation.coordinate
 
+                    /*let zonesOfInterest = [
+                        "University of Queensland",
+                        "Southbank Parklands",
+                        "Botanical Gardens",
+                        "Custom"
+                    ]
+
+                    var allLocations = LocationLoader.loadLocations()
+
+                    // Update the locations efficiently
+                    for updated in locations {
+                        if let index = allLocations.firstIndex(where: {
+                            $0.id == updated.id
+                        }) {
+                            allLocations[index] = updated
+                        } else {
+                            allLocations.append(updated)
+                        }
+                    }
+
+                    checkZoneCompletion(
+                        zones: zonesOfInterest,
+                        locations: allLocations
+                    )*/
+
                     // Update location visit state based on proximity
                     for index in locations.indices {
                         let locationCoord = locations[index].coordinate
@@ -666,6 +691,43 @@ struct MapView: View {
         usageTimer?.invalidate()
         usageTimer = nil
     }
+
+    /*
+    func checkZoneCompletion(zones: [String], locations: [Location]) {
+        for zone in zones {
+            let locationsInZone = locations.filter { $0.zone == zone }
+            let allVisited = locationsInZone.allSatisfy { $0.visited == 1 }
+
+            if allVisited {
+                let content = UNMutableNotificationContent()
+                content.title = "You Have Earned A Badge!"
+                content.body =
+                    "Go into the gallery to see what you have recieved"
+                content.sound = UNNotificationSound.default
+
+                let trigger = UNTimeIntervalNotificationTrigger(
+                    timeInterval: 1,
+                    repeats: false
+                )
+
+                let request = UNNotificationRequest(
+                    identifier: "noticication",
+                    content: content,
+                    trigger: trigger
+                )
+
+                UNUserNotificationCenter.current().add(request) {
+                    error in
+                    if let error = error {
+                        print(
+                            "Error scheduling notification: \(error.localizedDescription)"
+                        )
+                    }
+                }
+
+            }
+        }
+    }*/
 
     func fetchWikipediaImage(for title: String) {
         // Reset the image to nil so the previous one is cleared immediately
