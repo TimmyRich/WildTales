@@ -76,7 +76,7 @@ struct MapChoice: View {
                         })
                         .padding()
                         
-                        NavigationLink(destination: MapView().navigationBarBackButtonHidden(true)) {
+                        NavigationLink(destination: MapZones().navigationBarBackButtonHidden(true)) {
                             Image("cexisting")
                                 .resizable()
                                 .scaledToFit()

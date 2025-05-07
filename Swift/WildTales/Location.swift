@@ -21,6 +21,7 @@ struct Location: Identifiable, Codable, Equatable {
     var correctAnswerIndex: Int?
     var quizCompleted: Bool
     var category: LocationCategory
+    var zone: String
     
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)

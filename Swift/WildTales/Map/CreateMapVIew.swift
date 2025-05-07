@@ -43,7 +43,11 @@ struct CreateMapView: View {
     @State private var quizAnswers = ["", "", "", ""]
     @State private var correctAnswerIndex: Int? = nil
     
+    
     @State private var selectedCategory: LocationCategory = .location
+    
+    @State private var selectedZone = "Custom"
+
     
     @State private var selectedLocation: Location?
     
@@ -170,7 +174,10 @@ struct CreateMapView: View {
                             quizAnswers: nil,
                             correctAnswerIndex: nil,
                             quizCompleted: false,
-                            category: .fence
+                            
+                            category: .fence, zone: "Custom",
+                            
+
                         )
                         locations.append(newFence)
                         LocationLoader.saveLocations(locations)
@@ -375,6 +382,21 @@ struct CreateMapView: View {
                     .pickerStyle(SegmentedPickerStyle())
                     .cornerRadius(10)
                     .padding(.horizontal)
+                    
+                    Text("Zone")
+                        .font(.headline)
+
+                    Picker("Zone", selection: $selectedZone) {
+                        Text("Southbank Parklands").tag("Southbank Parklands")
+                        Text("University of Queensland").tag("University of Queensland")
+                        Text("Botanical Gardens").tag("Botanical Gardens")
+                        Text("Custom").tag("Custom")
+                    }
+                    .pickerStyle(MenuPickerStyle())
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .cornerRadius(10)
+                    .padding(.horizontal)
 
                     Text("Quiz Question")
                         .font(.headline)
@@ -418,9 +440,10 @@ struct CreateMapView: View {
                                 quizAnswers: quizAnswers.contains(where: { !$0.isEmpty }) ? quizAnswers : nil,
                                 correctAnswerIndex: correctAnswerIndex,
                                 quizCompleted: false,
-                                category: selectedCategory
-                                
+                                category: selectedCategory,
+                                zone: selectedZone
                             )
+
                             locations.append(newLocation)
                             LocationLoader.saveLocations(locations)
                             newLocationName = ""
@@ -430,6 +453,8 @@ struct CreateMapView: View {
                             selectedCategory = .location
                             correctAnswerIndex = nil
                             showLocationForm = false
+                            selectedZone = "Custom"
+
                         }
                         .foregroundColor(.white)
                         .padding()
@@ -446,6 +471,8 @@ struct CreateMapView: View {
                             selectedCategory = .location
                             correctAnswerIndex = nil
                             showLocationForm = false
+                            selectedZone = "Custom"
+
                         }
                         .foregroundColor(.white)
                         .padding()

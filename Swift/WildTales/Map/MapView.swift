@@ -16,6 +16,7 @@ import CoreHaptics
 import CoreLocation
 
 struct MapView: View {
+    let zone: String
     
     @EnvironmentObject var appState: AppState
     @Environment(\.presentationMode) var goBack
@@ -39,6 +40,15 @@ struct MapView: View {
     // state of quiz for showing
     @State private var isQuizFinished = false
     @State private var isAnswerCorrect = false
+    
+    enum FilterCategory: String, CaseIterable {
+        case all = "All"
+        case animal = "Animals"
+        case plant = "Plants"
+        case location = "Locations"
+    }
+        
+    @State private var selectedFilter: FilterCategory = .all
 
     var body: some View {
         ZStack {
@@ -47,7 +57,16 @@ struct MapView: View {
                 interactionModes: .all,
                 showsUserLocation: true,
                 userTrackingMode: .none,
-                annotationItems: locations) { location in
+                annotationItems: locations.filter { location in
+                    switch selectedFilter {
+                    case .all: return true
+                    case .animal: return location.category == .animal
+                    case .plant: return location.category == .plant
+                    case .location: return location.category == .location
+                    }
+                }
+                ) { location in
+               
                 
                 MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)) {
                     if location.category == .fence {
@@ -63,7 +82,7 @@ struct MapView: View {
                         }) {
                             Image(uiImage: UIImage(named: pinImageName(for: location)) ?? UIImage())
                                 .resizable()
-                                .frame(width: 40, height: 40)
+                                .frame(width: 30, height: 30)
                                 .shadow(radius: 2)
                         }
                     }
@@ -73,19 +92,19 @@ struct MapView: View {
             .ignoresSafeArea()
             .onAppear {
                 locationManager.requestLocation()
-                locations = LocationLoader.loadLocations() // load locations
+                let allLocations = LocationLoader.loadLocations()
+                locations = allLocations.filter { $0.zone == zone }
                 
-                // removes old ones and sets up a notification for each location on the map
                 ProximityNotificationManager.shared.requestPermission()
-
             }
+
             .onChange(of: locationManager.userLocation) { newLocation in
                 if let newLocation = newLocation {
                     if !isMapInitialized {
                         mapRegion.center = newLocation.coordinate
                         isMapInitialized = true
                     }
-                    
+                    /*
                     let userCoordinate = newLocation.coordinate
                     
                     // Update location visit state based on proximity
@@ -143,7 +162,7 @@ struct MapView: View {
                         }
                         
                         
-                    }
+                    }*/
                 }
             }
             
@@ -165,22 +184,7 @@ struct MapView: View {
                     
                     Spacer()
                     
-                    Button { // simply centers the map and zooms in to default
-                        if let userLocation = locationManager.userLocation {
-                            mapRegion.center = userLocation.coordinate
-                            mapRegion.span = MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
-                        }
-                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                    } label: {
-                        Image(systemName: "location.circle.fill")
-                    }
-                    .font(.system(size: 24))
-                    .foregroundColor(.white)
-                    .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("HunterGreen")))
-                    .shadow(radius: 5)
-                    .padding()
-                    .hapticOnTouch()
+                    
                     
                     Spacer()
                     
@@ -205,141 +209,112 @@ struct MapView: View {
             
             // location detail panel with quiz
             if let location = selectedLocation {
-                VStack {
-                    Spacer()
-                    VStack(alignment: .center, spacing: 12) {
-                        Text(location.name)
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: .infinity)
-                        
-                        Text(location.description)
+                VStack(alignment: .center, spacing: 12) {
+                    Text(location.name)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+
+                    Text(location.description)
+                        .font(.subheadline)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+
+                    HStack {
+                        Text("Visited:")
                             .font(.subheadline)
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: .infinity)
-                        
-                        HStack {
-                            // visited shows if it has been visited or not
-                            Text("Visited:")
-                                .font(.subheadline)
-                                .bold()
-                            Image(systemName: location.visited == 1 ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                .foregroundColor(location.visited == 1 ? .green : .red)
-                                .font(.title3)
-                            
-                           /* Text("Quiz:")
-                                .font(.subheadline)
-                                .bold()
-                            Image(systemName: location.quizCompleted == true ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                .foregroundColor(location.quizCompleted == 1 ? .green : .red)
-                                .font(.title3)*/
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 4)
-                        
-                        // users have to visit the location to view the quiz
-                        if location.visited == 1 {
-                            // initialise quiz question and answer text and correct index
-                            if let question = location.quizQuestion,
-                               let answers = location.quizAnswers,
-                               let correctIndex = location.correctAnswerIndex {
-                                
-                                Text(question)
-                                    .font(.headline)
-                                    .padding(.top)
-                                    .multilineTextAlignment(.center)
-                                    .frame(maxWidth: .infinity)
-                                
-                                ForEach(answers.indices, id: \.self) { index in
-                                    Button {
-                                        // check of the clicked index matches the correct index
-                                        if index == correctIndex {
-                                            isAnswerCorrect = true
-                                            AudioManager.playSound(soundName: "correct.wav", soundVol: 0.5)
-                                            
-                                            // Mark quiz as completed and update the array
-                                            if let selectedIndex = locations.firstIndex(where: { $0.id == location.id }) {
-                                                locations[selectedIndex].quizCompleted = true
-                                                LocationLoader.saveLocations(locations)
-                                            }
-                                        } else {
-                                            // if the index does not match the correct one
-                                            isAnswerCorrect = false
-                                            AudioManager.playSound(soundName: "wrong.wav", soundVol: 0.5)
-                                        }
-                                        isQuizFinished = true
-                                    } label: {
-                                        Text(answers[index])
-                                            .padding()
-                                            .frame(maxWidth: .infinity)
-                                            .background(Color.pink.opacity(0.1))
-                                            .cornerRadius(5)
-                                            .foregroundColor(.black)
-                                    }
-                                }
-                                
-                                // if the quiz has been attempted, it will show the user if they got the asnwer wrong or right
-                                // This just changes it depending on correct, colours included
-                                if isQuizFinished {
-                                    Text(isAnswerCorrect ? "That's right!" : "Oops, try again!") // colour change
-                                        .font(.headline)
-                                        .foregroundColor(isAnswerCorrect ? .green : .red)
-                                        .padding()
-                                        .transition(.opacity)
-                                }
-                            }
-                        } else if location.visited == 0 {
-                            
-                            
-                            if location.quizQuestion != nil {
-                                HStack {
-                                    Image(systemName: "dot.radiowaves.up.forward")
-                                        .foregroundColor(.red)
-                                    Text("Get closer to the location to take the quiz!")
-                                        .font(.footnote)
-                                        .foregroundColor(.red)
-                                    
-                                }
-                                .padding(.top)
-                                
-                            }
-                            // message if location is not yet visited
-                            
-                            else {
-                                HStack {
-                                    Image(systemName: "pencil.slash")
-                                        .foregroundColor(.orange)
-                                    Text("No quiz for this location!")
-                                        .font(.footnote)
-                                        .foregroundColor(.orange)
-                                    
-                                }
-                                .padding(.top)
-                                
-                            }
-                            
-                          
-                        }
-                        // closes the location map pin sheet
-                        Button("Close") {
-                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                            withAnimation {
-                                selectedLocation = nil
-                            }
-                        }
-                        .font(.body)
-                        //.fontWeight(.semibold)
-                        .padding(.top, 6)
-                        .frame(maxWidth: .infinity)
+                            .bold()
+                        Image(systemName: location.visited == 1 ? "checkmark.circle.fill" : "xmark.circle.fill")
+                            .foregroundColor(location.visited == 1 ? .green : .red)
+                            .font(.title3)
                     }
-                    .padding()
-                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
-                    .shadow(radius: 8)
-                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 4)
+
+                    if location.visited == 1 {
+                        if let question = location.quizQuestion,
+                           let answers = location.quizAnswers,
+                           let correctIndex = location.correctAnswerIndex {
+                            
+                            Text(question)
+                                .font(.headline)
+                                .padding(.top)
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: .infinity)
+
+                            ForEach(answers.indices, id: \.self) { index in
+                                Button {
+                                    if index == correctIndex {
+                                        isAnswerCorrect = true
+                                        AudioManager.playSound(soundName: "correct.wav", soundVol: 0.5)
+                                        if let selectedIndex = locations.firstIndex(where: { $0.id == location.id }) {
+                                            locations[selectedIndex].quizCompleted = true
+                                            LocationLoader.saveLocations(locations)
+                                        }
+                                    } else {
+                                        isAnswerCorrect = false
+                                        AudioManager.playSound(soundName: "wrong.wav", soundVol: 0.5)
+                                    }
+                                    isQuizFinished = true
+                                } label: {
+                                    Text(answers[index])
+                                        .padding()
+                                        .frame(maxWidth: .infinity)
+                                        .background(Color.pink.opacity(0.1))
+                                        .cornerRadius(5)
+                                        .foregroundColor(.black)
+                                }
+                            }
+
+                            if isQuizFinished {
+                                Text(isAnswerCorrect ? "That's right!" : "Oops, try again!")
+                                    .font(.headline)
+                                    .foregroundColor(isAnswerCorrect ? .green : .red)
+                                    .padding()
+                                    .transition(.opacity)
+                            }
+                        }
+                    } else {
+                        if location.quizQuestion != nil {
+                            HStack {
+                                Image(systemName: "dot.radiowaves.up.forward")
+                                    .foregroundColor(.red)
+                                Text("Get closer to the location to take the quiz!")
+                                    .font(.footnote)
+                                    .foregroundColor(.red)
+                            }
+                            .padding(.top)
+                        } else {
+                            HStack {
+                                Image(systemName: "pencil.slash")
+                                    .foregroundColor(.orange)
+                                Text("No quiz for this location!")
+                                    .font(.footnote)
+                                    .foregroundColor(.orange)
+                            }
+                            .padding(.top)
+                        }
+                    }
+
+                    Button("Close") {
+                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                        withAnimation {
+                            selectedLocation = nil
+                        }
+                    }
+                    .font(.body)
+                    .padding(.top, 6)
+                    .frame(maxWidth: .infinity)
                 }
-                .transition(.move(edge: .bottom))
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
+                .shadow(radius: 8)
+                .frame(maxWidth: 300)
+                .transition(.opacity)
+                .zIndex(100)
             }
+
             
             // Emergency overlay
             if showEmergency {
@@ -352,6 +327,62 @@ struct MapView: View {
                         .transition(.scale)
                 }
             }
+
+            VStack{
+                Spacer()
+                HStack{
+                    
+                    Image("Quokka_1")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: UIScreen.main.bounds.width / 6, height: UIScreen.main.bounds.height / 6)
+                        .rotationEffect(.degrees(30))
+                        .ignoresSafeArea(.all)
+                        .padding(.leading, 20.0)
+                    
+                    
+                    
+                    Spacer()
+                    
+                    
+                    TabView(selection: $selectedFilter) {
+                        ForEach(FilterCategory.allCases, id: \.self) { filter in
+                            Text(filter.rawValue)
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color("HunterGreen").opacity(0.8))
+                                .cornerRadius(12)
+                                .shadow(radius: 4)
+                                .padding(.horizontal, 30)
+                                .tag(filter)
+                            
+                        }
+                    }
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                    .frame(height: 70)
+                    .padding(.bottom, 10)
+                    
+                    Button { // simply centers the map and zooms in to default
+                        if let userLocation = locationManager.userLocation {
+                            mapRegion.center = userLocation.coordinate
+                            mapRegion.span = MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
+                        }
+                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                    } label: {
+                        Image(systemName: "location.circle.fill")
+                    }
+                    .font(.system(size: 24))
+                    .foregroundColor(.white)
+                    .frame(width: 50, height: 50)
+                    .background(Circle().fill(Color("HunterGreen").opacity(0.8)))
+                    .shadow(radius: 5)
+                    .padding()
+                    .hapticOnTouch()
+                }
+            }.ignoresSafeArea()
+
+
         }
         .sheet(isPresented: $showSheet) {
             GalleryView()
@@ -391,5 +422,5 @@ extension CLLocationCoordinate2D {
 }
 
 #Preview {
-    MapView()
+    MapView(zone:"Southbank Parklands")
 }

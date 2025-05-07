@@ -8,35 +8,30 @@
 import Foundation
 
 class CommunityLocationLoader {
+    static let fileName = "MapLocations.json" // your JSON file name
+
+    // Load bundled locations from the app bundle
     static func loadLocations() -> [Location] {
-        // Try loading from the saved file in Documents directory
-        if let url = getFileURL(), FileManager.default.fileExists(atPath: url.path) {
-            do {
-                let data = try Data(contentsOf: url)
-                let decoder = JSONDecoder()
-                return try decoder.decode([Location].self, from: data)
-            } catch {
-                print("Failed to load from Documents directory: \(error)")
-            }
+        guard let url = Bundle.main.url(forResource: "MapLocations", withExtension: "json") else {
+            print("MapLocations.json not found in bundle")
+            return []
         }
-
-        // Fallback: Load from bundled locations.json
-        if let bundleURL = Bundle.main.url(forResource: "MapLocations", withExtension: "json") {
-            do {
-                let data = try Data(contentsOf: bundleURL)
-                let decoder = JSONDecoder()
-                return try decoder.decode([Location].self, from: data)
-            } catch {
-                print("Failed to load bundled locations.json: \(error)")
-            }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let locations = try decoder.decode([Location].self, from: data)
+            return locations
+        } catch {
+            print("Failed to decode MapLocations.json: \(error)")
+            return []
         }
-
-        return []
     }
-    
+
+    // Save locations to user's documents folder if you want to support editing
     static func saveLocations(_ locations: [Location]) {
         guard let url = getFileURL() else { return }
-        
+
         do {
             let encoder = JSONEncoder()
             let data = try encoder.encode(locations)
@@ -45,11 +40,11 @@ class CommunityLocationLoader {
             print("Failed to save locations: \(error)")
         }
     }
-    
+
+    // Save location data to documents directory (for edits)
     static private func getFileURL() -> URL? {
         let fileManager = FileManager.default
         let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first
-        return directory?.appendingPathComponent("MapLocaitions")
+        return directory?.appendingPathComponent(fileName)
     }
-
 }
