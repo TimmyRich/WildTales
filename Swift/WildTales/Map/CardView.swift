@@ -13,14 +13,14 @@ struct MapCardView: View {
     var description: String
     var photoCount: Int
     var zone: String // 👈 Pass this in
-
+    
     @State private var navigateToMap = false
-
+    
     var body: some View {
         ZStack {
             Color("MapGreen")
                 .edgesIgnoringSafeArea(.all)
-
+            
             VStack(spacing: 16) {
                 image
                     .resizable()
@@ -29,14 +29,14 @@ struct MapCardView: View {
                     .clipped()
                     .cornerRadius(16)
                     .padding([.top, .leading, .trailing])
-
+                
                 VStack(alignment: .leading, spacing: 8) {
                     Text(title)
                         .font(.title3.bold())
                         .foregroundColor(.black)
                         .lineLimit(2)
                         .truncationMode(.tail)
-
+                    
                     Text(description)
                         .font(.subheadline)
                         .foregroundColor(.gray)
@@ -44,7 +44,7 @@ struct MapCardView: View {
                         .truncationMode(.tail)
                 }
                 .padding(.horizontal)
-
+                
                 HStack {
                     HStack(spacing: 4) {
                         Image(systemName: "photo")
@@ -55,14 +55,14 @@ struct MapCardView: View {
                     .padding(8)
                     .background(Color(.systemGray6))
                     .cornerRadius(8)
-
+                    
                     Spacer()
-
+                    
                     NavigationLink(destination: MapView(zone: zone)
                         .navigationBarBackButtonHidden(true), isActive: $navigateToMap) {
-                        EmptyView()
-                    }
-
+                            EmptyView()
+                        }
+                    
                     Button(action: {
                         navigateToMap = true
                     }) {

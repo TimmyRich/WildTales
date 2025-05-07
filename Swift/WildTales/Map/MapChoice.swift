@@ -55,7 +55,7 @@ struct MapChoice: View {
                     VStack{
                         
                         Text("Select or Create a Map!")
-
+                        
                         NavigationLink(destination: CommunityMapView().navigationBarBackButtonHidden(true)) {
                             Image("community")
                                 .resizable()
@@ -96,10 +96,10 @@ struct MapChoice: View {
                                     .font(.system(size: 40))
                                     .foregroundColor(Color("HunterGreen"))
                                     .frame(width: 60, height: 60)
-                                    
+                                
                                     .shadow(radius: 5)
-                                    //.hapticOnTouch()
-                                }
+                                //.hapticOnTouch()
+                            }
                             Spacer()
                             
                         }
@@ -107,7 +107,7 @@ struct MapChoice: View {
                         Spacer()
                     }
                     .padding(.leading)
- 
+                    
                 }
                 
                 
@@ -115,12 +115,12 @@ struct MapChoice: View {
             
         }  .preferredColorScheme(.light)
         
-        .sheet(isPresented: $showSheet) {
-            Stories()
-        }
-        .sheet(isPresented: $showSettingsSheet) {
-            Settings()
-        }
+            .sheet(isPresented: $showSheet) {
+                Stories()
+            }
+            .sheet(isPresented: $showSettingsSheet) {
+                Settings()
+            }
     }
 }
 

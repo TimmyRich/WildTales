@@ -47,9 +47,9 @@ struct MapView: View {
         case plant = "Plants"
         case location = "Locations"
     }
-        
+    
     @State private var selectedFilter: FilterCategory = .all
-
+    
     var body: some View {
         ZStack {
             // map with user dot
@@ -58,16 +58,14 @@ struct MapView: View {
                 showsUserLocation: true,
                 userTrackingMode: .none,
                 annotationItems: locations.filter { location in
-                    switch selectedFilter {
-                    case .all: return true
-                    case .animal: return location.category == .animal
-                    case .plant: return location.category == .plant
-                    case .location: return location.category == .location
-                    }
+                switch selectedFilter {
+                case .all: return true
+                case .animal: return location.category == .animal
+                case .plant: return location.category == .plant
+                case .location: return location.category == .location
                 }
-                ) { location in
-               
-                
+            }
+            ) { location in
                 MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)) {
                     if location.category == .fence {
                         Image(systemName: "dot.radiowaves.left.and.right")
@@ -87,7 +85,7 @@ struct MapView: View {
                         }
                     }
                 }
-
+                
             }
             .ignoresSafeArea()
             .onAppear {
@@ -97,7 +95,7 @@ struct MapView: View {
                 
                 ProximityNotificationManager.shared.requestPermission()
             }
-
+            
             .onChange(of: locationManager.userLocation) { newLocation in
                 if let newLocation = newLocation {
                     if !isMapInitialized {
@@ -119,11 +117,11 @@ struct MapView: View {
                             content.title = "You're Too Far Away!"
                             content.body = "Move closer home, you could be in danger!"
                             content.sound = UNNotificationSound.default
-
+                            
                             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-
+                            
                             let request = UNNotificationRequest(identifier: "noticication", content: content, trigger: trigger)
-
+                            
                             UNUserNotificationCenter.current().add(request) { error in
                                 if let error = error {
                                     print("Error scheduling notification: \(error.localizedDescription)")
@@ -143,11 +141,11 @@ struct MapView: View {
                             content.title = "You're Close!"
                             content.body = "You're close to \(locations[index].name)"
                             content.sound = UNNotificationSound.default
-
+                            
                             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-
+                            
                             let request = UNNotificationRequest(identifier: "noticication", content: content, trigger: trigger)
-
+                            
                             UNUserNotificationCenter.current().add(request) { error in
                                 if let error = error {
                                     print("Error scheduling notification: \(error.localizedDescription)")
@@ -156,7 +154,7 @@ struct MapView: View {
                             
                             locations[index].visited = 1
                             var allLocations = LocationLoader.loadLocations()
-
+                            
                             // Update the locations efficiently
                             for updated in locations {
                                 if let index = allLocations.firstIndex(where: { $0.id == updated.id }) {
@@ -167,10 +165,10 @@ struct MapView: View {
                                     allLocations.append(updated)
                                 }
                             }
-
+                            
                             // Save the updated locations back
                             LocationLoader.saveLocations(allLocations)
-
+                            
                             LocationLoader.saveLocations(allLocations)
                             AudioManager.playSound(soundName: "visited.wav", soundVol: 0.5)
                             
@@ -194,7 +192,7 @@ struct MapView: View {
                     }
                     .font(.system(size: 40))
                     .foregroundColor(Color("HunterGreen"))
-
+                    
                     .shadow(radius: 5)
                     .padding(.leading, 30.0)
                     
@@ -221,7 +219,7 @@ struct MapView: View {
                 Spacer()
             }
             
-
+            
             
             // location detail panel with quiz
             if let location = selectedLocation {
@@ -231,12 +229,12 @@ struct MapView: View {
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
-
+                    
                     Text(location.description)
                         .font(.subheadline)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
-
+                    
                     HStack {
                         Text("Visited:")
                             .font(.subheadline)
@@ -247,7 +245,7 @@ struct MapView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.top, 4)
-
+                    
                     if location.visited == 1 {
                         if let question = location.quizQuestion,
                            let answers = location.quizAnswers,
@@ -258,7 +256,7 @@ struct MapView: View {
                                 .padding(.top)
                                 .multilineTextAlignment(.center)
                                 .frame(maxWidth: .infinity)
-
+                            
                             ForEach(answers.indices, id: \.self) { index in
                                 Button {
                                     if index == correctIndex {
@@ -290,7 +288,7 @@ struct MapView: View {
                                         .foregroundColor(.black)
                                 }
                             }
-
+                            
                             if isQuizFinished {
                                 Text(isAnswerCorrect ? "That's right!" : "Oops, try again!")
                                     .font(.headline)
@@ -320,7 +318,7 @@ struct MapView: View {
                             .padding(.top)
                         }
                     }
-
+                    
                     Button("Close") {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         withAnimation {
@@ -338,7 +336,7 @@ struct MapView: View {
                 .transition(.opacity)
                 .zIndex(100)
             }
-
+            
             
             // Emergency overlay
             if showEmergency {
@@ -346,12 +344,12 @@ struct MapView: View {
                     Color.black.opacity(0.4)
                         .ignoresSafeArea()
                         .onTapGesture { showEmergency = false }
-
+                    
                     Emergency(showEmergency: $showEmergency)
                         .transition(.scale)
                 }
             }
-
+            
             VStack{
                 Spacer()
                 HStack{
@@ -405,8 +403,8 @@ struct MapView: View {
                     .hapticOnTouch()
                 }
             }.ignoresSafeArea()
-
-
+            
+            
         }
         .sheet(isPresented: $showSheet) {
             GalleryView()
@@ -433,7 +431,7 @@ struct MapView: View {
             return location.visited == 1 ? "blank" : "blank"
         }
     }
-
+    
 }
 
 // small extention to calculate distance between two coordinates, courtesy (https://stackoverflow.com/questions/11077425/finding-distance-between-cllocationcoordinate2d-points/28683508)

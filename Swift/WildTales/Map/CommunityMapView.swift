@@ -43,16 +43,16 @@ struct CommunityMapView: View {
                 annotationItems: locations) { location in
                 MapMarker(coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude))
             }
-            .ignoresSafeArea(.all)
-            .onAppear {
-                locationManager.requestLocation()
-            }
-            .onChange(of: locationManager.userLocation) { newLocation in
-                if let newLocation = newLocation, !isMapInitialized {
-                    mapRegion.center = newLocation.coordinate
-                    isMapInitialized = true
+                .ignoresSafeArea(.all)
+                .onAppear {
+                    locationManager.requestLocation()
                 }
-            }
+                .onChange(of: locationManager.userLocation) { newLocation in
+                    if let newLocation = newLocation, !isMapInitialized {
+                        mapRegion.center = newLocation.coordinate
+                        isMapInitialized = true
+                    }
+                }
             
             VStack {
                 HStack {
@@ -71,7 +71,7 @@ struct CommunityMapView: View {
                     .hapticOnTouch()
                     
                     
-                
+                    
                     Spacer()
                     
                     Button(action: {
@@ -97,7 +97,7 @@ struct CommunityMapView: View {
                 
                 HStack {
                     // Add Location Button
-
+                    
                     
                     // Stories Button
                     Button {
@@ -145,7 +145,7 @@ struct CommunityMapView: View {
                             Color.black.opacity(0.4)
                                 .ignoresSafeArea()
                                 .onTapGesture { showEmergency = false }
-
+                            
                             Emergency(showEmergency: $showEmergency)
                                 .transition(.scale)
                         }

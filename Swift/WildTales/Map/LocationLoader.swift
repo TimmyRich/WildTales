@@ -25,8 +25,8 @@ class LocationLoader {
         Location(id: UUID(), name: "Riverside Green", description: "Open grassy space for play and events.", latitude: -27.4787, longitude: 153.0237, visited: 0, quizQuestion: "What is Riverside Green used for?", quizAnswers: ["Camping", "Swimming", "Events and picnics", "Shopping"], correctAnswerIndex: 2, quizCompleted: false, category: .location, zone: "Southbank Parklands"),
         Location(id: UUID(), name: "Southbank Playgrounds", description: "A fun play area for children.", latitude: -27.4794, longitude: 153.0241, visited: 0, quizQuestion: "Who uses this area the most?", quizAnswers: ["Adults", "Birds", "Children", "Cyclists"], correctAnswerIndex: 2, quizCompleted: false, category: .location, zone: "Southbank Parklands"),
         Location(id: UUID(), name: "Rainforest Amphitheatre", description: "Hidden stage surrounded by nature.", latitude: -27.4801, longitude: 153.0232, visited: 0, quizQuestion: "What happens at this spot?", quizAnswers: ["Weddings", "Swimming", "Performances", "Fishing"], correctAnswerIndex: 2, quizCompleted: false, category: .location, zone: "Southbank Parklands"),
-
-
+        
+        
         // University of Queensland
         Location(id: UUID(), name: "Great Court", description: "The iconic sandstone heart of UQ.", latitude: -27.4975, longitude: 153.0137, visited: 0, quizQuestion: "What is the Great Court known for?", quizAnswers: ["Libraries", "Shops", "Sandstone buildings", "Dormitories"], correctAnswerIndex: 2, quizCompleted: false, category: .location, zone: "University of Queensland"),
         Location(id: UUID(), name: "UQ Lakes", description: "A serene spot for wildlife and walking.", latitude: -27.5002, longitude: 153.0152, visited: 0, quizQuestion: "Which animals are common here?", quizAnswers: ["Kangaroos", "Ducks", "Koalas", "Emus"], correctAnswerIndex: 1, quizCompleted: false, category: .animal, zone: "University of Queensland"),
@@ -38,8 +38,8 @@ class LocationLoader {
         Location(id: UUID(), name: "UQ Union Complex", description: "Food, shops, and services for students.", latitude: -27.4973, longitude: 153.0138, visited: 0, quizQuestion: "What do students find here?", quizAnswers: ["Animals", "Food and shops", "Labs", "Classrooms"], correctAnswerIndex: 1, quizCompleted: false, category: .location, zone: "University of Queensland"),
         Location(id: UUID(), name: "Forgan Smith Building", description: "Iconic sandstone law building.", latitude: -27.4960, longitude: 153.0135, visited: 0, quizQuestion: "What subject is taught here?", quizAnswers: ["Engineering", "Biology", "Law", "Music"], correctAnswerIndex: 2, quizCompleted: false, category: .location, zone: "University of Queensland"),
         Location(id: UUID(), name: "UQ Art Sculpture Trail", description: "Modern sculptures across campus.", latitude: -27.4959, longitude: 153.0142, visited: 0, quizQuestion: "What is displayed here?", quizAnswers: ["Graffiti", "Sculptures", "TVs", "Cars"], correctAnswerIndex: 1, quizCompleted: false, category: .location, zone: "University of Queensland"),
-
-
+        
+        
         // Botanical Gardens (Mt Coot-tha)
         Location(id: UUID(), name: "Tropical Dome", description: "A climate-controlled greenhouse for exotic plants.", latitude: -27.4757, longitude: 152.9743, visited: 0, quizQuestion: "What grows inside the dome?", quizAnswers: ["Cacti", "Tropical plants", "Grasses", "Bamboo"], correctAnswerIndex: 1, quizCompleted: false, category: .plant, zone: "Botanical Gardens"),
         Location(id: UUID(), name: "Japanese Garden", description: "A peaceful landscape garden gifted by Japan.", latitude: -27.4762, longitude: 152.9751, visited: 0, quizQuestion: "Who gifted this garden?", quizAnswers: ["Korea", "Japan", "China", "Vietnam"], correctAnswerIndex: 1, quizCompleted: false, category: .plant, zone: "Botanical Gardens"),
@@ -51,26 +51,26 @@ class LocationLoader {
         Location(id: UUID(), name: "Cactus Garden", description: "Succulents and cacti from around the world.", latitude: -27.4760, longitude: 152.9762, visited: 0, quizQuestion: "Which plants are here?", quizAnswers: ["Ferns", "Cacti", "Trees", "Flowers"], correctAnswerIndex: 1, quizCompleted: false, category: .plant, zone: "Botanical Gardens"),
         Location(id: UUID(), name: "Fragrant Plant Walk", description: "Aromatic plants line this peaceful path.", latitude: -27.4765, longitude: 152.9749, visited: 0, quizQuestion: "What is special about these plants?", quizAnswers: ["Color", "Smell", "Size", "Height"], correctAnswerIndex: 1, quizCompleted: false, category: .plant, zone: "Botanical Gardens"),
         Location(id: UUID(), name: "Lookout Trail Start", description: "Entry to trail leading up to scenic views.", latitude: -27.4770, longitude: 152.9755, visited: 0, quizQuestion: "Where does this trail lead?", quizAnswers: ["Shopping mall", "Cave", "Lookout", "Farm"], correctAnswerIndex: 2, quizCompleted: false, category: .location, zone: "Botanical Gardens"),
-
+        
     ]
-
+    
     
     // Tries to load a bunch of locations using JSON decoder
     static func loadLocations() -> [Location] {
         guard let url = getFileURL() else { return defaultLocations }
-
+        
         do {
             let data = try Data(contentsOf: url)
             let decoder = JSONDecoder()
             var savedLocations = try decoder.decode([Location].self, from: data)
-
+            
             // If this is the first launch and there are no saved locations,
             // initialize with the defaults and save them.
             if savedLocations.isEmpty {
                 saveLocations(defaultLocations)
                 return defaultLocations
             }
-
+            
             return savedLocations
         } catch {
             print("Error loading locations: \(error)")
@@ -79,7 +79,7 @@ class LocationLoader {
             return defaultLocations
         }
     }
-
+    
     
     // Call when any changes are made to save the changes on the file
     static func saveLocations(_ locations: [Location]) {

@@ -47,7 +47,7 @@ struct CreateMapView: View {
     @State private var selectedCategory: LocationCategory = .location
     
     @State private var selectedZone = "Custom"
-
+    
     
     @State private var selectedLocation: Location?
     
@@ -82,21 +82,21 @@ struct CreateMapView: View {
                         }
                     }
                 }
-
+                
             }
             
-            .ignoresSafeArea(.all)
-            .onAppear {
-                locationManager.requestLocation()
-                let allLocations = LocationLoader.loadLocations()
-                locations = allLocations.filter { $0.zone == "Custom" }
-            }
-            .onChange(of: locationManager.userLocation) { newLocation in
-                if let newLocation = newLocation, !isMapInitialized {
-                    mapRegion.center = newLocation.coordinate
-                    isMapInitialized = true
+                .ignoresSafeArea(.all)
+                .onAppear {
+                    locationManager.requestLocation()
+                    let allLocations = LocationLoader.loadLocations()
+                    locations = allLocations.filter { $0.zone == "Custom" }
                 }
-            }
+                .onChange(of: locationManager.userLocation) { newLocation in
+                    if let newLocation = newLocation, !isMapInitialized {
+                        mapRegion.center = newLocation.coordinate
+                        isMapInitialized = true
+                    }
+                }
             
             VStack {
                 HStack {
@@ -159,10 +159,10 @@ struct CreateMapView: View {
                     
                     Button {
                         AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-
+                        
                         // Remove existing fence if any
                         locations.removeAll { $0.category == .fence }
-
+                        
                         // Create and add new fence
                         let newFence = Location(
                             id: UUID(),
@@ -178,11 +178,11 @@ struct CreateMapView: View {
                             
                             category: .fence, zone: "Custom",
                             
-
+                            
                         )
                         locations.append(newFence)
                         var allLocations = LocationLoader.loadLocations()
-
+                        
                         // Update the locations efficiently
                         for updated in locations {
                             if let index = allLocations.firstIndex(where: { $0.id == updated.id }) {
@@ -193,7 +193,7 @@ struct CreateMapView: View {
                                 allLocations.append(updated)
                             }
                         }
-
+                        
                         // Save the updated locations back
                         LocationLoader.saveLocations(allLocations)
                     } label: {
@@ -206,7 +206,7 @@ struct CreateMapView: View {
                     .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
-                
+                    
                     
                     
                     Button { // center location
@@ -271,7 +271,7 @@ struct CreateMapView: View {
                         if let question = location.quizQuestion,
                            let answers = location.quizAnswers,
                            let correctIndex = location.correctAnswerIndex {
-
+                            
                             // displays the quiz info
                             Text(question).font(.headline).padding(.top)
                             ForEach(answers.indices, id: \.self) { index in
@@ -285,7 +285,7 @@ struct CreateMapView: View {
                                             if !locations[i].quizCompleted {
                                                 locations[i].quizCompleted = true
                                                 var allLocations = LocationLoader.loadLocations()
-
+                                                
                                                 // Update the locations efficiently
                                                 for updated in locations {
                                                     if let index = allLocations.firstIndex(where: { $0.id == updated.id }) {
@@ -296,7 +296,7 @@ struct CreateMapView: View {
                                                         allLocations.append(updated)
                                                     }
                                                 }
-
+                                                
                                                 // Save the updated locations back
                                                 LocationLoader.saveLocations(allLocations)
                                                 selectedLocation = locations[i]
@@ -318,7 +318,7 @@ struct CreateMapView: View {
                                 }
                             }
                         }
-
+                        
                         // if the quiz has been attempted, a right or wrong will show
                         if isQuizFinished {
                             Text(isAnswerCorrect ? "That's right!" : "Oops, try again!")
@@ -335,7 +335,7 @@ struct CreateMapView: View {
                                 if let index = locations.firstIndex(where: { $0.id == location.id }) {
                                     locations[index].visited = newValue ? 1 : 0
                                     var allLocations = LocationLoader.loadLocations()
-
+                                    
                                     // Update the locations efficiently
                                     for updated in locations {
                                         if let index = allLocations.firstIndex(where: { $0.id == updated.id }) {
@@ -346,48 +346,48 @@ struct CreateMapView: View {
                                             allLocations.append(updated)
                                         }
                                     }
-
+                                    
                                     // Save the updated locations back
                                     LocationLoader.saveLocations(allLocations)
                                     selectedLocation = locations[index]
                                 }
                             }
                         ))
-
+                        
                         // this toggle hasn't been finished yet
                         Toggle("Quiz Completed", isOn: Binding(
                             get: { location.quizCompleted },
                             set: { _ in }
                         ))
                         .disabled(true)
-
+                        
                         HStack {
                             // This button removes the location by ID then updates the array
                             Button("Remove") {
                                 if let index = locations.firstIndex(where: { $0.id == location.id }) {
                                     // Remove location from locations array
                                     locations.remove(at: index)
-
+                                    
                                     // Load all locations from persistent storage
                                     var allLocations = LocationLoader.loadLocations()
-
+                                    
                                     // Remove the location from allLocations as well
                                     if let allIndex = allLocations.firstIndex(where: { $0.id == location.id }) {
                                         allLocations.remove(at: allIndex)
                                     }
-
+                                    
                                     // Save the updated allLocations back to persistent storage
                                     LocationLoader.saveLocations(allLocations)
-
+                                    
                                     // Deselect the location
                                     selectedLocation = nil
                                 }
                             }
                             .foregroundColor(.red)
-
-
+                            
+                            
                             Spacer()
-
+                            
                             // removes selected location so nothing shows
                             Button("Close") {
                                 withAnimation {
@@ -418,13 +418,13 @@ struct CreateMapView: View {
                         .font(.title2)
                         .bold()
                         .padding(.top)
-
+                    
                     TextField("Enter name", text: $newLocationName)
                         .padding()
                         .background(Color(.systemGray6))
                         .cornerRadius(10)
                         .padding(.horizontal)
-
+                    
                     TextField("Enter description", text: $newLocationDescription)
                         .padding()
                         .background(Color(.systemGray6))
@@ -439,16 +439,16 @@ struct CreateMapView: View {
                     .pickerStyle(SegmentedPickerStyle())
                     .cornerRadius(10)
                     .padding(.horizontal)
-
+                    
                     Text("Quiz Question")
                         .font(.headline)
-
+                    
                     TextField("Enter question", text: $quizQuestion)
                         .padding()
                         .background(Color(.systemGray6))
                         .cornerRadius(10)
                         .padding(.horizontal)
-
+                    
                     // for each of the answers possible
                     ForEach(0..<4, id: \.self) { i in
                         HStack {
@@ -456,7 +456,7 @@ struct CreateMapView: View {
                                 .padding()
                                 .background(Color(.systemGray6))
                                 .cornerRadius(10)
-
+                            
                             Button(action: {
                                 correctAnswerIndex = i
                             }) {
@@ -468,7 +468,7 @@ struct CreateMapView: View {
                         }
                         .padding(.horizontal)
                     }
-
+                    
                     HStack {
                         Button("Save") {
                             let newLocation = Location(
@@ -485,10 +485,10 @@ struct CreateMapView: View {
                                 category: selectedCategory,
                                 zone: selectedZone
                             )
-
+                            
                             locations.append(newLocation)
                             var allLocations = LocationLoader.loadLocations()
-
+                            
                             // Update the locations efficiently
                             for updated in locations {
                                 if let index = allLocations.firstIndex(where: { $0.id == updated.id }) {
@@ -499,7 +499,7 @@ struct CreateMapView: View {
                                     allLocations.append(updated)
                                 }
                             }
-
+                            
                             // Save the updated locations back
                             LocationLoader.saveLocations(allLocations)
                             newLocationName = ""
@@ -510,7 +510,7 @@ struct CreateMapView: View {
                             correctAnswerIndex = nil
                             showLocationForm = false
                             selectedZone = "Custom"
-
+                            
                         }
                         .foregroundColor(.white)
                         .padding()
@@ -518,7 +518,7 @@ struct CreateMapView: View {
                         .background(Color("Pink"))
                         .cornerRadius(10)
                         .padding(.horizontal)
-
+                        
                         Button("Cancel") {
                             newLocationName = ""
                             newLocationDescription = ""
@@ -528,7 +528,7 @@ struct CreateMapView: View {
                             correctAnswerIndex = nil
                             showLocationForm = false
                             selectedZone = "Custom"
-
+                            
                         }
                         .foregroundColor(.white)
                         .padding()
@@ -542,7 +542,7 @@ struct CreateMapView: View {
                 .padding()
             }
         }  .preferredColorScheme(.light)
-
+        
     }
     
     func pinImageName(for location: Location) -> String {
