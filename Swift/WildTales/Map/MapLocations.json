@@ -1,58 +1,75 @@
 [
-  {
-    "id": "1A2B3C4D-1234-5678-ABCD-000000000001",
-    "name": "Golden Gate Overlook",
-    "description": "A scenic view of the Golden Gate Bridge and the Pacific Ocean.",
-    "latitude": 37.8021,
-    "longitude": -122.4776,
-    "visited": 0,
-    "quizQuestion": "What color is the Golden Gate Bridge?",
-    "quizAnswers": ["Blue", "Silver", "Orange-red", "Green"],
-    "correctAnswerIndex": 2,
-    "quizCompleted": false,
-    "category": "location",
-    "zone": "North"
-  },
-  {
-    "id": "1A2B3C4D-1234-5678-ABCD-000000000002",
-    "name": "Presidio Fox Den",
-    "description": "A wooded area where foxes are sometimes spotted.",
-    "latitude": 37.7989,
-    "longitude": -122.4662,
-    "visited": 0,
-    "quizQuestion": "Where do foxes usually sleep?",
-    "quizAnswers": ["Tree branches", "Underground dens", "Water holes", "Rock cliffs"],
-    "correctAnswerIndex": 1,
-    "quizCompleted": false,
-    "category": "animal",
-    "zone": "West"
-  },
-  {
-    "id": "1A2B3C4D-1234-5678-ABCD-000000000003",
-    "name": "Botanical Garden",
-    "description": "A diverse collection of plant species from around the world.",
-    "latitude": 37.7694,
-    "longitude": -122.4661,
-    "visited": 1,
-    "quizQuestion": "Which tree is native to California?",
-    "quizAnswers": ["Redwood", "Palm", "Birch", "Baobab"],
-    "correctAnswerIndex": 0,
-    "quizCompleted": false,
-    "category": "plant",
-    "zone": "Central"
-  },
-  {
-    "id": "1A2B3C4D-1234-5678-ABCD-000000000004",
-    "name": "Ocean Beach Fence",
-    "description": "A boundary fence along the beach dunes.",
-    "latitude": 37.7599,
-    "longitude": -122.5107,
-    "visited": 0,
-    "quizQuestion": null,
-    "quizAnswers": null,
-    "correctAnswerIndex": null,
-    "quizCompleted": false,
-    "category": "fence",
-    "zone": "South"
-  }
+    {
+        "id": "1A2B3C4D-1234-5678-ABCD-000000000001",
+        "name": "Golden Gate Overlook",
+        "description":
+            "A scenic view of the Golden Gate Bridge and the Pacific Ocean.",
+        "latitude": 37.8021,
+        "longitude": -122.4776,
+        "visited": 0,
+        "quizQuestion": "What color is the Golden Gate Bridge?",
+        "quizAnswers": [
+            "Blue",
+            "Silver",
+            "Orange-red",
+            "Green"
+        ],
+        "correctAnswerIndex": 2,
+        "quizCompleted": false,
+        "category": "location",
+        "zone": "North"
+    },
+    {
+        "id": "1A2B3C4D-1234-5678-ABCD-000000000002",
+        "name": "Presidio Fox Den",
+        "description": "A wooded area where foxes are sometimes spotted.",
+        "latitude": 37.7989,
+        "longitude": -122.4662,
+        "visited": 0,
+        "quizQuestion": "Where do foxes usually sleep?",
+        "quizAnswers": [
+            "Tree branches",
+            "Underground dens",
+            "Water holes",
+            "Rock cliffs"
+        ],
+        "correctAnswerIndex": 1,
+        "quizCompleted": false,
+        "category": "animal",
+        "zone": "West"
+    },
+    {
+        "id": "1A2B3C4D-1234-5678-ABCD-000000000003",
+        "name": "Botanical Garden",
+        "description":
+            "A diverse collection of plant species from around the world.",
+        "latitude": 37.7694,
+        "longitude": -122.4661,
+        "visited": 1,
+        "quizQuestion": "Which tree is native to California?",
+        "quizAnswers": [
+            "Redwood",
+            "Palm",
+            "Birch",
+            "Baobab"
+        ],
+        "correctAnswerIndex": 0,
+        "quizCompleted": false,
+        "category": "plant",
+        "zone": "Central"
+    },
+    {
+        "id": "1A2B3C4D-1234-5678-ABCD-000000000004",
+        "name": "Ocean Beach Fence",
+        "description": "A boundary fence along the beach dunes.",
+        "latitude": 37.7599,
+        "longitude": -122.5107,
+        "visited": 0,
+        "quizQuestion": null,
+        "quizAnswers": null,
+        "correctAnswerIndex": null,
+        "quizCompleted": false,
+        "category": "fence",
+        "zone": "South"
+    }
 ]

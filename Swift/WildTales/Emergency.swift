@@ -10,67 +10,75 @@ import SwiftUI
 struct Emergency: View {
     @Binding var showEmergency: Bool
     @State private var showAlert = false
-    
+
     var body: some View {
-        
-        ZStack{
+
+        ZStack {
 
             VStack(spacing: 20) {
                 Text("Feeling Lost?")
                     .font(.title2)
                     .fontWeight(.bold)
-                
+
                 Button("Call your parents?") {
-                    AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
+                    AudioManager.playSound(
+                        soundName: "siren.wav",
+                        soundVol: 0.5
+                    )
                     if let url = URL(string: "tel://0434797833") {
-                            UIApplication.shared.open(url)
-                        }
+                        UIApplication.shared.open(url)
+                    }
                 }
                 .foregroundColor(.white)
                 .frame(width: 300, height: 50)
                 .background(Color.orange)
                 .cornerRadius(10)
-                
+
                 Button("Find your parents!") {
-                    AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
-                    
+                    AudioManager.playSound(
+                        soundName: "siren.wav",
+                        soundVol: 0.5
+                    )
+
                     if let url = URL(string: "findmy://") {
-                            if UIApplication.shared.canOpenURL(url) {
-                                UIApplication.shared.open(url)
-                            }
+                        if UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url)
                         }
-                    
+                    }
+
                 }
                 .foregroundColor(.white)
                 .frame(width: 300, height: 50)
                 .background(Color.blue)
                 .cornerRadius(10)
-                
+
                 Image("unsafe")
                     .resizable()
-                    .frame(width: 170 , height: 150)
+                    .frame(width: 170, height: 150)
                     .padding(.trailing, 100)
-                
+
                 Text("Feeling Unsafe?")
                     .font(.title2)
                     .fontWeight(.bold)
                     .multilineTextAlignment(.center)
-                
-                
+
                 Button("Find security ") {
-                    AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
+                    AudioManager.playSound(
+                        soundName: "siren.wav",
+                        soundVol: 0.5
+                    )
                     let searchQuery = "police"
-                        if let url = URL(string: "maps://?q=\(searchQuery)") {
-                            if UIApplication.shared.canOpenURL(url) {
-                                UIApplication.shared.open(url)
-                            }
+                    if let url = URL(string: "maps://?q=\(searchQuery)") {
+                        if UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url)
                         }
+                    }
                 }
                 .frame(width: 300, height: 50)
                 .foregroundColor(.white)
                 .background(Color.purple)
                 .cornerRadius(10)
-                
+
                 Button("Rescue") {
                     showAlert = true
                 }
@@ -81,20 +89,20 @@ struct Emergency: View {
                 .alert(isPresented: $showAlert) {
                     Alert(
                         title: Text("WARNING: THIS WILL CALL 000"),
-                        message: Text("Press the side button 5 times to trigger the emergency call.\n \nThen swipe the red slider to confirm."),
+                        message: Text(
+                            "Press the side button 5 times to trigger the emergency call.\n \nThen swipe the red slider to confirm."
+                        ),
                         primaryButton: .default(Text("OK")),
                         secondaryButton: .cancel()
                     )
                 }
-                
+
             }
             .frame(width: 350, height: 600)
             .background(Color.white)
             .cornerRadius(15)
             .shadow(radius: 10)
-            
-            
-            
+
             Button(action: {
                 showEmergency = false
             }) {
@@ -103,22 +111,27 @@ struct Emergency: View {
                     .padding()
                     .background(Color("Pink"))
                     .clipShape(Circle())
-            }.simultaneousGesture(TapGesture().onEnded {
-                AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-            })
+            }.simultaneousGesture(
+                TapGesture().onEnded {
+                    AudioManager.playSound(
+                        soundName: "boing.wav",
+                        soundVol: 0.5
+                    )
+                }
+            )
             .padding(.trailing, 280)
             .padding(.bottom, 520)
-            
-            HStack{
+
+            HStack {
                 Spacer()
-                
+
                 Image("Quokka_1")
                     .resizable()
-                    .frame(width: 160 , height: 240)
+                    .frame(width: 160, height: 240)
                     .rotationEffect(Angle(degrees: -50))
                     .padding(.top, 100)
                     .padding(.leading, 300)
-                
+
             }
         }
     }

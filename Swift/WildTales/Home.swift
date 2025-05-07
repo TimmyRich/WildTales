@@ -5,18 +5,17 @@
 //  Created by Kurt McCullough on 31/3/2025.
 //
 
-
 import SwiftUI
 
 struct Home: View {
     @EnvironmentObject var appState: AppState
-    
+
     @State private var showEmergency = false
-    
+
     var hasSeenScrapBookGuide: Bool {
         UserDefaults.standard.bool(forKey: "hasSeenScrapBookGuide")
     }
-    
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -24,26 +23,35 @@ struct Home: View {
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .ignoresSafeArea(edges: .all)
-                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-                
+                    .frame(
+                        width: UIScreen.main.bounds.width,
+                        height: UIScreen.main.bounds.height
+                    )
+
                 VStack {
                     HStack {
                         Spacer()
-                        
+
                         Image("Quokka_2")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .frame(width: UIScreen.main.bounds.width / 4, height: UIScreen.main.bounds.height / 4)
+                            .frame(
+                                width: UIScreen.main.bounds.width / 4,
+                                height: UIScreen.main.bounds.height / 4
+                            )
                             .ignoresSafeArea(.all)
                     }
-                    
+
                     Spacer()
                 }
-                
+
                 VStack {
                     HStack {
                         Button(action: {
-                            AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
+                            AudioManager.playSound(
+                                soundName: "siren.wav",
+                                soundVol: 0.5
+                            )
                             showEmergency = true
                         }) {
                             Image(systemName: "phone.connection.fill")
@@ -55,63 +63,95 @@ struct Home: View {
                                 .padding()
                         }
                         .padding()
-                        
+
                         Spacer()
                     }
-                    
+
                     Spacer()
                 }
-                
+
                 Image("logoTitle")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 180, height: 180)
                     .padding(.bottom, 200)
-                
+
                 VStack {
                     HStack {
                         Spacer()
-                        VStack{
-                            NavigationLink(destination: MapChoice().navigationBarBackButtonHidden(true)) {
+                        VStack {
+                            NavigationLink(
+                                destination: MapChoice()
+                                    .navigationBarBackButtonHidden(true)
+                            ) {
                                 Image("homeButton2")
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 100, height: 100)
-                            }.simultaneousGesture(TapGesture().onEnded {
-                                AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                            })
-                            
-                            NavigationLink(destination: Home().navigationBarBackButtonHidden(true)) {
+                            }.simultaneousGesture(
+                                TapGesture().onEnded {
+                                    AudioManager.playSound(
+                                        soundName: "boing.wav",
+                                        soundVol: 0.5
+                                    )
+                                }
+                            )
+
+                            NavigationLink(
+                                destination: Home()
+                                    .navigationBarBackButtonHidden(true)
+                            ) {
                                 Image("homeButton4")
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 100, height: 100)
-                            }.simultaneousGesture(TapGesture().onEnded {
-                                AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                            })
+                            }.simultaneousGesture(
+                                TapGesture().onEnded {
+                                    AudioManager.playSound(
+                                        soundName: "boing.wav",
+                                        soundVol: 0.5
+                                    )
+                                }
+                            )
                         }
                         Spacer()
-                        
-                        VStack{
-                            
-                            NavigationLink(destination: Home().navigationBarBackButtonHidden(true)) {
+
+                        VStack {
+
+                            NavigationLink(
+                                destination: Home()
+                                    .navigationBarBackButtonHidden(true)
+                            ) {
                                 Image("homeButton1")
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 100, height: 100)
-                            }.simultaneousGesture(TapGesture().onEnded {
-                                AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                            })
-                            
-                            NavigationLink(destination: Learn().navigationBarBackButtonHidden(true)) {
+                            }.simultaneousGesture(
+                                TapGesture().onEnded {
+                                    AudioManager.playSound(
+                                        soundName: "boing.wav",
+                                        soundVol: 0.5
+                                    )
+                                }
+                            )
+
+                            NavigationLink(
+                                destination: Learn()
+                                    .navigationBarBackButtonHidden(true)
+                            ) {
                                 Image("homeButton3")
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 100, height: 100)
-                            }.simultaneousGesture(TapGesture().onEnded {
-                                AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                            })
-                            
+                            }.simultaneousGesture(
+                                TapGesture().onEnded {
+                                    AudioManager.playSound(
+                                        soundName: "boing.wav",
+                                        soundVol: 0.5
+                                    )
+                                }
+                            )
+
                         }
                         Spacer()
                     }
@@ -125,7 +165,7 @@ struct Home: View {
                             Color.black.opacity(0.4)
                                 .ignoresSafeArea()
                                 .onTapGesture { showEmergency = false }
-                            
+
                             Emergency(showEmergency: $showEmergency)
                                 .transition(.scale)
                         }
@@ -135,13 +175,11 @@ struct Home: View {
             .onAppear {
                 AudioManager.startBackgroundMusic()
             }
-            
+
         }
     }
 }
 
-
-#Preview{
+#Preview {
     Home()
 }
-

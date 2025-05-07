@@ -12,10 +12,10 @@ class AppState: ObservableObject {
     @Published var showIntro: Bool
     @Published var isLoggedIn: Bool {
         didSet {
-            UserDefaults.standard.set(isLoggedIn, forKey: "isLoggedIn") 
+            UserDefaults.standard.set(isLoggedIn, forKey: "isLoggedIn")
         }
     }
-    
+
     init() {
         self.clickedGo = false
         self.showIntro = false
@@ -25,13 +25,12 @@ class AppState: ObservableObject {
     }
 }
 
-
 @main
 struct WildTales: App {
-    
+
     @StateObject var appState = AppState()
     @StateObject var popupManager = PopupManager()
-    
+
     var body: some Scene {
         WindowGroup {
             if appState.isLoggedIn {

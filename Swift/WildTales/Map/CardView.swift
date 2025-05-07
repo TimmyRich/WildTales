@@ -12,31 +12,34 @@ struct MapCardView: View {
     var title: String
     var description: String
     var photoCount: Int
-    var zone: String // 👈 Pass this in
-    
+    var zone: String  // 👈 Pass this in
+
     @State private var navigateToMap = false
-    
+
     var body: some View {
         ZStack {
             Color("MapGreen")
                 .edgesIgnoringSafeArea(.all)
-            
+
             VStack(spacing: 16) {
                 image
                     .resizable()
                     .scaledToFill()
-                    .frame(width: UIScreen.main.bounds.width - 60, height: UIScreen.main.bounds.height - 500)
+                    .frame(
+                        width: UIScreen.main.bounds.width - 60,
+                        height: UIScreen.main.bounds.height - 500
+                    )
                     .clipped()
                     .cornerRadius(16)
                     .padding([.top, .leading, .trailing])
-                
+
                 VStack(alignment: .leading, spacing: 8) {
                     Text(title)
                         .font(.title3.bold())
                         .foregroundColor(.black)
                         .lineLimit(2)
                         .truncationMode(.tail)
-                    
+
                     Text(description)
                         .font(.subheadline)
                         .foregroundColor(.gray)
@@ -44,7 +47,7 @@ struct MapCardView: View {
                         .truncationMode(.tail)
                 }
                 .padding(.horizontal)
-                
+
                 HStack {
                     HStack(spacing: 4) {
                         Image(systemName: "photo")
@@ -55,14 +58,17 @@ struct MapCardView: View {
                     .padding(8)
                     .background(Color(.systemGray6))
                     .cornerRadius(8)
-                    
+
                     Spacer()
-                    
-                    NavigationLink(destination: MapView(zone: zone)
-                        .navigationBarBackButtonHidden(true), isActive: $navigateToMap) {
-                            EmptyView()
-                        }
-                    
+
+                    NavigationLink(
+                        destination: MapView(zone: zone)
+                            .navigationBarBackButtonHidden(true),
+                        isActive: $navigateToMap
+                    ) {
+                        EmptyView()
+                    }
+
                     Button(action: {
                         navigateToMap = true
                     }) {
@@ -73,7 +79,12 @@ struct MapCardView: View {
                             .background(Color("HunterGreen"))
                             .foregroundColor(.white)
                             .cornerRadius(12)
-                            .shadow(color: .gray.opacity(0.4), radius: 4, x: 2, y: 2)
+                            .shadow(
+                                color: .gray.opacity(0.4),
+                                radius: 4,
+                                x: 2,
+                                y: 2
+                            )
                     }
                 }
                 .padding([.horizontal, .bottom])
@@ -91,11 +102,10 @@ struct MapCardView: View {
         MapCardView(
             image: Image("PawIcon"),
             title: "Tropical Dome",
-            description: "Explore the Tropical Display Dome at Brisbane Botanic Gardens Mt Coot-tha.",
+            description:
+                "Explore the Tropical Display Dome at Brisbane Botanic Gardens Mt Coot-tha.",
             photoCount: 12,
             zone: "Custom"
         )
     }
 }
-
-

@@ -10,16 +10,16 @@ import SwiftUI
 struct Settings: View {
     @Environment(\.dismiss) var dismiss
     @State private var isMusicEnabled: Bool = true
-    @State private var selectedTime: Date = Date() // Use for temporary notification
-    
+    @State private var selectedTime: Date = Date()  // Use for temporary notification
+
     var body: some View {
         VStack {
-            
+
             Text("Settings")
                 .font(.largeTitle)
                 .padding()
-            
-            List{
+
+            List {
                 Toggle("Enable Background Music", isOn: $isMusicEnabled)
                     .onChange(of: isMusicEnabled) { value in
                         if value {
@@ -31,13 +31,22 @@ struct Settings: View {
                     .padding()
                 // Notification
                 VStack {
-                    DatePicker("Select Notification Time", selection: $selectedTime, displayedComponents: .hourAndMinute)
-                        .datePickerStyle(WheelDatePickerStyle())
-                        .padding()
-                
+                    DatePicker(
+                        "Select Notification Time",
+                        selection: $selectedTime,
+                        displayedComponents: .hourAndMinute
+                    )
+                    .datePickerStyle(WheelDatePickerStyle())
+                    .padding()
+
                     Button("Schedule Notification") {
-                        let notificationDate = NotificationManager.getNotificationDate(from: selectedTime)
-                        NotificationManager.scheduleNotification(at: notificationDate)
+                        let notificationDate =
+                            NotificationManager.getNotificationDate(
+                                from: selectedTime
+                            )
+                        NotificationManager.scheduleNotification(
+                            at: notificationDate
+                        )
                         print("pressing ok")
                     }
                     .buttonStyle(.borderedProminent).tint(.green)
@@ -47,44 +56,40 @@ struct Settings: View {
                     }
                     .buttonStyle(.borderedProminent).tint(.blue)
                 }
-                
+
                 Toggle("Random ahh toggle", isOn: .constant(true))
                     .padding()
-                
+
                 Toggle("Random ahh toggle", isOn: .constant(true))
                     .padding()
-                
+
                 Toggle("Random ahh toggle", isOn: .constant(true))
                     .padding()
-                
+
                 Toggle("Random ahh toggle", isOn: .constant(true))
                     .padding()
-                
+
                 Toggle("Random ahh toggle", isOn: .constant(true))
                     .padding()
-                
+
                 Toggle("Random ahh toggle", isOn: .constant(true))
                     .padding()
-                
+
                 Toggle("Random ahh toggle", isOn: .constant(true))
                     .padding()
-                
+
                 Toggle("Random ahh toggle", isOn: .constant(true))
                     .padding()
-                
+
                 Toggle("Random ahh toggle", isOn: .constant(true))
                     .padding()
-                
+
                 Toggle("Random ahh toggle", isOn: .constant(true))
                     .padding()
-                
-    
+
             }
             .background(Color.green)
             .cornerRadius(20)
-                
-            
-            
 
             Button("back") {
                 dismiss()
@@ -94,7 +99,7 @@ struct Settings: View {
             .foregroundColor(.white)
             .cornerRadius(10)
             .font(.title)
-            
+
             Spacer()
         }
         .padding()
