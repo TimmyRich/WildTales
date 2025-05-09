@@ -82,9 +82,9 @@ struct MapView: View {
                     )
                 ) {
                     if location.category == .fence {
-                        Image(systemName: "dot.radiowaves.left.and.right")
-                            .font(.system(size: 28))
-                            .foregroundColor(.red)
+                        Image("House")
+                            .resizable()
+                            .frame(width: 30, height: 30)
                             .shadow(radius: 2)
                     } else {
                         Button(action: {
@@ -379,6 +379,7 @@ struct MapView: View {
                         .font(.subheadline)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
+                
 
                     HStack {
                         Text("Visited:")
@@ -452,7 +453,7 @@ struct MapView: View {
                                     Text(answers[index])
                                         .padding()
                                         .frame(maxWidth: .infinity)
-                                        .background(Color.pink.opacity(0.1))
+                                        .background(Color("HunterGreen").opacity(0.1))
                                         .cornerRadius(5)
                                         .foregroundColor(.black)
                                 }
@@ -550,24 +551,42 @@ struct MapView: View {
                         .padding(.leading, 20.0)
 
                     Spacer()
-
-                    TabView(selection: $selectedFilter) {
-                        ForEach(FilterCategory.allCases, id: \.self) { filter in
-                            Text(filter.rawValue)
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color("HunterGreen").opacity(0.8))
-                                .cornerRadius(12)
-                                .shadow(radius: 4)
-                                .padding(.horizontal, 30)
-                                .tag(filter)
-
+                    
+                    ZStack{
+                        
+                        
+                        
+                        TabView(selection: $selectedFilter) {
+                            ForEach(FilterCategory.allCases, id: \.self) { filter in
+                                Text(filter.rawValue)
+                                    .font(.headline)
+                                    .foregroundColor(Color.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color("HunterGreen").opacity(0.8))
+                                    .cornerRadius(12)
+                                    .shadow(radius: 4)
+                                    .padding(.horizontal, 30)
+                                    .tag(filter)
+                                
+                            }
                         }
+                        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                        .frame(height: 70)
+                        
+                        HStack{
+                            Image(systemName: "arrow.backward")
+                            Text("                             ")
+                            Image(systemName: "arrow.forward")
+                            
+                        }.padding(.all, 3.0)
+                            .font(.footnote).foregroundColor(.white)
+                            
+                            .cornerRadius(12)
+                            .ignoresSafeArea(.all)
+                        
+                        
                     }
-                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                    .frame(height: 70)
-                    .padding(.bottom, 10)
 
                     Button {  // simply centers the map and zooms in to default
                         if let userLocation = locationManager.userLocation {
@@ -786,5 +805,5 @@ struct WikipediaSummary: Decodable {
 }
 
 #Preview {
-    MapView(zone: "Southbank Parklands")
+    MapView(zone: "Custom")
 }

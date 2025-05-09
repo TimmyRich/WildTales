@@ -75,10 +75,12 @@ struct CreateMapView: View {
                         }
                     }) {
                         if location.category == .fence {
-                            Image(systemName: "dot.radiowaves.left.and.right")
-                                .font(.system(size: 28))
-                                .foregroundColor(.red)
-                                .shadow(radius: 2)
+                            Image(
+                                "House"
+                            ).resizable()
+                                .frame(width: 40, height: 40)
+                            .foregroundColor(.red)
+                            .shadow(radius: 2)
                         } else {
                             Image(
                                 uiImage: UIImage(
@@ -98,7 +100,9 @@ struct CreateMapView: View {
             .onAppear {
                 locationManager.requestLocation()
                 let allLocations = LocationLoader.loadLocations()
-                locations = allLocations.filter { $0.zone == "Custom" }
+                locations = allLocations.filter {
+                    $0.zone == "Custom"
+                }
             }
             .onChange(of: locationManager.userLocation) { newLocation in
                 if let newLocation = newLocation, !isMapInitialized {
@@ -221,7 +225,7 @@ struct CreateMapView: View {
                         // Save the updated locations back
                         LocationLoader.saveLocations(allLocations)
                     } label: {
-                        Image(systemName: "person.2.wave.2.fill")
+                        Image(systemName: "house.fill")
                     }
                     .font(.system(size: 24))
                     .foregroundColor(.white)
@@ -298,6 +302,7 @@ struct CreateMapView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text(location.name).font(.headline)  // gets location name and description
                         Text(location.description).font(.subheadline)
+                        Text(location.zone).font(.subheadline)
 
                         // gets location quiz parts
                         if let question = location.quizQuestion,
@@ -367,7 +372,9 @@ struct CreateMapView: View {
                                     Text(answers[index])
                                         .padding()
                                         .frame(maxWidth: .infinity)
-                                        .background(Color.pink.opacity(0.1))
+                                        .background(
+                                            Color("HunterGreen").opacity(0.1)
+                                        )
                                         .cornerRadius(5)
                                         .foregroundColor(.black)
                                 }
