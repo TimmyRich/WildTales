@@ -15,11 +15,11 @@ struct GalleryView: View {
                     .ignoresSafeArea()
                 
                 // Quokka image
-                /*Image("quokka")
+                Image("quokka")
                     .resizable()
                     .scaledToFit()
                     .scaleEffect(0.2)
-                    .offset(x: 100, y: -370)*/
+                    .offset(x: 100, y: -370)
 
                Image("GalleryBackgroundRect")
                     .resizable()
