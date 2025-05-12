@@ -5,7 +5,7 @@
 //  Created by Kurt McCullough on 19/4/2025.
 //
 
-// help to load the locations from locations.json that sotres all the locatons on device
+// help to load the locations from locations.json that stores all the locatons on device
 
 import CoreLocation
 import Foundation

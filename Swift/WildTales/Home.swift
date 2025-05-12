@@ -119,7 +119,7 @@ struct Home: View {
                         VStack {
 
                             NavigationLink(
-                                destination: Home()
+                                destination: GalleryView()
                                     .navigationBarBackButtonHidden(true)
                             ) {
                                 Image("homeButton1")
