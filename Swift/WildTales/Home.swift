@@ -121,6 +121,7 @@ struct Home: View {
                             NavigationLink(
                                 destination: GalleryView()
                                     .navigationBarBackButtonHidden(true)
+                                    .preferredColorScheme(.light)
                             ) {
                                 Image("homeButton1")
                                     .resizable()
