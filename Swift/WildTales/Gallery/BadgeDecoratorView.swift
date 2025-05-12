@@ -54,8 +54,8 @@ struct BadgeDecoratorView: View {
 
             GeometryReader { geo in
                 ZStack {
-                    let imageWidth: CGFloat = 260
-                    let imageHeight: CGFloat = 550
+                    let imageWidth: CGFloat = 205
+                    let imageHeight: CGFloat = 430
                     let imageOrigin = CGPoint(
                         x: (geo.size.width - imageWidth) / 2,
                         y: (geo.size.height - imageHeight) / 2
