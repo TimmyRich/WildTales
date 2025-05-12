@@ -1,62 +1,75 @@
 [
-  {
-    "id": "1",
-    "name": "South Bank Parklands",
-    "description": "A vibrant park area with cultural attractions and great dining options along the Brisbane River.",
-    "latitude": -27.4705,
-    "longitude": 153.0251,
-    "visited": 0,
-    "quizQuestion": "What river runs through Brisbane?",
-    "quizAnswers": ["Sydney River", "Yarra River", "Brisbane River", "Murray River"],
-    "correctAnswerIndex": 2,
-    "quizCompleted": false
-  },
-  {
-    "id": "2",
-    "name": "Story Bridge",
-    "description": "An iconic Brisbane bridge offering stunning views of the city and a great spot for adventure.",
-    "latitude": -27.4592,
-    "longitude": 153.0351,
-    "visited": 0,
-    "quizQuestion": "What is the name of this Brisbane landmark?",
-    "quizAnswers": ["Sydney Harbour Bridge", "Story Bridge", "Golden Gate Bridge", "Eiffel Tower"],
-    "correctAnswerIndex": 1,
-    "quizCompleted": false
-  },
-  {
-    "id": "3",
-    "name": "Mount Coot-tha Lookout",
-    "description": "Offering panoramic views of Brisbane and its surrounding areas, this spot is a must-visit for tourists and locals alike.",
-    "latitude": -27.4670,
-    "longitude": 152.9870,
-    "visited": 0,
-    "quizQuestion": "Which lookout provides panoramic views of Brisbane?",
-    "quizAnswers": ["Mount Coot-tha Lookout", "Table Mountain", "Kangaroo Point Cliffs", "Brisbane Eye"],
-    "correctAnswerIndex": 0,
-    "quizCompleted": false
-  },
-  {
-    "id": "4",
-    "name": "Lone Pine Koala Sanctuary",
-    "description": "The world’s first and largest koala sanctuary, home to more than 130 koalas.",
-    "latitude": -27.4889,
-    "longitude": 152.9610,
-    "visited": 0,
-    "quizQuestion": "What animal is the Lone Pine Koala Sanctuary most famous for?",
-    "quizAnswers": ["Kangaroo", "Koala", "Platypus", "Dingo"],
-    "correctAnswerIndex": 1,
-    "quizCompleted": false
-  },
-  {
-    "id": "5",
-    "name": "Brisbane City Botanic Gardens",
-    "description": "A lush green space located near the city center, perfect for a peaceful walk or a picnic.",
-    "latitude": -27.4689,
-    "longitude": 153.0220,
-    "visited": 0,
-    "quizQuestion": "What is the name of Brisbane's central botanic gardens?",
-    "quizAnswers": ["Royal Botanic Gardens", "Brisbane City Botanic Gardens", "Sydney Botanic Gardens", "Melbourne Botanic Gardens"],
-    "correctAnswerIndex": 1,
-    "quizCompleted": false
-  }
+    {
+        "id": "1A2B3C4D-1234-5678-ABCD-000000000001",
+        "name": "Golden Gate Overlook",
+        "description":
+            "A scenic view of the Golden Gate Bridge and the Pacific Ocean.",
+        "latitude": 37.8021,
+        "longitude": -122.4776,
+        "visited": 0,
+        "quizQuestion": "What color is the Golden Gate Bridge?",
+        "quizAnswers": [
+            "Blue",
+            "Silver",
+            "Orange-red",
+            "Green"
+        ],
+        "correctAnswerIndex": 2,
+        "quizCompleted": false,
+        "category": "location",
+        "zone": "North"
+    },
+    {
+        "id": "1A2B3C4D-1234-5678-ABCD-000000000002",
+        "name": "Presidio Fox Den",
+        "description": "A wooded area where foxes are sometimes spotted.",
+        "latitude": 37.7989,
+        "longitude": -122.4662,
+        "visited": 0,
+        "quizQuestion": "Where do foxes usually sleep?",
+        "quizAnswers": [
+            "Tree branches",
+            "Underground dens",
+            "Water holes",
+            "Rock cliffs"
+        ],
+        "correctAnswerIndex": 1,
+        "quizCompleted": false,
+        "category": "animal",
+        "zone": "West"
+    },
+    {
+        "id": "1A2B3C4D-1234-5678-ABCD-000000000003",
+        "name": "Botanical Garden",
+        "description":
+            "A diverse collection of plant species from around the world.",
+        "latitude": 37.7694,
+        "longitude": -122.4661,
+        "visited": 1,
+        "quizQuestion": "Which tree is native to California?",
+        "quizAnswers": [
+            "Redwood",
+            "Palm",
+            "Birch",
+            "Baobab"
+        ],
+        "correctAnswerIndex": 0,
+        "quizCompleted": false,
+        "category": "plant",
+        "zone": "Central"
+    },
+    {
+        "id": "1A2B3C4D-1234-5678-ABCD-000000000004",
+        "name": "Ocean Beach Fence",
+        "description": "A boundary fence along the beach dunes.",
+        "latitude": 37.7599,
+        "longitude": -122.5107,
+        "visited": 0,
+        "quizQuestion": null,
+        "quizAnswers": null,
+        "correctAnswerIndex": null,
+        "quizCompleted": false,
+        "category": "fence",
+        "zone": "South"
+    }
 ]

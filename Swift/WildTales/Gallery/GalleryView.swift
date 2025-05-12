@@ -15,11 +15,11 @@ struct GalleryView: View {
                     .ignoresSafeArea()
                 
                 // Quokka image
-                /*Image("quokka")
+                Image("quokka")
                     .resizable()
                     .scaledToFit()
                     .scaleEffect(0.2)
-                    .offset(x: 100, y: -370)*/
+                    .offset(x: 100, y: -370)
 
                Image("GalleryBackgroundRect")
                     .resizable()
@@ -31,7 +31,7 @@ struct GalleryView: View {
                     
                     TabView(selection: $selectedIndex) {
                         ForEach(0..<imageNames.count, id: \.self) { index in
-                            NavigationLink(destination: BadgeDecoratorView(imageName: imageNames[index])) {
+                            NavigationLink(destination: BadgeDecoratorView(trailName: imageNames[index])) {
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 15)
                                         .fill(Color.white)
@@ -88,7 +88,7 @@ struct GalleryView: View {
                     .padding()
                 }
 
-                // 🏠 Home Button (Top-left)
+                // Home Button (Top-left)
                 HStack {
                     VStack(alignment: .leading) {
                         Button { // back button goes to the previous page

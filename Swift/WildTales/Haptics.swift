@@ -10,17 +10,19 @@ import UIKit
 
 struct HapticOnTouch: ViewModifier {
     @State var isDragging: Bool = false
-    
+
     func body(content: Content) -> some View {
         content
             .simultaneousGesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { _ in
                         if !isDragging {
-                            let impactLight = UIImpactFeedbackGenerator(style: .light)
+                            let impactLight = UIImpactFeedbackGenerator(
+                                style: .light
+                            )
                             impactLight.impactOccurred()
                         }
-                        
+
                         isDragging = true
                     }
                     .onEnded { _ in

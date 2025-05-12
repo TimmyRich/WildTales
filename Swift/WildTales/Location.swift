@@ -5,9 +5,8 @@
 //  Created by Kurt McCullough on 24/3/2025.
 //
 
-
-import Foundation
 import CoreLocation
+import Foundation
 
 struct Location: Identifiable, Codable, Equatable {
     var id: UUID
@@ -20,9 +19,19 @@ struct Location: Identifiable, Codable, Equatable {
     var quizAnswers: [String]?
     var correctAnswerIndex: Int?
     var quizCompleted: Bool
-    
+    var category: LocationCategory
+    var zone: String
+
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
 }
 
+enum LocationCategory: String, Codable, CaseIterable, Identifiable {
+    case plant
+    case animal
+    case location
+    case fence
+
+    var id: String { self.rawValue }
+}

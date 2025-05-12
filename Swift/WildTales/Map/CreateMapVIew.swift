@@ -10,31 +10,31 @@
 // It then prompts the user for a name, description, and quiz elements of the map.
 // None of these elements are as each location is stored with a unique ID
 
-import SwiftUI
-import MapKit
 import AVFoundation
-import SpriteKit
 import CoreHaptics
+import MapKit
+import SpriteKit
+import SwiftUI
 
 struct CreateMapView: View {
-    
+
     @EnvironmentObject var appState: AppState
     @Environment(\.presentationMode) var goBack
-    
+
     @State private var showEmergency = false
-    
-    @StateObject private var locationManager = LocationManager() // this helps load the locations from the json in addition to adding and saving to the arrays
-    
+
+    @StateObject private var locationManager = LocationManager()  // this helps load the locations from the json in addition to adding and saving to the arrays
+
     @State private var mapRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: -27.4705, longitude: 153.0260),
         span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
     )
-    
+
     @State private var locations = [Location]()
     @State private var showSheet = false
     @State private var showSettingsSheet = false
     @State private var isMapInitialized = false
-    
+
     // variables to be overwritten later for forms
     @State private var showLocationForm = false
     @State private var newLocationName = ""
@@ -42,38 +42,67 @@ struct CreateMapView: View {
     @State private var quizQuestion = ""
     @State private var quizAnswers = ["", "", "", ""]
     @State private var correctAnswerIndex: Int? = nil
-    
+
+    @State private var selectedCategory: LocationCategory = .location
+
+    @State private var selectedZone = "Custom"
+
     @State private var selectedLocation: Location?
-    
+
     // quiz stuff for later
     @State private var isQuizFinished = false
     @State private var isAnswerCorrect = false
-    
+
     var body: some View {
         ZStack {
             // this is the map initialization
-            Map(coordinateRegion: $mapRegion,
+            Map(
+                coordinateRegion: $mapRegion,
                 interactionModes: .all,
                 showsUserLocation: true,
                 userTrackingMode: .none,
-                annotationItems: locations) { location in
-                MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)) {
+                annotationItems: locations
+            ) { location in
+                MapAnnotation(
+                    coordinate: CLLocationCoordinate2D(
+                        latitude: location.latitude,
+                        longitude: location.longitude
+                    )
+                ) {
                     Button(action: {
                         withAnimation {
-                            selectedLocation = location // each location map pin is a button, when pressed, the selected location is the one pressed on
+                            selectedLocation = location
                         }
                     }) {
-                        Image(systemName: "mappin.circle.fill")
-                            .font(.title)
-                            .foregroundColor(location.visited == 1 ? .green : .red)
+                        if location.category == .fence {
+                            Image(
+                                "House"
+                            ).resizable()
+                                .frame(width: 40, height: 40)
+                                .foregroundColor(.red)
+                                .shadow(radius: 2)
+                        } else {
+                            Image(
+                                uiImage: UIImage(
+                                    named: pinImageName(for: location)
+                                ) ?? UIImage()
+                            )
+                            .resizable()
+                            .frame(width: 40, height: 40)
                             .shadow(radius: 2)
+                        }
                     }
                 }
+
             }
+
             .ignoresSafeArea(.all)
             .onAppear {
                 locationManager.requestLocation()
-                locations = LocationLoader.loadLocations()
+                let allLocations = LocationLoader.loadLocations()
+                locations = allLocations.filter {
+                    $0.zone == "Custom"
+                }
             }
             .onChange(of: locationManager.userLocation) { newLocation in
                 if let newLocation = newLocation, !isMapInitialized {
@@ -81,11 +110,14 @@ struct CreateMapView: View {
                     isMapInitialized = true
                 }
             }
-            
+
             VStack {
                 HStack {
-                    Button { // back button to go to map views
-                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                    Button {  // back button to go to map views
+                        AudioManager.playSound(
+                            soundName: "boing.wav",
+                            soundVol: 0.5
+                        )
                         goBack.wrappedValue.dismiss()
                     } label: {
                         Image(systemName: "chevron.left")
@@ -93,16 +125,19 @@ struct CreateMapView: View {
                     .font(.system(size: 24))
                     .foregroundColor(.white)
                     .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
+                    .background(Circle().fill(Color("HunterGreen")))
                     .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
-                    
+
                     Spacer()
-                    
-                    Button(action: { // emergency button
+
+                    Button(action: {  // emergency button
                         showEmergency = true
-                        AudioManager.playSound(soundName: "siren.wav", soundVol: 0.5)
+                        AudioManager.playSound(
+                            soundName: "siren.wav",
+                            soundVol: 0.5
+                        )
                     }) {
                         Image(systemName: "phone.connection.fill")
                             .font(.system(size: 24))
@@ -115,71 +150,123 @@ struct CreateMapView: View {
                 }
                 Spacer()
             }
-            
-            ZStack { // crosshairs in the middle of the screen for point accuracy
+
+            ZStack {  // crosshairs in the middle of the screen for point accuracy
                 Rectangle()
                     .frame(width: 1, height: 40)
                 Rectangle()
                     .frame(width: 40, height: 1)
             }
-            
+
             VStack {
                 Spacer()
-                
+
                 HStack {
-                    Button { // add button
-                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        showLocationForm.toggle() // shows up the form to add location
+                    Button {  // add button
+                        AudioManager.playSound(
+                            soundName: "boing.wav",
+                            soundVol: 0.5
+                        )
+                        showLocationForm.toggle()  // shows up the form to add location
                     } label: {
                         Image(systemName: "plus")
                     }
                     .font(.system(size: 24))
                     .foregroundColor(.white)
                     .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
+                    .background(Circle().fill(Color("HunterGreen")))
                     .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
-                    
-                    Spacer()
-                    
-                    Button { // for later additions
-                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                        showSheet.toggle()
+
+                    Button {
+                        AudioManager.playSound(
+                            soundName: "boing.wav",
+                            soundVol: 0.5
+                        )
+
+                        // Remove existing fence if any
+                        locations.removeAll { $0.category == .fence }
+
+                        // Create and add new fence
+                        let newFence = Location(
+                            id: UUID(),
+                            name: "Geofence",
+                            description:
+                                "An alarm will ring if your child isn't within 500 meters of this pin.",
+                            latitude: mapRegion.center.latitude,
+                            longitude: mapRegion.center.longitude,
+                            visited: 0,
+                            quizQuestion: nil,
+                            quizAnswers: nil,
+                            correctAnswerIndex: nil,
+                            quizCompleted: false,
+
+                            category: .fence,
+                            zone: "Custom",
+
+                        )
+                        locations.append(newFence)
+                        var allLocations = LocationLoader.loadLocations()
+
+                        // Update the locations efficiently
+                        for updated in locations {
+                            if let index = allLocations.firstIndex(where: {
+                                $0.id == updated.id
+                            }) {
+                                // If location exists, update it
+                                allLocations[index] = updated
+                            } else {
+                                // Otherwise, append the new location
+                                allLocations.append(updated)
+                            }
+                        }
+
+                        // Save the updated locations back
+                        LocationLoader.saveLocations(allLocations)
                     } label: {
-                        Image(systemName: "book")
+                        Image(systemName: "house.fill")
                     }
                     .font(.system(size: 24))
                     .foregroundColor(.white)
                     .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
+                    .background(Circle().fill(Color("HunterGreen")))
                     .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
-                    
-                    Spacer()
-                    
-                    Button { // center location
+
+                    Button {  // center location
                         if let userLocation = locationManager.userLocation {
                             mapRegion.center = userLocation.coordinate
-                            mapRegion.span = MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
+                            mapRegion.span = MKCoordinateSpan(
+                                latitudeDelta: 0.005,
+                                longitudeDelta: 0.005
+                            )
                         }
                     } label: {
                         Image(systemName: "location.circle.fill")
                     }
-                    .simultaneousGesture(TapGesture().onEnded {
-                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                    })
+                    .simultaneousGesture(
+                        TapGesture().onEnded {
+                            AudioManager.playSound(
+                                soundName: "boing.wav",
+                                soundVol: 0.5
+                            )
+                        }
+                    )
                     .font(.system(size: 24))
                     .foregroundColor(.white)
                     .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
+                    .background(Circle().fill(Color("HunterGreen")))
                     .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
-                    
-                    Button { // setting menu
-                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+
+                    Button {  // setting menu
+                        AudioManager.playSound(
+                            soundName: "boing.wav",
+                            soundVol: 0.5
+                        )
                         showSettingsSheet.toggle()
                     } label: {
                         Image(systemName: "gear")
@@ -187,7 +274,7 @@ struct CreateMapView: View {
                     .font(.system(size: 24))
                     .foregroundColor(.white)
                     .frame(width: 60, height: 60)
-                    .background(Circle().fill(Color("Pink")))
+                    .background(Circle().fill(Color("HunterGreen")))
                     .shadow(radius: 5)
                     .padding()
                     .hapticOnTouch()
@@ -195,31 +282,33 @@ struct CreateMapView: View {
             }
             .overlay(
                 Group {
-                    if showEmergency { // this just toggles the emergency menu if the button has been pressed
+                    if showEmergency {  // this just toggles the emergency menu if the button has been pressed
                         ZStack {
                             Color.black.opacity(0.4)
                                 .ignoresSafeArea()
                                 .onTapGesture { showEmergency = false }
-                            
+
                             Emergency(showEmergency: $showEmergency)
                                 .transition(.scale)
                         }
                     }
                 }
             )
-            
+
             // this is if a location has been selected (map pin pressed)
             if let location = selectedLocation {
                 VStack {
                     Spacer()
                     VStack(alignment: .leading, spacing: 12) {
-                        Text(location.name).font(.headline) // gets location name and description
+                        Text(location.name).font(.headline)  // gets location name and description
                         Text(location.description).font(.subheadline)
-                        
+                        Text(location.zone).font(.subheadline)
+
                         // gets location quiz parts
                         if let question = location.quizQuestion,
-                           let answers = location.quizAnswers,
-                           let correctIndex = location.correctAnswerIndex {
+                            let answers = location.quizAnswers,
+                            let correctIndex = location.correctAnswerIndex
+                        {
 
                             // displays the quiz info
                             Text(question).font(.headline).padding(.top)
@@ -228,26 +317,64 @@ struct CreateMapView: View {
                                     // check for correct answer and what not
                                     if index == correctIndex {
                                         isAnswerCorrect = true
-                                        AudioManager.playSound(soundName: "correct.wav", soundVol: 0.5)
-                                        if let i = locations.firstIndex(where: { $0.id == location.id }) {
+                                        AudioManager.playSound(
+                                            soundName: "correct.wav",
+                                            soundVol: 0.5
+                                        )
+                                        if let i = locations.firstIndex(where: {
+                                            $0.id == location.id
+                                        }) {
                                             // says if the quiz has successfully been completed (used later)
                                             if !locations[i].quizCompleted {
-                                                locations[i].quizCompleted = true
-                                                LocationLoader.saveLocations(locations)
+                                                locations[i].quizCompleted =
+                                                    true
+                                                var allLocations =
+                                                    LocationLoader.loadLocations()
+
+                                                // Update the locations efficiently
+                                                for updated in locations {
+                                                    if let index =
+                                                        allLocations.firstIndex(
+                                                            where: {
+                                                                $0.id
+                                                                    == updated
+                                                                    .id
+                                                            })
+                                                    {
+                                                        // If location exists, update it
+                                                        allLocations[index] =
+                                                            updated
+                                                    } else {
+                                                        // Otherwise, append the new location
+                                                        allLocations.append(
+                                                            updated
+                                                        )
+                                                    }
+                                                }
+
+                                                // Save the updated locations back
+                                                LocationLoader.saveLocations(
+                                                    allLocations
+                                                )
                                                 selectedLocation = locations[i]
                                             }
                                         }
                                     } else {
                                         // if the answer selected is wrong)
                                         isAnswerCorrect = false
-                                        AudioManager.playSound(soundName: "wrong.wav", soundVol: 0.5)
+                                        AudioManager.playSound(
+                                            soundName: "wrong.wav",
+                                            soundVol: 0.5
+                                        )
                                     }
                                     isQuizFinished = true
                                 }) {
                                     Text(answers[index])
                                         .padding()
                                         .frame(maxWidth: .infinity)
-                                        .background(Color.pink.opacity(0.1))
+                                        .background(
+                                            Color("HunterGreen").opacity(0.1)
+                                        )
                                         .cornerRadius(5)
                                         .foregroundColor(.black)
                                 }
@@ -256,38 +383,89 @@ struct CreateMapView: View {
 
                         // if the quiz has been attempted, a right or wrong will show
                         if isQuizFinished {
-                            Text(isAnswerCorrect ? "That's right!" : "Oops, try again!")
-                                .font(.headline)
-                                .foregroundColor(isAnswerCorrect ? .green : .red)
-                                .padding()
-                                .transition(.opacity)
+                            Text(
+                                isAnswerCorrect
+                                    ? "That's right!" : "Oops, try again!"
+                            )
+                            .font(.headline)
+                            .foregroundColor(isAnswerCorrect ? .green : .red)
+                            .padding()
+                            .transition(.opacity)
                         }
-                        
+
                         // This is the visited toggle, it can change if the location has been visited or not then save it to the array
-                        Toggle("Visited", isOn: Binding(
-                            get: { location.visited == 1 },
-                            set: { newValue in
-                                if let index = locations.firstIndex(where: { $0.id == location.id }) {
-                                    locations[index].visited = newValue ? 1 : 0
-                                    LocationLoader.saveLocations(locations)
-                                    selectedLocation = locations[index]
+                        Toggle(
+                            "Visited",
+                            isOn: Binding(
+                                get: { location.visited == 1 },
+                                set: { newValue in
+                                    if let index = locations.firstIndex(where: {
+                                        $0.id == location.id
+                                    }) {
+                                        locations[index].visited =
+                                            newValue ? 1 : 0
+                                        var allLocations =
+                                            LocationLoader.loadLocations()
+
+                                        // Update the locations efficiently
+                                        for updated in locations {
+                                            if let index =
+                                                allLocations.firstIndex(where: {
+                                                    $0.id == updated.id
+                                                })
+                                            {
+                                                // If location exists, update it
+                                                allLocations[index] = updated
+                                            } else {
+                                                // Otherwise, append the new location
+                                                allLocations.append(updated)
+                                            }
+                                        }
+
+                                        // Save the updated locations back
+                                        LocationLoader.saveLocations(
+                                            allLocations
+                                        )
+                                        selectedLocation = locations[index]
+                                    }
                                 }
-                            }
-                        ))
+                            )
+                        )
 
                         // this toggle hasn't been finished yet
-                        Toggle("Quiz Completed", isOn: Binding(
-                            get: { location.quizCompleted },
-                            set: { _ in }
-                        ))
+                        Toggle(
+                            "Quiz Completed",
+                            isOn: Binding(
+                                get: { location.quizCompleted },
+                                set: { _ in }
+                            )
+                        )
                         .disabled(true)
 
                         HStack {
                             // This button removes the location by ID then updates the array
                             Button("Remove") {
-                                if let index = locations.firstIndex(where: { $0.id == location.id }) {
+                                if let index = locations.firstIndex(where: {
+                                    $0.id == location.id
+                                }) {
+                                    // Remove location from locations array
                                     locations.remove(at: index)
-                                    LocationLoader.saveLocations(locations)
+
+                                    // Load all locations from persistent storage
+                                    var allLocations =
+                                        LocationLoader.loadLocations()
+
+                                    // Remove the location from allLocations as well
+                                    if let allIndex = allLocations.firstIndex(
+                                        where: { $0.id == location.id })
+                                    {
+                                        allLocations.remove(at: allIndex)
+                                    }
+
+                                    // Save the updated allLocations back to persistent storage
+                                    LocationLoader.saveLocations(allLocations)
+
+                                    // Deselect the location
                                     selectedLocation = nil
                                 }
                             }
@@ -305,7 +483,9 @@ struct CreateMapView: View {
                         }
                     }
                     .padding()
-                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
+                    .background(
+                        RoundedRectangle(cornerRadius: 12).fill(Color.white)
+                    )
                     .shadow(radius: 8)
                     .padding()
                 }
@@ -319,7 +499,7 @@ struct CreateMapView: View {
             Settings()
         }
         .sheet(isPresented: $showLocationForm) {
-            ScrollView { // some of the stuff didnt show on the screen so made it scrollable so they keyboards nots in they way
+            ScrollView {  // some of the stuff didnt show on the screen so made it scrollable so they keyboards nots in they way
                 VStack(spacing: 16) {
                     Text("New Location")
                         .font(.title2)
@@ -332,11 +512,25 @@ struct CreateMapView: View {
                         .cornerRadius(10)
                         .padding(.horizontal)
 
-                    TextField("Enter description", text: $newLocationDescription)
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(10)
-                        .padding(.horizontal)
+                    TextField(
+                        "Enter description",
+                        text: $newLocationDescription
+                    )
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .cornerRadius(10)
+                    .padding(.horizontal)
+
+                    Picker("Category", selection: $selectedCategory) {
+                        ForEach(
+                            LocationCategory.allCases.filter { $0 != .fence }
+                        ) { category in
+                            Text(category.rawValue.capitalized).tag(category)
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .cornerRadius(10)
+                    .padding(.horizontal)
 
                     Text("Quiz Question")
                         .font(.headline)
@@ -356,19 +550,25 @@ struct CreateMapView: View {
                                 .cornerRadius(10)
 
                             Button(action: {
-                                correctAnswerIndex = i // correct answer index to check against
+                                correctAnswerIndex = i
                             }) {
-                                Image(systemName: correctAnswerIndex == i ? "largecircle.fill.circle" : "circle")
-                                    .foregroundColor(correctAnswerIndex == i ? Color("Pink") : .gray)
-                                    .imageScale(.large)
-                                    .padding(.leading, 8)
+                                Image(
+                                    systemName: correctAnswerIndex == i
+                                        ? "largecircle.fill.circle" : "circle"
+                                )
+                                .foregroundColor(
+                                    correctAnswerIndex == i
+                                        ? Color("Pink") : .gray
+                                )
+                                .imageScale(.large)
+                                .padding(.leading, 8)
                             }
                         }
                         .padding(.horizontal)
                     }
 
                     HStack {
-                        Button("Save") {
+                        Button(action: {
                             let newLocation = Location(
                                 id: UUID(),
                                 name: newLocationName,
@@ -376,48 +576,89 @@ struct CreateMapView: View {
                                 latitude: mapRegion.center.latitude,
                                 longitude: mapRegion.center.longitude,
                                 visited: 0,
-                                quizQuestion: quizQuestion.isEmpty ? nil : quizQuestion,
-                                quizAnswers: quizAnswers.contains(where: { !$0.isEmpty }) ? quizAnswers : nil,
+                                quizQuestion: quizQuestion.isEmpty
+                                    ? nil : quizQuestion,
+                                quizAnswers: quizAnswers.contains(where: {
+                                    !$0.isEmpty
+                                }) ? quizAnswers : nil,
                                 correctAnswerIndex: correctAnswerIndex,
-                                quizCompleted: false
+                                quizCompleted: false,
+                                category: selectedCategory,
+                                zone: selectedZone
                             )
+
                             locations.append(newLocation)
-                            LocationLoader.saveLocations(locations)
+                            var allLocations = LocationLoader.loadLocations()
+
+                            for updated in locations {
+                                if let index = allLocations.firstIndex(where: {
+                                    $0.id == updated.id
+                                }) {
+                                    allLocations[index] = updated
+                                } else {
+                                    allLocations.append(updated)
+                                }
+                            }
+
+                            LocationLoader.saveLocations(allLocations)
+
                             newLocationName = ""
                             newLocationDescription = ""
                             quizQuestion = ""
                             quizAnswers = ["", "", "", ""]
+                            selectedCategory = .location
                             correctAnswerIndex = nil
                             showLocationForm = false
+                            selectedZone = "Custom"
+                        }) {
+                            Text("Save")
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color("Pink"))
+                                .cornerRadius(10)
+                                .contentShape(Rectangle())  // Ensures the entire padded area is tappable
                         }
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color("Pink"))
-                        .cornerRadius(10)
                         .padding(.horizontal)
 
-                        Button("Cancel") {
+                        Button(action: {
                             newLocationName = ""
                             newLocationDescription = ""
                             quizQuestion = ""
                             quizAnswers = ["", "", "", ""]
+                            selectedCategory = .location
                             correctAnswerIndex = nil
                             showLocationForm = false
+                            selectedZone = "Custom"
+                        }) {
+                            Text("Cancel")
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.gray)
+                                .cornerRadius(10)
+                                .contentShape(Rectangle())
                         }
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.gray)
-                        .cornerRadius(10)
                         .padding(.horizontal)
                     }
-                    .padding(.bottom)
                 }
                 .padding()
             }
-        }
+        }.preferredColorScheme(.light)
 
+    }
+
+    func pinImageName(for location: Location) -> String {
+        switch location.category {
+        case .animal:
+            return location.visited == 1 ? "map_animal" : "map_animal_blank"
+        case .plant:
+            return location.visited == 1 ? "map_plant" : "map_plant_blank"
+        case .location:
+            return location.visited == 1 ? "map_place" : "map_place_blank"
+        case .fence:
+            return location.visited == 1 ? "blank" : "blank"
+        }
     }
 }
 
