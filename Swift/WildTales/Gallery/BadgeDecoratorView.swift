@@ -1,13 +1,12 @@
 import SwiftUI
 
-
 struct BadgeDecoratorView: View {
     @Environment(\.presentationMode) var presentationMode
 
     let imageName: String
     let availableBadges = ["moon-badge", "ibis-badge", "possum-badge", "cloud-badge", "bird-badge", "quokka-badge"]
 
-    @State private var badgesOnImage: [Badge] = []
+    @StateObject private var badgeLoader = BadgeLoader()
 
     var body: some View {
         VStack {
@@ -24,7 +23,6 @@ struct BadgeDecoratorView: View {
 
             GeometryReader { geo in
                 ZStack {
-                    // Image frame setup
                     let imageWidth: CGFloat = 260
                     let imageHeight: CGFloat = 550
                     let imageOrigin = CGPoint(
@@ -40,43 +38,64 @@ struct BadgeDecoratorView: View {
                         .border(Color.black, width: 4)
                         .position(x: imageRect.midX, y: imageRect.midY)
 
-                    ForEach($badgesOnImage) { $badge in
-                        BadgeView(
-                            badge: $badge,
-                            imageRect: imageRect,
-                            removeBadge: {
-                                withAnimation {
-                                    badgesOnImage.removeAll { $0.id == badge.id }
+                    ForEach($badgeLoader.data) { $badge in
+                        if (badge.parentImage == imageName) {
+                            BadgeView(
+                                badge: $badge,
+                                imageRect: imageRect,
+                                removeBadge: {
+                                    withAnimation {
+                                        badgeLoader.removeBadge(badge)
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
                 .frame(width: geo.size.width, height: geo.size.height)
             }
-            
-            HStack(spacing: 20) {
-                ForEach(availableBadges, id: \.self) { badgeName in
-                    Button(action: {
-                        // Add a new badge to the center
-                        badgesOnImage.append(
-                            Badge(imageName: badgeName, position: CGPoint(
-                                x: UIScreen.main.bounds.midX, y: UIScreen.main.bounds.midY))
-                        )
-                    }) {
-                        Image(badgeName)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 50)
+
+            HStack(alignment: .center, spacing: 10) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 20) {
+                        ForEach(availableBadges, id: \.self) { badgeName in
+                            Button(action: {
+                                let newBadge = Badge(imageName: badgeName, x: 200, y: 300, parentImage: imageName)
+                                badgeLoader.addBadge(newBadge)
+                            }) {
+                                Image(badgeName)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(height: 50)
+                            }
+                        }
                     }
+                    .padding(.horizontal)
                 }
+
+                Button(action: {
+                    badgeLoader.removeAllBadges(parentImage: imageName)
+                }) {
+                    Image(systemName: "trash")
+                    .foregroundColor(.red)
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                    .background(Color.white)
+                    .cornerRadius(8)
+                    .shadow(radius: 5)
+                }
+                .padding(.trailing)
             }
-            .padding()
+            .frame(height: 70)
+            .padding(.bottom)
+
+
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
+                    badgeLoader.saveBadges()
                     presentationMode.wrappedValue.dismiss()
                 }) {
                     Image("page_back_button")
@@ -85,6 +104,9 @@ struct BadgeDecoratorView: View {
                         .frame(width: 30, height: 30)
                 }
             }
+        }
+        .onDisappear {
+            badgeLoader.saveBadges()
         }
     }
 
@@ -106,28 +128,20 @@ struct BadgeView: View {
     var body: some View {
         Image(badge.imageName)
             .resizable()
-            .frame(width: badgeSize, height: badgeSize)
+            .scaledToFit()
             .scaleEffect(badge.scale)
-            .rotationEffect(badge.rotation)
-            .position(badge.position)
+            .rotationEffect(Angle(degrees: badge.degrees))
+            .position(x: badge.x, y: badge.y)
             .gesture(
                 SimultaneousGesture(
                     SimultaneousGesture(
                         DragGesture()
                             .onChanged { value in
-                                badge.position = value.location
+                                badge.x = value.location.x
+                                badge.y = value.location.y
                             }
                             .onEnded { _ in
-                                let actualBadgeWidth = badgeSize * badge.scale
-                                let actualBadgeHeight = badgeSize * badge.scale
-                                let insetX = actualBadgeWidth / 2
-                                let insetY = actualBadgeHeight / 2
-
-                                let safeImageRect = imageRect.insetBy(dx: insetX, dy: insetY)
-
-                                if !safeImageRect.contains(badge.position) {
-                                    removeBadge()
-                                }
+                                checkIfOutOfBounds()
                             },
                         MagnificationGesture()
                             .onChanged { value in
@@ -135,32 +149,33 @@ struct BadgeView: View {
                             }
                             .onEnded { _ in
                                 initialScale = badge.scale
-                                
-                                let actualBadgeWidth = badgeSize * badge.scale
-                                let actualBadgeHeight = badgeSize * badge.scale
-                                let insetX = actualBadgeWidth / 2
-                                let insetY = actualBadgeHeight / 2
-
-                                let safeImageRect = imageRect.insetBy(dx: insetX, dy: insetY)
-
-                                if !safeImageRect.contains(badge.position) {
-                                    removeBadge()
-                                }
+                                checkIfOutOfBounds()
                             }
                     ),
                     RotationGesture()
                         .onChanged { angle in
-                            badge.rotation = initialRotation + angle
+                            badge.degrees = (initialRotation + angle).degrees
                         }
                         .onEnded { _ in
-                            initialRotation = badge.rotation
+                            initialRotation = Angle(degrees: badge.degrees)
                         }
                 )
             )
             .onAppear {
-                // Set initial values on appear
                 initialScale = badge.scale
-                initialRotation = badge.rotation
+                initialRotation = Angle(degrees: badge.degrees)
             }
+    }
+
+    private func checkIfOutOfBounds() {
+        let actualBadgeWidth = badgeSize * badge.scale
+        let actualBadgeHeight = badgeSize * badge.scale
+        let insetX = actualBadgeWidth / 2
+        let insetY = actualBadgeHeight / 2
+        let safeImageRect = imageRect.insetBy(dx: insetX, dy: insetY)
+
+        if !safeImageRect.contains(CGPoint(x: badge.x, y: badge.y)) {
+            removeBadge()
+        }
     }
 }
