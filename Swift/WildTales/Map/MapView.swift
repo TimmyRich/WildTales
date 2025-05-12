@@ -17,6 +17,11 @@ import SwiftUI
 
 struct MapView: View {
     let zone: String
+    
+    @State private var showNewBadge = false
+    @State private var navigateToGallery = false
+   
+    
 
     @EnvironmentObject var appState: AppState
     @Environment(\.presentationMode) var goBack
@@ -123,8 +128,10 @@ struct MapView: View {
                     }
 
                     let userCoordinate = newLocation.coordinate
-
-                    /*let zonesOfInterest = [
+                    
+                    
+                    
+                    let zonesOfInterest = [
                         "University of Queensland",
                         "Southbank Parklands",
                         "Botanical Gardens",
@@ -147,7 +154,9 @@ struct MapView: View {
                     checkZoneCompletion(
                         zones: zonesOfInterest,
                         locations: allLocations
-                    )*/
+                    )
+                    
+                    
 
                     // Update location visit state based on proximity
                     for index in locations.indices {
@@ -215,15 +224,19 @@ struct MapView: View {
                                 content: content,
                                 trigger: trigger
                             )
-
-                            UNUserNotificationCenter.current().add(request) {
-                                error in
+                            
+                            
+                            
+                            UNUserNotificationCenter.current().add(request) { (error) in
                                 if let error = error {
-                                    print(
-                                        "Error scheduling notification: \(error.localizedDescription)"
-                                    )
+                                    // Handle error if there is one
+                                    print("Error adding notification request: \(error.localizedDescription)")
+                                } else {
+                                    selectedLocation = locations[index]
+                                    print("Notification request successfully added.")
                                 }
                             }
+                            
 
                             locations[index].visited = 1
                             var allLocations = LocationLoader.loadLocations()
@@ -711,14 +724,20 @@ struct MapView: View {
         usageTimer = nil
     }
 
-    /*
+    
     func checkZoneCompletion(zones: [String], locations: [Location]) {
         for zone in zones {
             let locationsInZone = locations.filter { $0.zone == zone }
             let allVisited = locationsInZone.allSatisfy { $0.visited == 1 }
+            
+            @State var notified = UserDefaults.standard.integer(forKey: zone)
 
-            if allVisited {
+            if allVisited && notified != 1{
                 let content = UNMutableNotificationContent()
+                
+                UserDefaults.standard.set(1, forKey: zone)
+                notified = 1 // Update the local state to reflect the change
+                
                 content.title = "You Have Earned A Badge!"
                 content.body =
                     "Go into the gallery to see what you have recieved"
@@ -745,8 +764,12 @@ struct MapView: View {
                 }
 
             }
+            else if !allVisited && notified == 1 {
+                UserDefaults.standard.set(0, forKey: zone)
+                notified = 0 
+            }
         }
-    }*/
+    }
 
     func fetchWikipediaImage(for title: String) {
         // Reset the image to nil so the previous one is cleared immediately
