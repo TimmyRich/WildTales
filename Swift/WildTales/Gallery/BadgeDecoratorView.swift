@@ -7,6 +7,10 @@ func getAvailableBadges() -> [String] {
     func addZoneBadge(zone: String, badge: String) {
         let filteredLocations = LocationLoader.loadLocations().filter { $0.zone == zone }
         
+        if (filteredLocations.isEmpty)  {
+            return
+        }
+        
         if (filteredLocations.allSatisfy { $0.visited == 1 }) {
             defaultBadges.append(badge)
         }
@@ -18,7 +22,7 @@ func getAvailableBadges() -> [String] {
     addZoneBadge(zone: "University of Queensland", badge: "quokka-badge")
     addZoneBadge(zone: "Southbank Parklands", badge: "ibis-badge")
     addZoneBadge(zone: "Botanical Gardens", badge: "bird-badge")
-    addZoneBadge(zone: "Custom", badge: "bird-badge")
+    addZoneBadge(zone: "Custom", badge: "smiley-badge")
     return defaultBadges
 }
 
@@ -70,7 +74,7 @@ struct BadgeDecoratorView: View {
 
                     // Render each badge associated with this trail
                     ForEach($badgeLoader.data) { $badge in
-                        if (badge.parentImage == trailName) {
+                        if (badge.parentImage == trailName && availableBadges.contains(badge.imageName)) {
                             BadgeView(
                                 badge: $badge,
                                 imageRect: imageRect,
