@@ -568,7 +568,7 @@ struct CreateMapView: View {
                     }
 
                     HStack {
-                        Button("Save") {
+                        Button(action: {
                             let newLocation = Location(
                                 id: UUID(),
                                 name: newLocationName,
@@ -576,35 +576,27 @@ struct CreateMapView: View {
                                 latitude: mapRegion.center.latitude,
                                 longitude: mapRegion.center.longitude,
                                 visited: 0,
-                                quizQuestion: quizQuestion.isEmpty
-                                    ? nil : quizQuestion,
-                                quizAnswers: quizAnswers.contains(where: {
-                                    !$0.isEmpty
-                                }) ? quizAnswers : nil,
+                                quizQuestion: quizQuestion.isEmpty ? nil : quizQuestion,
+                                quizAnswers: quizAnswers.contains(where: { !$0.isEmpty }) ? quizAnswers : nil,
                                 correctAnswerIndex: correctAnswerIndex,
                                 quizCompleted: false,
                                 category: selectedCategory,
                                 zone: selectedZone
                             )
-
+                            
                             locations.append(newLocation)
                             var allLocations = LocationLoader.loadLocations()
-
-                            // Update the locations efficiently
+                            
                             for updated in locations {
-                                if let index = allLocations.firstIndex(where: {
-                                    $0.id == updated.id
-                                }) {
-                                    // If location exists, update it
+                                if let index = allLocations.firstIndex(where: { $0.id == updated.id }) {
                                     allLocations[index] = updated
                                 } else {
-                                    // Otherwise, append the new location
                                     allLocations.append(updated)
                                 }
                             }
-
-                            // Save the updated locations back
+                            
                             LocationLoader.saveLocations(allLocations)
+                            
                             newLocationName = ""
                             newLocationDescription = ""
                             quizQuestion = ""
@@ -613,16 +605,18 @@ struct CreateMapView: View {
                             correctAnswerIndex = nil
                             showLocationForm = false
                             selectedZone = "Custom"
-
+                        }) {
+                            Text("Save")
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color("Pink"))
+                                .cornerRadius(10)
+                                .contentShape(Rectangle()) // Ensures the entire padded area is tappable
                         }
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color("Pink"))
-                        .cornerRadius(10)
                         .padding(.horizontal)
-
-                        Button("Cancel") {
+                        
+                        Button(action: {
                             newLocationName = ""
                             newLocationDescription = ""
                             quizQuestion = ""
@@ -631,16 +625,17 @@ struct CreateMapView: View {
                             correctAnswerIndex = nil
                             showLocationForm = false
                             selectedZone = "Custom"
-
+                        }) {
+                            Text("Cancel")
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.gray)
+                                .cornerRadius(10)
+                                .contentShape(Rectangle())
                         }
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.gray)
-                        .cornerRadius(10)
                         .padding(.horizontal)
                     }
-                    .padding(.bottom)
                 }
                 .padding()
             }

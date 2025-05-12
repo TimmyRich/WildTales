@@ -16,7 +16,11 @@ struct MapZones: View {
 
     var body: some View {
         ZStack {
-            // Full-screen content view
+                
+
+                
+            
+            Color("MapGreen").edgesIgnoringSafeArea(.all)
             TabView(selection: $selectedTab) {
                 MapCardView(
                     image: Image("gardens"),
@@ -87,6 +91,13 @@ struct MapZones: View {
                 }
                 Spacer()
             }
+            
+            HStack{
+                GIFView(gifName: "swipe")
+                    .frame(width: 50, height: 50)
+                    .padding(.top, UIScreen.main.bounds.height-200)
+            }
+
         }
         .ignoresSafeArea(.all)  // Ensure no safe area interference for the whole screen
     }

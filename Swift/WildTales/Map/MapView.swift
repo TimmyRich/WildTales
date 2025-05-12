@@ -20,6 +20,8 @@ struct MapView: View {
     
     @State private var showNewBadge = false
     @State private var navigateToGallery = false
+    
+    @State private var showGIF = true
    
     
 
@@ -627,6 +629,14 @@ struct MapView: View {
                     .hapticOnTouch()
                 }
             }.ignoresSafeArea()
+            
+            HStack {
+                        if showGIF {
+                            GIFView(gifName: "swipe")
+                                .frame(width: 70, height: 70)
+                                .padding(.top, UIScreen.main.bounds.height - 300)
+                        }
+                    }
 
         }
         .sheet(isPresented: $showSheet) {
@@ -669,6 +679,13 @@ struct MapView: View {
                         Spacer()
                     }
                     Spacer()
+                }
+            }
+        }.onAppear {
+            // Hide the GIF after 10 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                withAnimation {
+                    showGIF = false
                 }
             }
         }
