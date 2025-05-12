@@ -2,22 +2,23 @@ import SwiftUI
 
 // Get available badges, including unlocked badges
 func getAvailableBadges() -> [String] {
+    
+    // Adds the badge associated with a zone if all locations in that zone have been added
+    func addZoneBadge(zone: String, badge: String) {
+        let filteredLocations = LocationLoader.loadLocations().filter { $0.zone == zone }
+        
+        if (filteredLocations.allSatisfy { $0.visited == 1 }) {
+            defaultBadges.append(badge)
+        }
+    }
+    
     // badges available by default
     var defaultBadges: [String] = ["moon-badge", "possum-badge", "cloud-badge"]
-    // locations belonging to a certain zone
-    let BotanicalGardensLocations = LocationLoader.loadLocations().filter { $0.zone == "Botanical Gardens" }
-    let SouthbankParklandsLocations = LocationLoader.loadLocations().filter { $0.zone == "Southbank Parklands" }
-    let UQLocations = LocationLoader.loadLocations().filter { $0.zone == "University of Queensland" }
-
-    if (BotanicalGardensLocations.allSatisfy { $0.visited == 1 }) {
-        defaultBadges.append("bird-badge")
-    }
-    if (SouthbankParklandsLocations.allSatisfy { $0.visited == 1 }) {
-        defaultBadges.append("ibis-badge")
-    }
-    if (UQLocations.allSatisfy { $0.visited == 1 }) {
-        defaultBadges.append("quokka-badge")
-    }
+    
+    addZoneBadge(zone: "University of Queensland", badge: "quokka-badge")
+    addZoneBadge(zone: "Southbank Parklands", badge: "ibis-badge")
+    addZoneBadge(zone: "Botanical Gardens", badge: "bird-badge")
+    addZoneBadge(zone: "Custom", badge: "bird-badge")
     return defaultBadges
 }
 
