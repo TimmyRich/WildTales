@@ -1,21 +1,47 @@
 import SwiftUI
 
+// Get available badges, including unlocked badges
+func getAvailableBadges() -> [String] {
+    // badges available by default
+    var defaultBadges: [String] = ["moon-badge", "possum-badge", "cloud-badge"]
+    // locations belonging to a certain zone
+    let BotanicalGardensLocations = LocationLoader.loadLocations().filter { $0.zone == "Botanical Gardens" }
+    let SouthbankParklandsLocations = LocationLoader.loadLocations().filter { $0.zone == "Southbank Parklands" }
+    let UQLocations = LocationLoader.loadLocations().filter { $0.zone == "University of Queensland" }
+
+    if (BotanicalGardensLocations.allSatisfy { $0.visited == 1 }) {
+        defaultBadges.append("bird-badge")
+    }
+    if (SouthbankParklandsLocations.allSatisfy { $0.visited == 1 }) {
+        defaultBadges.append("ibis-badge")
+    }
+    if (UQLocations.allSatisfy { $0.visited == 1 }) {
+        defaultBadges.append("quokka-badge")
+    }
+    return defaultBadges
+}
+
 struct BadgeDecoratorView: View {
     @Environment(\.presentationMode) var presentationMode
 
-    let imageName: String
-    let availableBadges = ["moon-badge", "ibis-badge", "possum-badge", "cloud-badge", "bird-badge", "quokka-badge"]
+    let trailName: String
+    let helpMessage: String = "Tap a badge to add it. Drag, pinch, or rotate to adjust. Drag offscreen to delete."
 
     @StateObject private var badgeLoader = BadgeLoader()
+    
+    let availableBadges: [String] = getAvailableBadges()
 
     var body: some View {
         VStack {
-            Text("The \(imageName) trail")
+            
+            // Page title
+            Text("The \(trailName) trail")
                 .font(.title)
                 .padding(.top, -8)
                 .foregroundColor(Color(red: 25/255, green: 71/255, blue: 41/255))
 
-            Text(statusMessage)
+            // Help message, directs user to manipulate badges
+            Text(helpMessage)
                 .frame(width: 250)
                 .font(.subheadline)
                 .foregroundColor(.gray)
@@ -29,17 +55,21 @@ struct BadgeDecoratorView: View {
                         x: (geo.size.width - imageWidth) / 2,
                         y: (geo.size.height - imageHeight) / 2
                     )
+                    
+                    // Safe area for placing badfges
                     let imageRect = CGRect(origin: imageOrigin, size: CGSize(width: imageWidth, height: imageHeight))
 
-                    Image(imageName)
+                    // Trail image
+                    Image(trailName)
                         .resizable()
                         .scaledToFit()
                         .frame(width: imageWidth, height: imageHeight)
                         .border(Color.black, width: 4)
                         .position(x: imageRect.midX, y: imageRect.midY)
 
+                    // Render each badge associated with this trail
                     ForEach($badgeLoader.data) { $badge in
-                        if (badge.parentImage == imageName) {
+                        if (badge.parentImage == trailName) {
                             BadgeView(
                                 badge: $badge,
                                 imageRect: imageRect,
@@ -54,13 +84,14 @@ struct BadgeDecoratorView: View {
                 }
                 .frame(width: geo.size.width, height: geo.size.height)
             }
-
+            
+            // Badge selector
             HStack(alignment: .center, spacing: 10) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 20) {
                         ForEach(availableBadges, id: \.self) { badgeName in
                             Button(action: {
-                                let newBadge = Badge(imageName: badgeName, x: 200, y: 300, parentImage: imageName)
+                                let newBadge = Badge(imageName: badgeName, x: 200, y: 300, parentImage: trailName)
                                 badgeLoader.addBadge(newBadge)
                             }) {
                                 Image(badgeName)
@@ -74,7 +105,7 @@ struct BadgeDecoratorView: View {
                 }
 
                 Button(action: {
-                    badgeLoader.removeAllBadges(parentImage: imageName)
+                    badgeLoader.removeAllBadges(parentImage: trailName)
                 }) {
                     Image(systemName: "trash")
                     .foregroundColor(.red)
@@ -86,7 +117,7 @@ struct BadgeDecoratorView: View {
                 }
                 .padding(.trailing)
             }
-            .frame(height: 70)
+            .frame(width: UIScreen.main.bounds.width * 0.9, height: 70)
             .padding(.bottom)
 
 
@@ -110,9 +141,7 @@ struct BadgeDecoratorView: View {
         }
     }
 
-    private var statusMessage: String {
-        return "Tap a badge to add it. Drag, pinch, or rotate to adjust. Drag offscreen to delete."
-    }
+    
 }
 
 struct BadgeView: View {
