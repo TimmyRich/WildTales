@@ -589,17 +589,6 @@ struct MapView: View {
                         )
                         .frame(height: 70)
 
-                        HStack {
-                            Image(systemName: "arrow.backward")
-                            Text("                             ")
-                            Image(systemName: "arrow.forward")
-
-                        }.padding(.all, 3.0)
-                            .font(.footnote).foregroundColor(.white)
-
-                            .cornerRadius(12)
-                            .ignoresSafeArea(.all)
-
                     }
 
                     Button {  // simply centers the map and zooms in to default
