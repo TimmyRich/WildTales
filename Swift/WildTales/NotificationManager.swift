@@ -36,8 +36,8 @@ struct NotificationManager {
     static func scheduleImmediateNotification() {
         let center = UNUserNotificationCenter.current()
         let content = UNMutableNotificationContent()
-        content.title = "Test Notification"
-        content.body = "Welcome to WildTale"
+        content.title = "We Miss You!"
+        content.body = "Come explore the world with us!"
         content.sound = UNNotificationSound.default
 
         // Send in 5sec from now

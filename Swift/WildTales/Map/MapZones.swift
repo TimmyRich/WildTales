@@ -14,12 +14,11 @@ struct MapZones: View {
     @State private var selectedTab = 0
     @Environment(\.presentationMode) var goBack
 
+    @State private var showGIF = true
+
     var body: some View {
         ZStack {
-                
 
-                
-            
             Color("MapGreen").edgesIgnoringSafeArea(.all)
             TabView(selection: $selectedTab) {
                 MapCardView(
@@ -91,13 +90,23 @@ struct MapZones: View {
                 }
                 Spacer()
             }
-            
-            HStack{
-                GIFView(gifName: "swipe")
-                    .frame(width: 50, height: 50)
-                    .padding(.top, UIScreen.main.bounds.height-200)
+
+            HStack {
+                if showGIF {
+                    GIFView(gifName: "swipe")
+                        .frame(width: 70, height: 70)
+                        .padding(.top, UIScreen.main.bounds.height - 200)
+                }
             }
 
+        }
+        .onAppear {
+            // Hide the GIF after 10 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                withAnimation {
+                    showGIF = false
+                }
+            }
         }
         .ignoresSafeArea(.all)  // Ensure no safe area interference for the whole screen
     }

@@ -79,8 +79,8 @@ struct CreateMapView: View {
                                 "House"
                             ).resizable()
                                 .frame(width: 40, height: 40)
-                            .foregroundColor(.red)
-                            .shadow(radius: 2)
+                                .foregroundColor(.red)
+                                .shadow(radius: 2)
                         } else {
                             Image(
                                 uiImage: UIImage(
@@ -576,27 +576,32 @@ struct CreateMapView: View {
                                 latitude: mapRegion.center.latitude,
                                 longitude: mapRegion.center.longitude,
                                 visited: 0,
-                                quizQuestion: quizQuestion.isEmpty ? nil : quizQuestion,
-                                quizAnswers: quizAnswers.contains(where: { !$0.isEmpty }) ? quizAnswers : nil,
+                                quizQuestion: quizQuestion.isEmpty
+                                    ? nil : quizQuestion,
+                                quizAnswers: quizAnswers.contains(where: {
+                                    !$0.isEmpty
+                                }) ? quizAnswers : nil,
                                 correctAnswerIndex: correctAnswerIndex,
                                 quizCompleted: false,
                                 category: selectedCategory,
                                 zone: selectedZone
                             )
-                            
+
                             locations.append(newLocation)
                             var allLocations = LocationLoader.loadLocations()
-                            
+
                             for updated in locations {
-                                if let index = allLocations.firstIndex(where: { $0.id == updated.id }) {
+                                if let index = allLocations.firstIndex(where: {
+                                    $0.id == updated.id
+                                }) {
                                     allLocations[index] = updated
                                 } else {
                                     allLocations.append(updated)
                                 }
                             }
-                            
+
                             LocationLoader.saveLocations(allLocations)
-                            
+
                             newLocationName = ""
                             newLocationDescription = ""
                             quizQuestion = ""
@@ -612,10 +617,10 @@ struct CreateMapView: View {
                                 .padding()
                                 .background(Color("Pink"))
                                 .cornerRadius(10)
-                                .contentShape(Rectangle()) // Ensures the entire padded area is tappable
+                                .contentShape(Rectangle())  // Ensures the entire padded area is tappable
                         }
                         .padding(.horizontal)
-                        
+
                         Button(action: {
                             newLocationName = ""
                             newLocationDescription = ""

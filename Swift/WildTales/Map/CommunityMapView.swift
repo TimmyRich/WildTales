@@ -126,9 +126,9 @@ struct CommunityMapView: View {
                         "Botanical Gardens",
                         "Custom"
                     ]
-
+                    
                     var allLocations = LocationLoader.loadLocations()
-
+                    
                     // Update the locations efficiently
                     for updated in locations {
                         if let index = allLocations.firstIndex(where: {
@@ -139,7 +139,7 @@ struct CommunityMapView: View {
                             allLocations.append(updated)
                         }
                     }
-
+                    
                     checkZoneCompletion(
                         zones: zonesOfInterest,
                         locations: allLocations
@@ -448,7 +448,9 @@ struct CommunityMapView: View {
                                     Text(answers[index])
                                         .padding()
                                         .frame(maxWidth: .infinity)
-                                        .background(Color("HunterGreen").opacity(0.1))
+                                        .background(
+                                            Color("HunterGreen").opacity(0.1)
+                                        )
                                         .cornerRadius(5)
                                         .foregroundColor(.black)
                                 }
@@ -694,25 +696,25 @@ struct CommunityMapView: View {
         for zone in zones {
             let locationsInZone = locations.filter { $0.zone == zone }
             let allVisited = locationsInZone.allSatisfy { $0.visited == 1 }
-
+    
             if allVisited {
                 let content = UNMutableNotificationContent()
                 content.title = "You Have Earned A Badge!"
                 content.body =
                     "Go into the gallery to see what you have recieved"
                 content.sound = UNNotificationSound.default
-
+    
                 let trigger = UNTimeIntervalNotificationTrigger(
                     timeInterval: 1,
                     repeats: false
                 )
-
+    
                 let request = UNNotificationRequest(
                     identifier: "noticication",
                     content: content,
                     trigger: trigger
                 )
-
+    
                 UNUserNotificationCenter.current().add(request) {
                     error in
                     if let error = error {
@@ -721,7 +723,7 @@ struct CommunityMapView: View {
                         )
                     }
                 }
-
+    
             }
         }
     }*/

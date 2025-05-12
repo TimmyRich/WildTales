@@ -17,13 +17,11 @@ import SwiftUI
 
 struct MapView: View {
     let zone: String
-    
+
     @State private var showNewBadge = false
     @State private var navigateToGallery = false
-    
+
     @State private var showGIF = true
-   
-    
 
     @EnvironmentObject var appState: AppState
     @Environment(\.presentationMode) var goBack
@@ -130,14 +128,12 @@ struct MapView: View {
                     }
 
                     let userCoordinate = newLocation.coordinate
-                    
-                    
-                    
+
                     let zonesOfInterest = [
                         "University of Queensland",
                         "Southbank Parklands",
                         "Botanical Gardens",
-                        "Custom"
+                        "Custom",
                     ]
 
                     var allLocations = LocationLoader.loadLocations()
@@ -157,8 +153,6 @@ struct MapView: View {
                         zones: zonesOfInterest,
                         locations: allLocations
                     )
-                    
-                    
 
                     // Update location visit state based on proximity
                     for index in locations.indices {
@@ -226,19 +220,21 @@ struct MapView: View {
                                 content: content,
                                 trigger: trigger
                             )
-                            
-                            
-                            
-                            UNUserNotificationCenter.current().add(request) { (error) in
+
+                            UNUserNotificationCenter.current().add(request) {
+                                (error) in
                                 if let error = error {
                                     // Handle error if there is one
-                                    print("Error adding notification request: \(error.localizedDescription)")
+                                    print(
+                                        "Error adding notification request: \(error.localizedDescription)"
+                                    )
                                 } else {
                                     selectedLocation = locations[index]
-                                    print("Notification request successfully added.")
+                                    print(
+                                        "Notification request successfully added."
+                                    )
                                 }
                             }
-                            
 
                             locations[index].visited = 1
                             var allLocations = LocationLoader.loadLocations()
@@ -394,7 +390,6 @@ struct MapView: View {
                         .font(.subheadline)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
-                
 
                     HStack {
                         Text("Visited:")
@@ -468,7 +463,9 @@ struct MapView: View {
                                     Text(answers[index])
                                         .padding()
                                         .frame(maxWidth: .infinity)
-                                        .background(Color("HunterGreen").opacity(0.1))
+                                        .background(
+                                            Color("HunterGreen").opacity(0.1)
+                                        )
                                         .cornerRadius(5)
                                         .foregroundColor(.black)
                                 }
@@ -566,41 +563,43 @@ struct MapView: View {
                         .padding(.leading, 20.0)
 
                     Spacer()
-                    
-                    ZStack{
-                        
-                        
-                        
+
+                    ZStack {
+
                         TabView(selection: $selectedFilter) {
-                            ForEach(FilterCategory.allCases, id: \.self) { filter in
+                            ForEach(FilterCategory.allCases, id: \.self) {
+                                filter in
                                 Text(filter.rawValue)
                                     .font(.headline)
                                     .foregroundColor(Color.white)
                                     .frame(maxWidth: .infinity)
                                     .padding()
-                                    .background(Color("HunterGreen").opacity(0.8))
+                                    .background(
+                                        Color("HunterGreen").opacity(0.8)
+                                    )
                                     .cornerRadius(12)
                                     .shadow(radius: 4)
                                     .padding(.horizontal, 30)
                                     .tag(filter)
-                                
+
                             }
                         }
-                        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                        .tabViewStyle(
+                            PageTabViewStyle(indexDisplayMode: .never)
+                        )
                         .frame(height: 70)
-                        
-                        HStack{
+
+                        HStack {
                             Image(systemName: "arrow.backward")
                             Text("                             ")
                             Image(systemName: "arrow.forward")
-                            
+
                         }.padding(.all, 3.0)
                             .font(.footnote).foregroundColor(.white)
-                            
+
                             .cornerRadius(12)
                             .ignoresSafeArea(.all)
-                        
-                        
+
                     }
 
                     Button {  // simply centers the map and zooms in to default
@@ -629,14 +628,14 @@ struct MapView: View {
                     .hapticOnTouch()
                 }
             }.ignoresSafeArea()
-            
+
             HStack {
-                        if showGIF {
-                            GIFView(gifName: "swipe")
-                                .frame(width: 70, height: 70)
-                                .padding(.top, UIScreen.main.bounds.height - 300)
-                        }
-                    }
+                if showGIF {
+                    GIFView(gifName: "swipe")
+                        .frame(width: 70, height: 70)
+                        .padding(.top, UIScreen.main.bounds.height - 300)
+                }
+            }
 
         }
         .sheet(isPresented: $showSheet) {
@@ -741,20 +740,19 @@ struct MapView: View {
         usageTimer = nil
     }
 
-    
     func checkZoneCompletion(zones: [String], locations: [Location]) {
         for zone in zones {
             let locationsInZone = locations.filter { $0.zone == zone }
             let allVisited = locationsInZone.allSatisfy { $0.visited == 1 }
-            
+
             @State var notified = UserDefaults.standard.integer(forKey: zone)
 
-            if allVisited && notified != 1{
+            if allVisited && notified != 1 {
                 let content = UNMutableNotificationContent()
-                
+
                 UserDefaults.standard.set(1, forKey: zone)
-                notified = 1 // Update the local state to reflect the change
-                
+                notified = 1  // Update the local state to reflect the change
+
                 content.title = "You Have Earned A Badge!"
                 content.body =
                     "Go into the gallery to see what you have recieved"
@@ -780,10 +778,9 @@ struct MapView: View {
                     }
                 }
 
-            }
-            else if !allVisited && notified == 1 {
+            } else if !allVisited && notified == 1 {
                 UserDefaults.standard.set(0, forKey: zone)
-                notified = 0 
+                notified = 0
             }
         }
     }
