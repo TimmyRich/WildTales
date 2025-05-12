@@ -56,15 +56,13 @@ struct ScrapBookGuide: View {
                         
                         HStack (spacing: 30) {
                             VStack {
-                                Button {
-                                   
-                                    
-                                } label: {
+                                NavigationLink(destination: ScrapBookDrag().navigationBarBackButtonHidden(true)) {
                                     Image("albumButton").resizable().frame(width: 60, height: 60)
                                 }
+                                .hapticOnTouch()
+                                
                                 Text("Add from Album").font(Font.custom("Inter", size: 8))
                             }
-                            
                             
                             VStack {
                                 Button {
@@ -89,6 +87,7 @@ struct ScrapBookGuide: View {
                                 .font(Font.custom("Inter", size: 12))
                         }
                         .hapticOnTouch()
+                        
                         
                         // Temporary button for popup page
                         Button ("Show Image Gallery") {
@@ -120,7 +119,7 @@ struct ScrapBookGuide: View {
                                 AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                                 dismiss()
                             } label: {
-                                Image("homeButtonGreen").resizable().frame(width: 50, height: 50).padding(.top, 18).padding(.leading, 10)
+                                Image("homeButtonGreen").resizable().frame(width: 70, height: 70).padding(.top, 25).padding(.leading, 15)
                             }
                             .hapticOnTouch()
                             Spacer()
@@ -158,4 +157,5 @@ struct ScrapBookGuide_Previews: PreviewProvider {
         ScrapBookGuide().environmentObject(PopupManager())
     }
 }
+
 

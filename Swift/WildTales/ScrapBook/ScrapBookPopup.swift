@@ -143,6 +143,7 @@ struct CardView: View {
                 .padding(.top, 10)
             
             // Image
+            // within the zstack
             ZStack {
                 Image(memory.imageName)
                     .resizable()

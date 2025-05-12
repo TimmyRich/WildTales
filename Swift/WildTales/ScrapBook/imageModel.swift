@@ -15,9 +15,10 @@ struct ImageItem: Identifiable {
 }
 
 let sampleImageList: [ImageItem] = [
-    ImageItem(imageName:"scrapbookpic1", locationTitle: "At Tropical Dome", description: "one one one one one one one one one one one one one one one"),
-    ImageItem(imageName:"scrapbookpic2", locationTitle: "Location2", description: "two two two two two two two two two two"),
-    ImageItem(imageName:"scrapbookpic3", locationTitle: "Location3", description: "three three three three three three three three three"),
+    ImageItem(imageName:"scrapbookpic1", locationTitle: "At Forest", description: "I remember walking through the quiet forest that morning—the air was crisp, birdsong echoed between the trees, and everything felt alive."),
+    ImageItem(imageName:"scrapbookpic2", locationTitle: "At City", description: "It was a bustling night in the city, the streets alive with movement and color."),
+    ImageItem(imageName:"scrapbookpic3", locationTitle: "Near Silent Creek", description: "We sat near the creek where the water whispered over the rocks. It was peaceful sound of nature."),
+    ImageItem(imageName:"scrapbookpic4", locationTitle: "Near Mountain and WaterFall", description: "That view took my breath away—the waterfall crashing down from the cliffs, mist rising in the sunlight."),
 ]
 
 

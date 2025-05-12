@@ -20,7 +20,7 @@ struct ScrapBookInstruction: View {
                     Spacer()
                     Image("QuokkaScrapbookInstruction")
                         .resizable().aspectRatio(contentMode: .fit)
-                        .frame(width: 135, height: 200,  alignment: .bottom)
+                        .frame(width: 135, height: 200,  alignment: .bottom).offset(y:35)
                 }
             }
             
