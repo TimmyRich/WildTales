@@ -98,7 +98,7 @@ struct Home: View {
                             )
 
                             NavigationLink(
-                                destination: Home()
+                                destination: ScrapBookGuide()
                                     .navigationBarBackButtonHidden(true)
                             ) {
                                 Image("homeButton4")

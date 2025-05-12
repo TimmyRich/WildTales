@@ -119,7 +119,7 @@ struct ScrapBookGuide: View {
                                 AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                                 dismiss()
                             } label: {
-                                Image("homeButtonGreen").resizable().frame(width: 70, height: 70).padding(.top, 25).padding(.leading, 15)
+                                Image("homeButtonGreen").resizable().frame(width: 60, height: 60).padding(.top, 40).padding(.leading, 15)
                             }
                             .hapticOnTouch()
                             Spacer()
