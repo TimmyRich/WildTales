@@ -19,44 +19,24 @@ struct GalleryView: View {
                     .resizable()
                     .scaledToFit()
                     .scaleEffect(0.2)
-                    .offset(x: 100, y: -370)
-
-               Image("GalleryBackgroundRect")
+                    .offset(x: 100, y: UIScreen.main.bounds.height * -0.43)
+                
+                /*VStack(alignment: .leading) {
+                        Spacer()
+                        Rectangle()
+                            .foregroundStyle(Color.white)
+                            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 1)
+                            .cornerRadius(70)
+                }*/
+                Image("GalleryBackgroundRect")
                     .resizable()
                     .scaledToFit()
-                    .offset(y: 30)
+                    .offset(y: 100)
+                
+                
+                TrailCarouselView(imageNames: imageNames, selectedIndex: $selectedIndex)
+                    .offset(y: 20)
 
-                VStack {
-                    Spacer().frame(height: 200)
-                    
-                    TabView(selection: $selectedIndex) {
-                        ForEach(0..<imageNames.count, id: \.self) { index in
-                            NavigationLink(destination: BadgeDecoratorView(trailName: imageNames[index])) {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 15)
-                                        .fill(Color.white)
-                                        .frame(width: 320, height: 660)
-                                    
-                                    VStack {
-                                        Text("The \(imageNames[selectedIndex]) trail")
-                                            .padding(.bottom, 10)
-                                            .font(.headline)
-                                        
-                                        Image(imageNames[index])
-                                            .resizable()
-                                            .frame(width: 300, height: 600)
-                                            .cornerRadius(10)
-                                    }
-                                }
-                                .tag(index)
-                                .shadow(radius: 10)
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                        }
-                    }
-                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                    .frame(height: 800)
-                }
 
                 // Carousel navigation buttons
                 VStack {
@@ -87,7 +67,8 @@ struct GalleryView: View {
                     }
                     .padding()
                 }
-
+                // Image Carousel
+                
                 // Home Button (Top-left)
                 HStack {
                     VStack(alignment: .leading) {
@@ -102,7 +83,7 @@ struct GalleryView: View {
                         .foregroundColor(.red)
                         .frame(width: 20, height: 20)
                         .shadow(radius: 5)
-                        .padding(.top, 150)
+                        .padding(.top, 200)
                         
 
                         Spacer()
