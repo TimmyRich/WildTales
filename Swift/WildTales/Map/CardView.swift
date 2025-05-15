@@ -4,24 +4,30 @@
 //
 //  Created by Kurt McCullough on 7/5/2025.
 //
+//
+//  Basic card view for each map in Present Maps.
+//  Contains a large image, dtext/description and a play button that will take you to a specific zone to play
+//
 
 import SwiftUI
 
 struct MapCardView: View {
-    var image: Image
-    var title: String
-    var description: String
-    var photoCount: Int
-    var zone: String  // 👈 Pass this in
+    // All these are used in displaying a proper card
+    var image: Image  //image to use
+    var title: String  // title of map
+    var description: String  // description of map
+    var photoCount: Int  // number of map pins (simulated)
+    var zone: String  //zone for the MapView to search for
 
-    @State private var navigateToMap = false
+    @State private var navigateToMap = false  // if the map view is to be shown
 
     var body: some View {
+
         ZStack {
             Color("MapGreen")
-                .edgesIgnoringSafeArea(.all)
+                .edgesIgnoringSafeArea(.all)  // as there was a white bar on top of the view, removes this
 
-            VStack(spacing: 16) {
+            VStack(spacing: 16) {  //image formatting, this sits on top of the text
                 image
                     .resizable()
                     .scaledToFill()
@@ -33,11 +39,11 @@ struct MapCardView: View {
                     .cornerRadius(16)
                     .padding([.top, .leading, .trailing])
 
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 8) {  // title and description text on top of one another under the image
                     Text(title)
                         .font(.title3.bold())
                         .foregroundColor(.black)
-                        .lineLimit(2)
+                        .lineLimit(2)  //no more than 2 lines can be shown
                         .truncationMode(.tail)
 
                     Text(description)
@@ -51,7 +57,7 @@ struct MapCardView: View {
                 HStack {
                     HStack(spacing: 4) {
                         Image(systemName: "photo")
-                        Text("\(photoCount)")
+                        Text("\(photoCount)")  // simulated photo (pin) count
                     }
                     .font(.footnote)
                     .foregroundColor(.gray)
@@ -62,17 +68,17 @@ struct MapCardView: View {
                     Spacer()
 
                     NavigationLink(
-                        destination: MapView(zone: zone)
+                        destination: MapView(zone: zone)  //zone to go to
                             .navigationBarBackButtonHidden(true),
-                        isActive: $navigateToMap
+                        isActive: $navigateToMap  //goes to map with destination of "zone"
                     ) {
                         EmptyView()
                     }
 
                     Button(action: {
-                        navigateToMap = true
+                        navigateToMap = true  // when clicked go to map
                     }) {
-                        Text("Play!")
+                        Text("Play!")  // Play! button
                             .fontWeight(.semibold)
                             .padding(.vertical, 10)
                             .padding(.horizontal, 20)
@@ -97,6 +103,8 @@ struct MapCardView: View {
     }
 }
 
+// Basic preview of inputs into the MapCardView
+// Contains an image, title, description, photo count and view.
 #Preview {
     NavigationView {
         MapCardView(

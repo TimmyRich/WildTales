@@ -57,36 +57,6 @@ struct Settings: View {
                     .buttonStyle(.borderedProminent).tint(.blue)
                 }
 
-                Toggle("Random ahh toggle", isOn: .constant(true))
-                    .padding()
-
-                Toggle("Random ahh toggle", isOn: .constant(true))
-                    .padding()
-
-                Toggle("Random ahh toggle", isOn: .constant(true))
-                    .padding()
-
-                Toggle("Random ahh toggle", isOn: .constant(true))
-                    .padding()
-
-                Toggle("Random ahh toggle", isOn: .constant(true))
-                    .padding()
-
-                Toggle("Random ahh toggle", isOn: .constant(true))
-                    .padding()
-
-                Toggle("Random ahh toggle", isOn: .constant(true))
-                    .padding()
-
-                Toggle("Random ahh toggle", isOn: .constant(true))
-                    .padding()
-
-                Toggle("Random ahh toggle", isOn: .constant(true))
-                    .padding()
-
-                Toggle("Random ahh toggle", isOn: .constant(true))
-                    .padding()
-
             }
             .background(Color.green)
             .cornerRadius(20)

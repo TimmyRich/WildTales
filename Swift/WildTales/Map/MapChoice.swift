@@ -4,6 +4,10 @@
 //
 //  Created by Kurt McCullough on 1/4/2025.
 //
+//
+//  Basic view to change between the community map, present maps and custom map
+//
+
 
 import AVFoundation
 import CoreHaptics
@@ -20,18 +24,16 @@ struct MapChoice: View {
     @State private var mapRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: -27.4705, longitude: 153.0260),
         span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
-    )
+    ) //basic zoom into brisbane if location is not provided
 
     @State private var locations = [Location]()
-    @State private var showSheet = false
-    @State private var showSettingsSheet = false
     @State private var isMapInitialized = false
 
     var body: some View {
 
         NavigationView {
             ZStack {
-                Map(
+                Map( //load map to have it as the background
                     coordinateRegion: $mapRegion,
                     interactionModes: .all,
                     userTrackingMode: .none,
@@ -48,14 +50,14 @@ struct MapChoice: View {
                 .onAppear {
                     locationManager.requestLocation()
                 }
-                .onChange(of: locationManager.userLocation) { newLocation in
+                .onChange(of: locationManager.userLocation) { newLocation in //when map loads
                     if let newLocation = newLocation, !isMapInitialized {
                         mapRegion.center = newLocation.coordinate
                         isMapInitialized = true
                     }
                 }
                 ZStack {
-                    Rectangle()
+                    Rectangle() //background white rectangle
                         .foregroundColor(.white)
                         .frame(width: 300, height: 500)
                         .cornerRadius(20)
@@ -64,8 +66,8 @@ struct MapChoice: View {
                         Text("Select or Create a Map!")
 
                         NavigationLink(
-                            destination: CommunityMapView()
-                                .navigationBarBackButtonHidden(true)
+                            destination: CommunityMapView() // go to community map
+                                .navigationBarBackButtonHidden(true) //dont show navigation menu options, this usually has a back button but we are using our own
                         ) {
                             Image("community")
                                 .resizable()
@@ -82,16 +84,16 @@ struct MapChoice: View {
                         .padding()
 
                         NavigationLink(
-                            destination: CreateMapView()
+                            destination: CreateMapView() //create map view
                                 .navigationBarBackButtonHidden(true)
                         ) {
                             Image("create")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 250, height: 100)
-                        }.simultaneousGesture(
+                        }.simultaneousGesture( // also do this when clicked
                             TapGesture().onEnded {
-                                AudioManager.playSound(
+                                AudioManager.playSound( //play sound effect
                                     soundName: "boing.wav",
                                     soundVol: 0.5
                                 )
@@ -100,7 +102,7 @@ struct MapChoice: View {
                         .padding()
 
                         NavigationLink(
-                            destination: MapZones()
+                            destination: MapZones() // go to map zones to choose here
                                 .navigationBarBackButtonHidden(true)
                         ) {
                             Image("cexisting")
@@ -120,7 +122,7 @@ struct MapChoice: View {
                     HStack {
                         VStack {
                             Button(action: {
-                                goBack.wrappedValue.dismiss()
+                                goBack.wrappedValue.dismiss() // go to previous view before this (usually home)
                                 AudioManager.playSound(
                                     soundName: "boing.wav",
                                     soundVol: 0.5
@@ -146,14 +148,8 @@ struct MapChoice: View {
 
             }
 
-        }.preferredColorScheme(.light)
+        }.preferredColorScheme(.light) //alwsys light map
 
-            .sheet(isPresented: $showSheet) {
-                Stories()
-            }
-            .sheet(isPresented: $showSettingsSheet) {
-                Settings()
-            }
     }
 }
 

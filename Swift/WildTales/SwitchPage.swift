@@ -27,6 +27,7 @@ class AppState: ObservableObject {
 
 @main
 struct WildTales: App {
+    // app states to help switch page, this was replaced with Navigation View later i the developpment
 
     @StateObject var appState = AppState()
     @StateObject var popupManager = PopupManager()

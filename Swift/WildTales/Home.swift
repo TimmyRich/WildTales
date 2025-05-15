@@ -4,6 +4,7 @@
 //
 //  Created by Kurt McCullough on 31/3/2025.
 //
+//Home page, just a NavigationView that redirects to differeent views within the application
 
 import SwiftUI
 
@@ -32,7 +33,7 @@ struct Home: View {
                     HStack {
                         Spacer()
 
-                        Image("Quokka_2")
+                        Image("Quokka_2") //quokka image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(
@@ -52,7 +53,7 @@ struct Home: View {
                                 soundName: "siren.wav",
                                 soundVol: 0.5
                             )
-                            showEmergency = true
+                            showEmergency = true // for emergency toggle
                         }) {
                             Image(systemName: "phone.connection.fill")
                                 .font(.system(size: 24))
@@ -81,8 +82,8 @@ struct Home: View {
                         Spacer()
                         VStack {
                             NavigationLink(
-                                destination: MapChoice()
-                                    .navigationBarBackButtonHidden(true)
+                                destination: MapChoice() // go to select maps
+                                    .navigationBarBackButtonHidden(true) //dont show navigation bar or details
                             ) {
                                 Image("homeButton2")
                                     .resizable()
@@ -174,7 +175,7 @@ struct Home: View {
                 }
             )
             .onAppear {
-                AudioManager.startBackgroundMusic()
+                AudioManager.startBackgroundMusic() //starts backgrounf music
             }
 
         }
