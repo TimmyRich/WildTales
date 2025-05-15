@@ -4,6 +4,7 @@
 //
 //  Created by Kurt McCullough on 24/3/2025.
 //
+// Very simmilar to Landing, contains different text and some extra fields to fill out if the user was signing up
 
 import SwiftUI
 import AVFoundation
@@ -169,8 +170,12 @@ struct SignUp: View {
         }
     }
     
+    // Function to play sounds with a file name and a sound level
+    // This code was inspired by https://www.hackingwithswift.com/forums/100-days-of-swiftui/trying-to-play-sound-when-pressing-button/28226
+    // It was changed according to app needs like different file types
     func playSound(soundName: String, soundVol: Float ) {
         
+        //search for sound
         guard let path = Bundle.main.path(forResource: soundName, ofType: nil ) else {
             print("path not created")
             return
@@ -178,11 +183,11 @@ struct SignUp: View {
         
         let url = URL(fileURLWithPath: path)
         
-        do {
+        do { // try to play the sound with AVAudioPlayer
             player = try AVAudioPlayer(contentsOf: url)
             player?.volume = soundVol
             player?.play()
-        } catch {
+        } catch { // if anything went wrong
             print("Error playing sound: \(error.localizedDescription)")
         }
     }

@@ -4,35 +4,41 @@
 //
 //  Created by Kurt McCullough on 7/5/2025.
 //
+//
+// Shows all the zones to play: three in brisbane and the custom and the end
+// All hard coded and do not loop through all avalible zones
+//
+// TabView so the user has to swipe through it, GIF communicaes this
+//
+// Clicking play redirects to MapView with a specific zone.
 
 import SwiftUI
 import WebKit
 
 struct MapZones: View {
 
-    @EnvironmentObject var appState: AppState
-    @State private var selectedTab = 0
-    @Environment(\.presentationMode) var goBack
+    @State private var selectedTab = 0  // shows the index of tab for white dots
+    @Environment(\.presentationMode) var goBack  // to go back to previous navigation view
 
     @State private var showGIF = true
 
     var body: some View {
         ZStack {
 
-            Color("MapGreen").edgesIgnoringSafeArea(.all)
+            Color("MapGreen").edgesIgnoringSafeArea(.all)  //keep a consistant background, removes white bar
             TabView(selection: $selectedTab) {
-                MapCardView(
+                MapCardView( // for botanical gardens
                     image: Image("gardens"),
                     title: "Mt Coot-tha Botanic Gardens",
                     description:
                         "The Brisbane Botanic Gardens at Mount Coot-tha is a beautiful garden full of different plants from around the world. You can explore tropical plants in a big dome, see cool bonsai trees, visit a Japanese garden, and even walk through a bamboo grove.",
-                    photoCount: 12,
+                    photoCount: 10,
                     zone: "Botanical Gardens"
                 )
                 .tag(0)
                 .ignoresSafeArea()
 
-                MapCardView(
+                MapCardView( // for uq
                     image: Image("uq"),
                     title: "University of Queensland",
                     description:
@@ -40,10 +46,10 @@ struct MapZones: View {
                     photoCount: 12,
                     zone: "University of Queensland"
                 )
-                .tag(1)
+                .tag(1) //shows the index how many tabs, this is the second tab
                 .ignoresSafeArea()
 
-                MapCardView(
+                MapCardView( // southbank card
                     image: Image("southbank"),
                     title: "Southbank Parklands",
                     description:
@@ -54,8 +60,8 @@ struct MapZones: View {
                 .tag(2)
                 .ignoresSafeArea()
 
-                MapCardView(
-                    image: Image("PawIcon"),
+                MapCardView( //custom icon
+                    image: Image("PawIcon"), //default if no image
                     title: "Custom Map",
                     description:
                         "Walk through a custom map that your parents have created for you. Don't forget to stay safe!",
@@ -65,7 +71,7 @@ struct MapZones: View {
                 .tag(3)
                 .ignoresSafeArea()
             }
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic)) // shows the white dots in terms of view
             .background(Color.clear)
 
             // Back Button
@@ -76,7 +82,7 @@ struct MapZones: View {
                             soundName: "boing.wav",
                             soundVol: 0.5
                         )
-                        goBack.wrappedValue.dismiss()
+                        goBack.wrappedValue.dismiss() // go back to select map
                     } label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 40))
@@ -93,7 +99,7 @@ struct MapZones: View {
 
             HStack {
                 if showGIF {
-                    GIFView(gifName: "swipe")
+                    GIFView(gifName: "swipe") // swipe gif
                         .frame(width: 70, height: 70)
                         .padding(.top, UIScreen.main.bounds.height - 200)
                 }
@@ -102,7 +108,7 @@ struct MapZones: View {
         }
         .onAppear {
             // Hide the GIF after 10 seconds
-            DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 10) { //timer for 10 second hand showing the fading
                 withAnimation {
                     showGIF = false
                 }

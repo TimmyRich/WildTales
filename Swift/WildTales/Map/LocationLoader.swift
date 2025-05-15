@@ -6,6 +6,8 @@
 //
 
 // help to load the locations from locations.json that stores all the locatons on device
+//
+// Lots of pre-exisitng map pins to add from here as loading them from a stadard JSON in the xcode file was providing lots of errors
 
 import CoreLocation
 import Foundation
@@ -491,6 +493,7 @@ class LocationLoader {
         }
     }
 
+    //gets the position of the file in the iPhone
     static private func getFileURL() -> URL? {
         let fileManager = FileManager.default
         let directory = fileManager.urls(
