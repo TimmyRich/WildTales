@@ -9,8 +9,9 @@ import SwiftUI
 
 struct ImagePicker: UIViewControllerRepresentable {
     
-    @Binding var showPicker: Bool
-    @Binding var imageData: Data
+    @Binding var selectedImage: UIImage?
+    @Environment(\.presentationMode) private var presentationMode
+    
     
     // Create delegate and set the source as album
     func makeUIViewController(context: Context) -> UIImagePickerController {
@@ -20,7 +21,7 @@ struct ImagePicker: UIViewControllerRepresentable {
         controller.delegate = context.coordinator
         
         return controller
-    
+        
     }
     
     // future use to update
@@ -29,7 +30,7 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
     
     func makeCoordinator() -> Coordinator {
-            return Coordinator(parent: self)
+        return Coordinator(parent: self)
     }
     
     
@@ -41,18 +42,20 @@ struct ImagePicker: UIViewControllerRepresentable {
         
         // It is called when user selects a photo, convert UIImage to png
         func imagePickerController(_ picker: UIImagePickerController,
-        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            if let imageData = (info[.originalImage] as? UIImage)?.pngData () {
-                parent.imageData = imageData
-                parent.showPicker.toggle()
+                                   didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            if let image = info[.originalImage] as? UIImage {
+                parent.selectedImage = image
             }
+            parent.presentationMode.wrappedValue.dismiss()
+            
         }
         
         // cancenl picker
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            parent.showPicker.toggle() }
+            parent.presentationMode.wrappedValue.dismiss()
+        }
+        
     }
-    
 }
 
 

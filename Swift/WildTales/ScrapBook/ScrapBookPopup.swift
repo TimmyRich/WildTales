@@ -8,144 +8,181 @@
 import SwiftUI
 
 struct ScrapBookPopup: View {
-    
+
     let didClose: () -> Void
-    let ImageList: [ImageItem] = sampleImageList
-    
+    @State private var currentImageList: [ImageItem] = sampleImageList
+
     @State private var currentIndex: Int = 0
 
+    @State private var showImagePickerSheet = false
+    @State private var newlySelectedUIImage: UIImage? = nil
+
     var body: some View {
-            GeometryReader { geometry in
+        GeometryReader { geometry in
+            ZStack {
                 
-                ZStack {
-                    // Background Color to fill the gap
-                    /*Color(.green1)
-                         .frame(height: 150) // Adjust height
-                         .frame(maxHeight: .infinity, alignment: .top)
-                         .ignoresSafeArea(.container, edges: .top)*/
+                VStack(spacing: 0) {
+                    Header(
+                        closeAction: didClose,
+                        addPhotoAction: {
+                            self.newlySelectedUIImage = nil
+                            self.showImagePickerSheet = true
+                        }
+                    )
+                    .padding(.bottom, 20)
 
-                    VStack(spacing: 0) {
-                        Header(closeAction: didClose)
-                            .padding(.bottom, 20)
+                   
+                    CarouselView(carouselImages: currentImageList, currentIndex: $currentIndex)
+                         .frame(height: geometry.size.height * 0.7)
 
-                        CarouselView(CarouselImage: ImageList, currentIndex: $currentIndex)
-                             .frame(height: geometry.size.height * 0.7)
-
-                        Spacer()
-                    }
-                    .background(Color(.white))
-                    .cornerRadius(30, corners: [.topLeft, .topRight])
-                    .padding(.top, 80)
+                    Spacer()
                 }
+                .background(Color.white)
+                .cornerRadius(30, corners: [.topLeft, .topRight])
+                .padding(.top, 80)
             }
-            .transition(.move(edge: .bottom))
         }
+        .sheet(isPresented: $showImagePickerSheet, onDismiss: processSelectedImage) {
+            ImagePicker(selectedImage: $newlySelectedUIImage)
+        }
+        .transition(.move(edge: .bottom))
+        
     }
+
+    private func processSelectedImage() {
+        guard let selectedImage = newlySelectedUIImage else {
+            print("No image selected or picker cancelled.")
+            return
+        }
+
+        let newTitle = "New Memory \(currentImageList.count + 1)"
+        let newDescription = "A beautiful moment captured."
+
+        let newImageItem = ImageItem(
+            uiImage: selectedImage,
+            locationTitle: newTitle,
+            description: newDescription
+        )
+
+        currentImageList.append(newImageItem)
+
+        if !currentImageList.isEmpty {
+            currentIndex = currentImageList.count - 1
+        }
+       
+        self.newlySelectedUIImage = nil
+    }
+}
 
 struct Header: View {
     var closeAction: () -> Void
+    var addPhotoAction: () -> Void
 
     var body: some View {
         ZStack {
             VStack {
                 Text("Memories")
                     .font(.title)
-                    .foregroundColor(Color(.green1))
-                
+                    .foregroundColor(Color("Green1"))
                 Text("Look back at all your adventures")
                     .font(.subheadline)
-                    .foregroundColor(Color(.gray))
+                    .foregroundColor(Color.gray)
             }
-            .padding(.horizontal, 25)
-            .padding(.top, 40)
-            VStack(alignment: .leading) {
-                HStack {
-                    Button {
-                        closeAction()
-                    } label: {
-                        
-                        Image("exitButton")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 35)
-                    }
-                    Spacer()
-                }
-                .padding(.bottom, 40)
-            }
+            .padding(.top, 10)
             
+            HStack {
+                Button {
+                    closeAction()
+                } label: {
+                    Image("exitButton")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 30, height: 30)
+                }
+
+                Spacer()
+
+                Button {
+                    addPhotoAction()
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.system(size: 30))
+                        .foregroundColor(Color("Green1"))
+                }
+            }
         }
-        
+        .padding(.horizontal, 25)
+        .frame(height: 60)
     }
 }
 
+
 struct CarouselView: View {
-    let CarouselImage: [ImageItem]
+    let carouselImages: [ImageItem]
     @Binding var currentIndex: Int
-    
+
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                TabView(selection: $currentIndex) {
-                    ForEach(CarouselImage.indices, id: \.self) { index in
-                        CardView(memory: CarouselImage[index])
-                            .padding(.horizontal, 25)
-                            .frame(width: geometry.size.width)
-                            .tag(index)
+                if carouselImages.isEmpty {
+                    Text("No memories yet. Add one!")
+                        .font(.title2)
+                        .foregroundColor(.gray)
+                } else {
+                    TabView(selection: $currentIndex) {
+                        ForEach(carouselImages.indices, id: \.self) { index in
+                            CardView(memory: carouselImages[index])
+                                .padding(.horizontal, 25)
+                                .frame(width: geometry.size.width)
+                                .tag(index)
+                        }
                     }
+                    .tabViewStyle(.page(indexDisplayMode: .never))
                 }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                .frame(height: geometry.size.height)
-                
-                HStack {
-                    // Left
-                    Button {
-                        withAnimation { currentIndex = max(0, currentIndex - 1) }
-                    } label: {
-                        Image(systemName: "arrow.left.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 30, height: 30)
-                            .foregroundColor(Color(.green1))
+
+                if !carouselImages.isEmpty {
+                    HStack {
+                        Button {
+                            withAnimation { currentIndex = max(0, currentIndex - 1) }
+                        } label: {
+                            Image(systemName: "arrow.left.circle.fill")
+                                .resizable().scaledToFit().frame(width: 30, height: 30)
+                                .foregroundColor(Color("Green1"))
+                        }
+                        .disabled(currentIndex == 0)
+                        .padding(.leading, 5)
+
+                        Spacer()
+
+                        Button {
+                            withAnimation { currentIndex = min(carouselImages.count - 1, currentIndex + 1) }
+                        } label: {
+                            Image(systemName: "arrow.right.circle.fill")
+                                .resizable().scaledToFit().frame(width: 30, height: 30)
+                                .foregroundColor(Color("Green1"))
+                        }
+                        .disabled(currentIndex >= carouselImages.count - 1)
+                        .padding(.trailing, 5)
                     }
-                    .padding(.leading, 5)
-                    
-                    Spacer()
-                    // Right
-                    Button {
-                        withAnimation { currentIndex = min(CarouselImage.count - 1, currentIndex + 1) }
-                    } label: {
-                        Image(systemName: "arrow.right.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 30, height: 30)
-                            .foregroundColor(Color(.green1))
-                    }
-                    .padding(.trailing, 5)
+                    .padding(.top, geometry.size.height * 0.3) 
                 }
-                // adjust vertical position of arrow buttons relative to the area
-                .padding(.top, geometry.size.height * 0.3)
             }
+            .frame(height: geometry.size.height)
         }
     }
 }
-    
+
 struct CardView: View {
     let memory: ImageItem
-    
+
     var body: some View {
         VStack(spacing: 15) {
-            // Title
             Text(memory.locationTitle)
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundColor(.black)
+                .font(.title2).fontWeight(.semibold).foregroundColor(.black)
                 .padding(.top, 10)
-            
-            // Image
-            // within the zstack
+
             ZStack {
-                Image(memory.imageName)
+                memory.displayImage
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(maxHeight: 300)
@@ -153,10 +190,8 @@ struct CardView: View {
                     .cornerRadius(8)
             }
             .frame(maxHeight: 300)
-            // photo ratio 4/3
             .aspectRatio(4/3, contentMode: .fit)
-            
-            // Text
+
             Text("\"\(memory.description)\"")
                 .font(Font.custom("Inter", size: 16))
                 .foregroundColor(.gray)
@@ -168,22 +203,19 @@ struct CardView: View {
         .padding(.horizontal, 10)
         .background(Color.white)
         .cornerRadius(20)
-        .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 4)
+        .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 4)
     }
 }
 
 
-// Change the corner or the card, inspired by post from stackoverflow
 extension View {
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape(RoundedCorner(radius: radius, corners: corners))
     }
 }
-
 struct RoundedCorner: Shape {
     var radius: CGFloat = .infinity
     var corners: UIRectCorner = .allCorners
-    
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         return Path(path.cgPath)
@@ -192,13 +224,10 @@ struct RoundedCorner: Shape {
 
 struct ScrapBookPopup_Previews: PreviewProvider {
     static var previews: some View {
-        ScrapBookPopup(didClose: {})
+       
+        ScrapBookPopup(didClose: { print("close") })
             .previewLayout(.sizeThatFits)
             .padding()
-            .background(Color.gray.opacity(0.2))
+            .background(Color.gray.opacity(0.3))
     }
 }
-
-
-
-

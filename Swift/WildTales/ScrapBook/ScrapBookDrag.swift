@@ -3,6 +3,7 @@
 //  WildTales
 //
 //  Created by Yujie Wei on 10/5/2025.
+//  Inspired by https://www.youtube.com/watch?v=2ZK5wfbvvS4
 
 import SwiftUI
 
@@ -37,10 +38,11 @@ struct ScrapBookDrag: View {
 
 
     let StickersInBar: [SelectSticker] = [
-        SelectSticker(imageName: "stickerMoon"),
-        SelectSticker(imageName: "stickerStar"),
-        SelectSticker(imageName: "stickerHedgedog"),
-        SelectSticker(imageName: "stickerRat")
+        SelectSticker(imageName: "badgeQuin"),
+        SelectSticker(imageName: "badgeBird"),
+        SelectSticker(imageName: "badgeMoon"),
+        SelectSticker(imageName: "badgeRat"),
+        SelectSticker(imageName: "badgeCrane")
     ]
 
   
@@ -135,7 +137,7 @@ struct ScrapBookDrag: View {
         
         return ZStack(alignment: .topTrailing) {
             
-            Image("scene")
+            Image("displayImage3")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: photoAreaWidth, height: photoAreaHeight)

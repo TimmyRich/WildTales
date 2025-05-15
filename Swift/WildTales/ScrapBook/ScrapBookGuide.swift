@@ -45,12 +45,9 @@ struct ScrapBookGuide: View {
                         Spacer()
                     }
                     VStack (spacing:10){
-                        NavigationLink(destination: PhotoPicker().navigationBarBackButtonHidden(true)) {
-                            Text("Scrapbook").font(Font.custom("Inter", size: 26)).foregroundColor(.green1)
-                        }
-                        .simultaneousGesture(TapGesture().onEnded {
-                            UserDefaults.standard.set(true, forKey: "hasSeenScrapBookGuide")
-                        })
+                        
+                        Text("Scrapbook").font(Font.custom("Inter", size: 26)).foregroundColor(.green1)
+                        
                         Text("Keep all your memories safe!").font(Font.custom("Inter", size: 14)).foregroundColor(.green1).padding(.bottom,20)
                         
                         
