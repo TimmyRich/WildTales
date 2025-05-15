@@ -1,3 +1,11 @@
+/*
+ -- Acknowledgments --
+ 
+ Heavily inspired by https://www.youtube.com/watch?v=O3QAI8Mxh8M . GenAI was used to develop the logic for determining when an
+ image was placed out of bounds using a geometryReader with prompt: "Use a GeometryReader to define a safe area inside the
+'Image(trailName)'. Make a function which checks if a badge has been placed outside of this safe area"
+ */
+
 import SwiftUI
 
 // Get available badges, including unlocked badges
@@ -32,8 +40,10 @@ struct BadgeDecoratorView: View {
     let trailName: String
     let helpMessage: String = "Tap a badge to add it. Drag, pinch, or rotate to adjust. Drag offscreen to delete."
 
+    // Loads all previously saved badges
     @StateObject private var badgeLoader = BadgeLoader()
     
+    // Gets the list of badge names that the user has unlocked
     let availableBadges: [String] = getAvailableBadges()
 
     var body: some View {
@@ -52,6 +62,7 @@ struct BadgeDecoratorView: View {
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
 
+            // Define safe area within the trail image
             GeometryReader { geo in
                 ZStack {
                     let imageWidth: CGFloat = 205
@@ -108,7 +119,8 @@ struct BadgeDecoratorView: View {
                     }
                     .padding(.horizontal)
                 }
-
+                
+                // clear all badges button
                 Button(action: {
                     badgeLoader.removeAllBadges(parentImage: trailName)
                 }) {
@@ -124,8 +136,6 @@ struct BadgeDecoratorView: View {
             }
             .frame(width: UIScreen.main.bounds.width * 0.9, height: 70)
             .padding(.bottom)
-
-
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {
@@ -145,9 +155,8 @@ struct BadgeDecoratorView: View {
             badgeLoader.saveBadges()
         }
     }
-
-    
 }
+
 
 struct BadgeView: View {
     @Binding var badge: Badge
@@ -166,6 +175,7 @@ struct BadgeView: View {
             .scaleEffect(badge.scale)
             .rotationEffect(Angle(degrees: badge.degrees))
             .position(x: badge.x, y: badge.y)
+            // Simulataneous gesture allows user to manipulate size position and rotation with one gesture
             .gesture(
                 SimultaneousGesture(
                     SimultaneousGesture(
@@ -201,6 +211,7 @@ struct BadgeView: View {
             }
     }
 
+    // Check if this badge is out of bounds
     private func checkIfOutOfBounds() {
         let actualBadgeWidth = badgeSize * badge.scale
         let actualBadgeHeight = badgeSize * badge.scale
