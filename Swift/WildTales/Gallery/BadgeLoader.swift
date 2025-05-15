@@ -1,5 +1,5 @@
 /*
- -- Acknowledgements --
+ -- Acknowledgments --
  
  The BadgeLoader class was originally adapted from code provided by https://www.youtube.com/watch?v=G9vXr41ssdM
  which details how to load JSON data from a json file in the app bundle. This code was
