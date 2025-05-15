@@ -203,7 +203,7 @@ struct CreateMapView: View {
                             quizCompleted: false,
 
                             category: .fence,
-                            zone: "Custom",
+                            zone: "Custom"
 
                         )
                         locations.append(newFence)

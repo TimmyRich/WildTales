@@ -4,7 +4,7 @@
 //
 //  Created by Yujie on 2025/4/30.
 //
-
+/*
 import SwiftUI
 
 struct PhotoPicker: View {
@@ -33,7 +33,7 @@ struct PhotoPicker: View {
                                 }
                             }
                         }
-
+                        
                 } else {
                     // Button to trigger image picker
                     Spacer()
@@ -74,3 +74,4 @@ struct Home_Previews: PreviewProvider {
         PhotoPicker()
     }
 }
+*/
