@@ -717,7 +717,7 @@ struct MapView: View {
         usageTimer?.invalidate()  // Cancel previous timer if any
 
         usageTimer = Timer.scheduledTimer(
-            withTimeInterval: 1800,
+            withTimeInterval: 20,
             repeats: false
         ) { _ in
             showUsageAlert = true
