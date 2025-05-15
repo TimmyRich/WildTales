@@ -5,6 +5,8 @@
 //  Created by Kurt McCullough on 24/3/2025.
 //
 
+// Struct with the needed details of a location for the location JSON database
+
 import CoreLocation
 import Foundation
 
@@ -24,9 +26,10 @@ struct Location: Identifiable, Codable, Equatable {
 
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-    }
+    } //coordinate
 }
 
+// for each location category
 enum LocationCategory: String, Codable, CaseIterable, Identifiable {
     case plant
     case animal
