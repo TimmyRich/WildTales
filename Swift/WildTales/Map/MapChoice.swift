@@ -8,12 +8,10 @@
 //  Basic view to change between the community map, present maps and custom map
 //
 
-
-import AVFoundation
-import CoreHaptics
-import MapKit
-import SpriteKit
-import SwiftUI
+import AVFoundation  // sound content
+import CoreHaptics  // haptics when nessesary
+import MapKit  // maps
+import SwiftUI  // forming ui's
 
 struct MapChoice: View {
 
@@ -24,22 +22,22 @@ struct MapChoice: View {
     @State private var mapRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: -27.4705, longitude: 153.0260),
         span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
-    ) //basic zoom into brisbane if location is not provided
+    )  //basic zoom into brisbane if location is not provided
 
     @State private var locations = [Location]()
-    @State private var isMapInitialized = false
+    @State private var isMapLoaded = false
 
     var body: some View {
 
         NavigationView {
             ZStack {
-                Map( //load map to have it as the background
+                Map(  //load map to have it as the background
                     coordinateRegion: $mapRegion,
                     interactionModes: .all,
                     userTrackingMode: .none,
                     annotationItems: locations
                 ) { location in
-                    MapMarker(
+                    MapMarker(  //no locations should be loaded in but this is needed to load them map
                         coordinate: CLLocationCoordinate2D(
                             latitude: location.latitude,
                             longitude: location.longitude
@@ -50,14 +48,14 @@ struct MapChoice: View {
                 .onAppear {
                     locationManager.requestLocation()
                 }
-                .onChange(of: locationManager.userLocation) { newLocation in //when map loads
-                    if let newLocation = newLocation, !isMapInitialized {
+                .onChange(of: locationManager.userLocation) { newLocation in  //when map loads
+                    if let newLocation = newLocation, !isMapLoaded {
                         mapRegion.center = newLocation.coordinate
-                        isMapInitialized = true
+                        isMapLoaded = true
                     }
                 }
                 ZStack {
-                    Rectangle() //background white rectangle
+                    Rectangle()  //background white rectangle
                         .foregroundColor(.white)
                         .frame(width: 300, height: 500)
                         .cornerRadius(20)
@@ -66,8 +64,8 @@ struct MapChoice: View {
                         Text("Select or Create a Map!")
 
                         NavigationLink(
-                            destination: CommunityMapView() // go to community map
-                                .navigationBarBackButtonHidden(true) //dont show navigation menu options, this usually has a back button but we are using our own
+                            destination: CommunityMapView()  // go to community map
+                                .navigationBarBackButtonHidden(true)  //dont show navigation menu options, this usually has a back button but we are using our own
                         ) {
                             Image("community")
                                 .resizable()
@@ -84,16 +82,16 @@ struct MapChoice: View {
                         .padding()
 
                         NavigationLink(
-                            destination: CreateMapView() //create map view
+                            destination: CreateMapView()  //create map view
                                 .navigationBarBackButtonHidden(true)
                         ) {
                             Image("create")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 250, height: 100)
-                        }.simultaneousGesture( // also do this when clicked
+                        }.simultaneousGesture(  // also do this when clicked
                             TapGesture().onEnded {
-                                AudioManager.playSound( //play sound effect
+                                AudioManager.playSound(  //play sound effect
                                     soundName: "boing.wav",
                                     soundVol: 0.5
                                 )
@@ -102,7 +100,7 @@ struct MapChoice: View {
                         .padding()
 
                         NavigationLink(
-                            destination: MapZones() // go to map zones to choose here
+                            destination: MapZones()  // go to map zones to choose here
                                 .navigationBarBackButtonHidden(true)
                         ) {
                             Image("cexisting")
@@ -122,7 +120,7 @@ struct MapChoice: View {
                     HStack {
                         VStack {
                             Button(action: {
-                                goBack.wrappedValue.dismiss() // go to previous view before this (usually home)
+                                goBack.wrappedValue.dismiss()  // go to previous view before this (usually home)
                                 AudioManager.playSound(
                                     soundName: "boing.wav",
                                     soundVol: 0.5
@@ -148,7 +146,7 @@ struct MapChoice: View {
 
             }
 
-        }.preferredColorScheme(.light) //alwsys light map
+        }.preferredColorScheme(.light)  //alwsys light map
 
     }
 }

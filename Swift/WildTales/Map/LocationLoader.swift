@@ -455,6 +455,7 @@ class LocationLoader {
 
     ]
 
+    // Some of this code was taken from (https://forums.swift.org/t/json-decoding-failing-for-only-one-field/68596) and (https://developer.apple.com/documentation/foundation/jsonencoder) and the playlist (https://www.youtube.com/watch?v=9xzHJAT_Iqk&list=PLBn01m5Vbs4A0dus7gfymgj0UI1qKTe3M)
     // Tries to load a bunch of locations using JSON decoder
     static func loadLocations() -> [Location] {
         guard let url = getFileURL() else { return defaultLocations }
