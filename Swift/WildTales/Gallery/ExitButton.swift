@@ -35,7 +35,6 @@ struct ExitButton: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
-        .contentShape(Rectangle()) // Makes the whole area tappable if needed
     }
 }
 
