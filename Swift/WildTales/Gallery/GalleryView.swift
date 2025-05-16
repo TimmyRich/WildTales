@@ -101,6 +101,10 @@ struct GalleryView: View {
                             if selectedIndex > 0 {
                                 selectedIndex -= 1
                             }
+                            AudioManager.playSound(
+                                soundName: "boing.wav",
+                                soundVol: 0.5
+                            )
                         }) {
                             Image("back_button")
                                 .resizable()
@@ -114,6 +118,10 @@ struct GalleryView: View {
                             if selectedIndex < imageNames.count - 1 {
                                 selectedIndex += 1
                             }
+                            AudioManager.playSound(
+                                soundName: "boing.wav",
+                                soundVol: 0.5
+                            )
                         }) {
                             Image("forward_button")
                                 .resizable()

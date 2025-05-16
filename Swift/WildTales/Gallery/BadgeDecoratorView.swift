@@ -126,6 +126,10 @@ struct BadgeDecoratorView: View {
                                     parentImage: trailName
                                 )
                                 badgeLoader.addBadge(newBadge)
+                                AudioManager.playSound(
+                                    soundName: "boing.wav",
+                                    soundVol: 0.5
+                                )
                             }) {
                                 Image(badgeName)
                                     .resizable()
@@ -140,6 +144,10 @@ struct BadgeDecoratorView: View {
                 // clear all badges button
                 Button(action: {
                     badgeLoader.removeAllBadges(parentImage: trailName)
+                    AudioManager.playSound(
+                        soundName: "boing.wav",
+                        soundVol: 0.5
+                    )
                 }) {
                     Image(systemName: "trash")
                         .foregroundColor(.red)
@@ -160,6 +168,10 @@ struct BadgeDecoratorView: View {
                 Button(action: {
                     badgeLoader.saveBadges()
                     presentationMode.wrappedValue.dismiss()
+                    AudioManager.playSound(
+                        soundName: "boing.wav",
+                        soundVol: 0.5
+                    )
                 }) {
                     Image("page_back_button")
                         .resizable()
