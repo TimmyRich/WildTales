@@ -4,7 +4,8 @@
 //
 //  Created by Kurt McCullough on 31/3/2025.
 //  Updated by Yujie Wei on 18/4/2025.
-//  Scrapbook with update visual elements
+//  Scrapbook main page with update visual elements
+//  Inspired by https://www.youtube.com/watch?v=OaIn7HBlCSk
 
 import SwiftUI
 
@@ -86,7 +87,7 @@ struct ScrapBookGuide: View {
                         .hapticOnTouch()
                         
                         
-                        // Temporary button for popup page
+                        // Click button for image carousel popup page
                         Button ("Show Image Gallery") {
                             withAnimation(.spring()) {
                                 popupManager.present()
@@ -101,12 +102,7 @@ struct ScrapBookGuide: View {
                         )
                         .shadow(radius: 10)
                         .font(Font.custom("Inter", size: 12))
-                        /*
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .font(Font.custom("Inter", size: 12))
-                          */
+                        
                     }
                     
                     HStack{
@@ -131,7 +127,6 @@ struct ScrapBookGuide: View {
                             withAnimation(.spring()){
                                 popupManager.dismiss()
                             }
-                            
                         }
                         
                         

@@ -3,7 +3,8 @@
 //  WildTales
 //
 //  Created by Yujie Wei on 18/4/2025
-//  Inspired by https://www.youtube.com/watch?v=OaIn7HBlCSk
+//  Heavily inspired by the following content
+//  Reference: https://www.youtube.com/watch?v=OaIn7HBlCSk
 
 
 import Foundation
