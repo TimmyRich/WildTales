@@ -6,12 +6,13 @@
 //
 
 // Struct with the needed details of a location for the location JSON database
+// This was reccomended by (https://www.youtube.com/watch?v=9xzHJAT_Iqk&list=PLBn01m5Vbs4A0dus7gfymgj0UI1qKTe3M)
 
 import CoreLocation
 import Foundation
 
 struct Location: Identifiable, Codable, Equatable {
-    var id: UUID
+    var id: UUID //unique ID
     var name: String
     var description: String
     var latitude: Double

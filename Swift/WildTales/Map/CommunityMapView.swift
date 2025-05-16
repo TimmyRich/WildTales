@@ -12,7 +12,6 @@ import AVFoundation
 import CoreHaptics
 import CoreLocation
 import MapKit
-import SpriteKit
 import SwiftUI
 
 struct CommunityMapView: View {
@@ -39,7 +38,7 @@ struct CommunityMapView: View {
     )
 
     @State private var locations = [Location]()  // all locations
-    @State private var isMapInitialized = false  // checks if map is initialised
+    @State private var isMapLoaded = false  // checks if map is initialised
 
     @State private var selectedLocation: Location?  //selected location for when pressed
 
@@ -115,9 +114,9 @@ struct CommunityMapView: View {
 
             .onChange(of: locationManager.userLocation) { newLocation in  // when the users locations changes
                 if let newLocation = newLocation {
-                    if !isMapInitialized {  // when first initialised, center the screen to the user
+                    if !isMapLoaded {  // when first initialised, center the screen to the user
                         mapRegion.center = newLocation.coordinate
-                        isMapInitialized = true
+                        isMapLoaded = true
                     }
 
                     let userCoordinate = newLocation.coordinate  //users location

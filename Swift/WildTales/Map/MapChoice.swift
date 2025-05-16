@@ -9,11 +9,10 @@
 //
 
 
-import AVFoundation
-import CoreHaptics
-import MapKit
-import SpriteKit
-import SwiftUI
+import AVFoundation // sound content
+import CoreHaptics // haptics when nessesary
+import MapKit // maps
+import SwiftUI // forming ui's
 
 struct MapChoice: View {
 
@@ -27,7 +26,7 @@ struct MapChoice: View {
     ) //basic zoom into brisbane if location is not provided
 
     @State private var locations = [Location]()
-    @State private var isMapInitialized = false
+    @State private var isMapLoaded = false
 
     var body: some View {
 
@@ -39,7 +38,7 @@ struct MapChoice: View {
                     userTrackingMode: .none,
                     annotationItems: locations
                 ) { location in
-                    MapMarker(
+                    MapMarker( //no locations should be loaded in but this is needed to load them map
                         coordinate: CLLocationCoordinate2D(
                             latitude: location.latitude,
                             longitude: location.longitude
@@ -51,9 +50,9 @@ struct MapChoice: View {
                     locationManager.requestLocation()
                 }
                 .onChange(of: locationManager.userLocation) { newLocation in //when map loads
-                    if let newLocation = newLocation, !isMapInitialized {
+                    if let newLocation = newLocation, !isMapLoaded {
                         mapRegion.center = newLocation.coordinate
-                        isMapInitialized = true
+                        isMapLoaded = true
                     }
                 }
                 ZStack {

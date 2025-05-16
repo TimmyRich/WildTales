@@ -13,12 +13,11 @@
 // Screen time notifications
 // Badge notifications if all spots in a certain zone are visited
 
-import AVFoundation
-import CoreHaptics
-import CoreLocation
-import MapKit
-import SpriteKit
-import SwiftUI
+import AVFoundation // sound managers
+import CoreHaptics // haptics when needed
+import CoreLocation //location use
+import MapKit //maps
+import SwiftUI //ui elements
 
 struct MapView: View {
     let zone: String
@@ -29,11 +28,11 @@ struct MapView: View {
 
     @State private var isShowingFullImage = false  //for full image on pin
 
-    @State private var wikipediaImageURL: URL? = nil  // default wikipedia url
+    @State private var wikipediaImageURL: URL? = nil  // default wikipedia url to nothing
 
-    @State private var showUsageAlert = false  // for screen time alert
-    @State private var usageStartTime: Date? = nil  //start time for alert
-    @State private var usageTimer: Timer? = nil  // timer count
+    @State private var showScreenTimeAlert = false  // for screen time alert
+    @State private var screenTimerStart: Date? = nil  //start time for alert
+    @State private var ScreenTimer: Timer? = nil  // timer count
 
     @State private var showEmergency = false  //to show the emergency popup
     @StateObject private var locationManager = LocationManager()
@@ -45,7 +44,7 @@ struct MapView: View {
     )
 
     @State private var locations = [Location]()  // all locations
-    @State private var isMapInitialized = false  // checks if map is initialised
+    @State private var isMapLoaded = false  // checks if map is initialised
 
     @State private var selectedLocation: Location?  //selected location for when pressed
 
@@ -66,7 +65,7 @@ struct MapView: View {
     var body: some View {
         ZStack {
             // map with user dot
-            Map(
+            Map( // most of thse variables are standard and autofill when createing a Map()
                 coordinateRegion: $mapRegion,
                 interactionModes: .all,  // allows all interactions with the map
                 showsUserLocation: true,  // shows user location as blue dot
@@ -113,7 +112,7 @@ struct MapView: View {
             .ignoresSafeArea()  // can go from corner to corner
             .onAppear {  // when view first shows up
                 locationManager.requestLocation()  // request location if not previoously asked
-                startUsageTimer()  // start screen on timer
+                startScreenTimer()  // start screen on timer
                 let allLocations = LocationLoader.loadLocations()  //load locations
                 locations = allLocations.filter { $0.zone == zone }  //filter by zone
 
@@ -122,9 +121,9 @@ struct MapView: View {
 
             .onChange(of: locationManager.userLocation) { newLocation in  // when the users locations changes
                 if let newLocation = newLocation {
-                    if !isMapInitialized {  // when first initialised, center the screen to the user
+                    if !isMapLoaded {  // when first initialised, center the screen to the user
                         mapRegion.center = newLocation.coordinate
-                        isMapInitialized = true
+                        isMapLoaded = true
                     }
 
                     let userCoordinate = newLocation.coordinate  //users location
@@ -274,7 +273,7 @@ struct MapView: View {
                 }
             }
             .onDisappear {
-                stopUsageTimer()  // when going off this view, stop the screen time timer
+                stopScreenTimer()  // when going off this view, stop the screen time timer
             }
 
             VStack {
@@ -462,7 +461,7 @@ struct MapView: View {
                                             )
                                         }
                                     } else {
-                                        isAnswerCorrect = false  // if the anseer is false
+                                        isAnswerCorrect = false  // if the answer is false
                                         AudioManager.playSound(
                                             soundName: "wrong.wav",  //incorrect sound
                                             soundVol: 0.5
@@ -693,10 +692,10 @@ struct MapView: View {
         }.preferredColorScheme(.light)  // always light mode map
         .alert(
             "You've been using the app for a while!",  //aleart for screen time
-            isPresented: $showUsageAlert
+            isPresented: $showScreenTimeAlert
         ) {
             Button("Okay") {
-                startUsageTimer()  // Reset timer when user acknowledges
+                startScreenTimer()  // Reset timer when user acknowledges
             }
         } message: {
             Text("Time to take a break!")
@@ -719,22 +718,22 @@ struct MapView: View {
     }
 
     //function to start the timer for screen time
-    func startUsageTimer() {
-        usageStartTime = Date()
-        usageTimer?.invalidate()  // Cancel previous timer if any
+    func startScreenTimer() {
+        screenTimerStart = Date()
+        ScreenTimer?.invalidate()  // Cancel previous timer if any
 
-        usageTimer = Timer.scheduledTimer(
+        ScreenTimer = Timer.scheduledTimer(
             withTimeInterval: 1600,
             repeats: false
         ) { _ in
-            showUsageAlert = true
+            showScreenTimeAlert = true
         }
     }
 
     //stop the timer
-    func stopUsageTimer() {
-        usageTimer?.invalidate()
-        usageTimer = nil
+    func stopScreenTimer() {
+        ScreenTimer?.invalidate()
+        ScreenTimer = nil
     }
 
     //loops through the locations and checks if the one is completed, if so awarding a badge and notifying about it

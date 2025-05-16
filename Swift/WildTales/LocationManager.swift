@@ -5,6 +5,7 @@
 //  Created by Kurt McCullough on 28/3/2025.
 //
 // This is what MapKit uses to help with user location permissions
+// Some of this code was retrieved from (https://developer.apple.com/documentation/corelocation/cllocationmanager)
 
 import Combine
 import CoreLocation
@@ -25,7 +26,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     //requests users location
     func requestLocation() {
-        locationManager.requestWhenInUseAuthorization() //popup for request for in use
+        locationManager.requestWhenInUseAuthorization() //popup for request for in use authorisation
         //locationManager.requestAlwaysAuthorization()
         locationManager.startUpdatingLocation() // updates location
     }

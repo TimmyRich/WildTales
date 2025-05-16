@@ -10,7 +10,6 @@
 //
 // It was originally used to create proximity notifications but we had found a better and more reliable way
 
-import CoreLocation
 import Foundation
 import UserNotifications
 

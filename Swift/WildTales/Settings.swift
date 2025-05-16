@@ -9,8 +9,8 @@ import SwiftUI
 
 struct Settings: View {
     @Environment(\.dismiss) var dismiss
-    @State private var isMusicEnabled: Bool = true
-    @State private var selectedTime: Date = Date()  // Use for temporary notification
+    @State private var isMusicEnabled: Bool = true //default music playing
+    @State private var selectedTime: Date = Date()  // Use for temporary notification, uneeded as code is commented out
 
     var body: some View {
         VStack {
@@ -23,14 +23,14 @@ struct Settings: View {
                 Toggle("Enable Background Music", isOn: $isMusicEnabled)
                     .onChange(of: isMusicEnabled) { value in
                         if value {
-                            AudioManager.startBackgroundMusic()
+                            AudioManager.startBackgroundMusic() //asks the auto manager to start music
                         } else {
-                            AudioManager.stopBackgroundMusic()
+                            AudioManager.stopBackgroundMusic() // stop of not selected, mute button also works
                         }
                     }
                     .padding()
-                // Notification
-                VStack {
+                // Set up notifications, commented out and can be implemented later
+                /*VStack {
                     DatePicker(
                         "Select Notification Time",
                         selection: $selectedTime,
@@ -55,14 +55,14 @@ struct Settings: View {
                         print("test notification is scheduled")
                     }
                     .buttonStyle(.borderedProminent).tint(.blue)
-                }
+                }*/
 
             }
             .background(Color.green)
             .cornerRadius(20)
 
             Button("back") {
-                dismiss()
+                dismiss() // go back to previous view, dismiss popup
             }
             .padding()
             .background(Color("Pink"))
@@ -75,7 +75,7 @@ struct Settings: View {
         .padding()
         .onAppear {
             // request notification permissions
-            NotificationManager.requestPermissions()
+            NotificationManager.requestPermissions() //request notification access if not provided already
         }
     }
 }

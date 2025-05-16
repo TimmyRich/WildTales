@@ -13,7 +13,6 @@
 // Clicking play redirects to MapView with a specific zone.
 
 import SwiftUI
-import WebKit
 
 struct MapZones: View {
 

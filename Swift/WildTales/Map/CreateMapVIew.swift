@@ -16,11 +16,10 @@
 // Clicking on pre-exisint icon allows it to be removed or visited/univisted
 // Quiz can also be tested on this
 
-import AVFoundation
-import CoreHaptics
-import MapKit
-import SpriteKit
-import SwiftUI
+import AVFoundation //sound managers
+import CoreHaptics //haptics when needed
+import MapKit // maps API
+import SwiftUI // ui
 
 struct CreateMapView: View {
 
@@ -38,7 +37,7 @@ struct CreateMapView: View {
     @State private var locations = [Location]() //to hold locations
 
     @State private var showSettingsSheet = false // to show shetting view
-    @State private var isMapInitialized = false //see if map has loaded
+    @State private var isMapLoaded = false //see if map has loaded
 
     
     @State private var showLocationForm = false // if a location has been pressed or not
@@ -115,9 +114,9 @@ struct CreateMapView: View {
                 }
             }
             .onChange(of: locationManager.userLocation) { newLocation in //when loading in, center map and initialise it
-                if let newLocation = newLocation, !isMapInitialized {
+                if let newLocation = newLocation, !isMapLoaded {
                     mapRegion.center = newLocation.coordinate //centers map
-                    isMapInitialized = true
+                    isMapLoaded = true
                 }
             }
 
@@ -532,7 +531,7 @@ struct CreateMapView: View {
                         ForEach(
                             LocationCategory.allCases.filter { $0 != .fence }
                         ) { category in
-                            Text(category.rawValue.capitalized).tag(category)
+                            Text(category.rawValue.capitalized).tag(category) // retrieved from (https://developer.apple.com/documentation/swiftui/picker) as part of a dynamic picker for categories
                         }
                     }
                     .pickerStyle(SegmentedPickerStyle()) //so they can only choose between 3 options, excluding fence
