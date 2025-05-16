@@ -3,7 +3,7 @@
 //  WildTales
 //
 //  Created by Wei on 2025/4/11.
-//  Inspired by https://github.com/soapyigu/Swift-30-Projects/tree/master/Project%2027%20-%20NotificationsUI
+//  Heavily Inspired by https://github.com/soapyigu/Swift-30-Projects/tree/master/Project%2027%20-%20NotificationsUI
 
 import SwiftUI
 import UserNotifications

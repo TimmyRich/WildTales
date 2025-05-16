@@ -3,6 +3,7 @@
 //  WildTales
 //
 //  Created by Yujie on 2025/4/30.
+//  Heavily inspired by the following content
 //  Reference https://www.youtube.com/watch?v=g-lJ2ODJD8E
 
 import SwiftUI
