@@ -9,6 +9,8 @@ import SwiftUI
 
 // Gallery view for selecting which digital artwork to decorate
 struct GalleryView: View {
+    let screenHeight = UIScreen.main.bounds.height
+    let screenWidth = UIScreen.main.bounds.width
 
     let imageNames = [
         "Botanical Gardens", "Botanical Gardens Night Time", "Sunny Fields",
@@ -24,25 +26,73 @@ struct GalleryView: View {
             ZStack {
                 Color(red: 191 / 255, green: 209 / 255, blue: 161 / 255)
                     .ignoresSafeArea()
+                VStack {
+                    Image("quokka")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: screenHeight * 0.15)
+                        .offset(x: screenWidth * 0.3, y: screenHeight * 0.07)
+                    ZStack {
+                        Rectangle()
+                            .cornerRadius(60)
+                            .foregroundColor(.lightGrey)
+                            
+                        VStack {
+                            Text("Gallery")
+                                .font(.system(size: 32, design: .default))
+                                .foregroundStyle(.green1)
+                            Text("Select your trail")
+                                .foregroundStyle(.grey)
+                            Spacer()
+                        }
+                        .padding(.top, 20)
+                    }
+                }
+                .padding(.top, 75)
 
-                // Quokka image
-                Image("quokka")
-                    .resizable()
-                    .scaledToFit()
-                    .scaleEffect(0.2)
-                    .offset(x: 100, y: UIScreen.main.bounds.height * -0.43)
+                VStack {
+                    Spacer().frame(height: 200)
 
-                // Background image
-                Image("GalleryBackgroundRect")
-                    .resizable()
-                    .scaledToFit()
-                    .offset(y: 100)
+                    TabView(selection: $selectedIndex) {
+                        ForEach(0..<imageNames.count, id: \.self) { index in
+                            NavigationLink(
+                                destination: BadgeDecoratorView(
+                                    trailName: imageNames[index]
+                                )
+                            ) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 15)
+                                        .fill(Color.white)
+                                        .frame(
+                                            width: screenWidth * 0.8,
+                                            height: screenHeight * 0.65
+                                        )
 
-                TrailCarouselView(
-                    imageNames: imageNames,
-                    selectedIndex: $selectedIndex
-                )
-                .offset(y: 20)
+                                    VStack {
+                                        Text(
+                                            "The \(imageNames[selectedIndex]) trail"
+                                        )
+                                        .padding(.bottom, 10)
+                                        .font(.headline)
+
+                                        Image(imageNames[index])
+                                            .resizable()
+                                            .frame(
+                                                width: screenWidth * 0.75,
+                                                height: screenHeight * 0.6
+                                            )
+                                            .cornerRadius(10)
+                                    }
+                                }
+                                .tag(index)
+                                .shadow(radius: 10)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                    .frame(height: screenHeight)
+                }
 
                 // Carousel navigation buttons
                 VStack {
@@ -73,29 +123,23 @@ struct GalleryView: View {
                     }
                     .padding()
                 }
-
-                // Home Button (Top-left)
+                
+                // Home Button
                 HStack {
-                    VStack(alignment: .leading) {
-                        Button {  // back button goes to the previous page
+                    VStack {
+                        Button {
                             AudioManager.playSound(
                                 soundName: "boing.wav",
                                 soundVol: 0.5
                             )
                             goBack.wrappedValue.dismiss()
                         } label: {
-                            Image(systemName: "x.circle.fill").resizable()
+                            ExitButton()
                         }
-                        .font(.system(size: 24))
-                        .foregroundColor(.red)
-                        .frame(width: 20, height: 20)
-                        .shadow(radius: 5)
-                        .padding(.top, 200)
-                        Spacer()
+                        Spacer().frame(height: screenHeight * 0.65)
                     }
                     Spacer()
                 }
-                .padding()
             }
         }
     }
