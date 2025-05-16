@@ -13,69 +13,55 @@ struct Settings: View {
     @State private var selectedTime: Date = Date()  // Use for temporary notification, uneeded as code is commented out
 
     var body: some View {
-        VStack {
-
-            Text("Settings")
-                .font(.largeTitle)
-                .padding()
-
-            List {
-                Toggle("Enable Background Music", isOn: $isMusicEnabled)
-                    .onChange(of: isMusicEnabled) { value in
-                        if value {
-                            AudioManager.startBackgroundMusic()  //asks the auto manager to start music
-                        } else {
-                            AudioManager.stopBackgroundMusic()  // stop of not selected, mute button also works
-                        }
-                    }
-                    .padding()
-                // Set up notifications, commented out and can be implemented later
-                VStack {
-                    Text("Select Notification Time").padding()
-                    DatePicker(
-                        "",
-                        selection: $selectedTime,
-                        displayedComponents: .hourAndMinute
-                    )
-                    .padding()
-                    .padding(.leading)
-                    .datePickerStyle(WheelDatePickerStyle())
-
-                    Button("Schedule Notification") {
-                        let notificationDate =
-                            NotificationManager.getNotificationDate(
-                                from: selectedTime
-                            )
-                        NotificationManager.scheduleNotification(
-                            at: notificationDate
+        ZStack{
+            VStack{
+                HStack{
+                    Button {  // back button goes to the previous page
+                        AudioManager.playSound(
+                            soundName: "boing.wav",
+                            soundVol: 0.5
                         )
-                        print("pressing ok")
+                        dismiss()  //go to previous view
+                    } label: {
+                        Image(systemName: "chevron.left")
                     }
-                    .buttonStyle(.borderedProminent).tint(.green)
+                    .font(.system(size: 40))
+                    .foregroundColor(Color("HunterGreen"))
 
-                    .buttonStyle(.borderedProminent).tint(.blue)
-
+                    .shadow(radius: 5)
+                    .padding([.top, .leading], 30.0)
+                    
+                    Spacer()
+                    
                 }
-
+                Spacer()
             }
-            .background(Color.green)
-            .cornerRadius(20)
-
-            Button("back") {
-                dismiss()  // go back to previous view, dismiss popup
+            VStack {
+                
+                Text("Settings")
+                    .font(.largeTitle)
+                    .padding()
+                
+                List {
+                    Toggle("Enable Background Music", isOn: $isMusicEnabled)
+                        .onChange(of: isMusicEnabled) { value in
+                            if value {
+                                AudioManager.startBackgroundMusic()  //asks the auto manager to start music
+                            } else {
+                                AudioManager.stopBackgroundMusic()  // stop of not selected, mute button also works
+                            }
+                        }
+                        .padding()
+                    
+                }
+                .background(Color.green)
+                .cornerRadius(20)
+                
+                
+                
+                Spacer()
             }
             .padding()
-            .background(Color("Pink"))
-            .foregroundColor(.white)
-            .cornerRadius(10)
-            .font(.title)
-
-            Spacer()
-        }
-        .padding()
-        .onAppear {
-            // request notification permissions
-            NotificationManager.requestPermissions()  //request notification access if not provided already
         }
     }
 }
