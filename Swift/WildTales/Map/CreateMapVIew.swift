@@ -6,50 +6,58 @@
 //
 
 // This page allows the user to create pins on the map.
+
 // Pressing the plus will add a location to the middle of the screen.
 // It then prompts the user for a name, description, and quiz elements of the map.
-// None of these elements are as each location is stored with a unique ID
+// Each location is stored with a unique ID.
+//
+// Pressing the home icon creates a fence which user cannot go outside of 500 meters of this
+//
+// Clicking on pre-exisint icon allows it to be removed or visited/univisted
+// Quiz can also be tested on this
 
-import AVFoundation
-import CoreHaptics
-import MapKit
-import SpriteKit
-import SwiftUI
+import AVFoundation  //sound managers
+import CoreHaptics  //haptics when needed
+import MapKit  // maps API
+import SwiftUI  // ui
 
 struct CreateMapView: View {
 
-    @EnvironmentObject var appState: AppState
-    @Environment(\.presentationMode) var goBack
+    @Environment(\.presentationMode) var goBack  // to go back to previous view
 
-    @State private var showEmergency = false
+    @State private var showEmergency = false  // variable for if emergency is showing
 
     @StateObject private var locationManager = LocationManager()  // this helps load the locations from the json in addition to adding and saving to the arrays
 
     @State private var mapRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: -27.4705, longitude: 153.0260),
         span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
-    )
+    )  // default zoom into brisbane when loading map
 
-    @State private var locations = [Location]()
-    @State private var showSheet = false
-    @State private var showSettingsSheet = false
-    @State private var isMapInitialized = false
+    @State private var locations = [Location]()  //to hold locations
+
+    @State private var showSettingsSheet = false  // to show shetting view
+    @State private var isMapLoaded = false  //see if map has loaded
+
+    @State private var showLocationForm = false  // if a location has been pressed or not
 
     // variables to be overwritten later for forms
-    @State private var showLocationForm = false
     @State private var newLocationName = ""
     @State private var newLocationDescription = ""
     @State private var quizQuestion = ""
     @State private var quizAnswers = ["", "", "", ""]
     @State private var correctAnswerIndex: Int? = nil
 
+    //if its a animal, plant, location or fence
     @State private var selectedCategory: LocationCategory = .location
 
+    //default zone to show only custom pins
     @State private var selectedZone = "Custom"
 
+    //for which location is clicked
     @State private var selectedLocation: Location?
 
-    // quiz stuff for later
+    // if the quiz is finished or answers for quiz has been found
     @State private var isQuizFinished = false
     @State private var isAnswerCorrect = false
 
@@ -58,11 +66,11 @@ struct CreateMapView: View {
             // this is the map initialization
             Map(
                 coordinateRegion: $mapRegion,
-                interactionModes: .all,
-                showsUserLocation: true,
-                userTrackingMode: .none,
-                annotationItems: locations
-            ) { location in
+                interactionModes: .all,  //allow user to interact in many ways
+                showsUserLocation: true,  // user location
+                userTrackingMode: .none,  //doesnt follow the user
+                annotationItems: locations  //pins on the map
+            ) { location in  // for each location
                 MapAnnotation(
                     coordinate: CLLocationCoordinate2D(
                         latitude: location.latitude,
@@ -71,24 +79,24 @@ struct CreateMapView: View {
                 ) {
                     Button(action: {
                         withAnimation {
-                            selectedLocation = location
+                            selectedLocation = location  // each pin is a button and when clicks makes it the selected location
                         }
                     }) {
-                        if location.category == .fence {
+                        if location.category == .fence {  // if the category is special fence, show it as a house
                             Image(
                                 "House"
                             ).resizable()
                                 .frame(width: 40, height: 40)
                                 .foregroundColor(.red)
                                 .shadow(radius: 2)
-                        } else {
+                        } else {  // otherwise show it as visited or unvisited normal icons
                             Image(
                                 uiImage: UIImage(
-                                    named: pinImageName(for: location)
+                                    named: pinImageName(for: location)  // visited or univisited image
                                 ) ?? UIImage()
                             )
                             .resizable()
-                            .frame(width: 40, height: 40)
+                            .frame(width: 40, height: 40)  // pin size on map
                             .shadow(radius: 2)
                         }
                     }
@@ -97,30 +105,30 @@ struct CreateMapView: View {
             }
 
             .ignoresSafeArea(.all)
-            .onAppear {
-                locationManager.requestLocation()
-                let allLocations = LocationLoader.loadLocations()
+            .onAppear {  //when the map appears
+                locationManager.requestLocation()  //request the users location (if not already done)
+                let allLocations = LocationLoader.loadLocations()  //loads locations onto map
                 locations = allLocations.filter {
-                    $0.zone == "Custom"
+                    $0.zone == "Custom"  // only show locations where the zone is "custom"
                 }
             }
-            .onChange(of: locationManager.userLocation) { newLocation in
-                if let newLocation = newLocation, !isMapInitialized {
-                    mapRegion.center = newLocation.coordinate
-                    isMapInitialized = true
+            .onChange(of: locationManager.userLocation) { newLocation in  //when loading in, center map and initialise it
+                if let newLocation = newLocation, !isMapLoaded {
+                    mapRegion.center = newLocation.coordinate  //centers map
+                    isMapLoaded = true
                 }
             }
 
-            VStack {
+            VStack {  // top meny elemtns, back and emergency
                 HStack {
                     Button {  // back button to go to map views
                         AudioManager.playSound(
                             soundName: "boing.wav",
                             soundVol: 0.5
                         )
-                        goBack.wrappedValue.dismiss()
+                        goBack.wrappedValue.dismiss()  //dismiss this view and go to the previous
                     } label: {
-                        Image(systemName: "chevron.left")
+                        Image(systemName: "chevron.left")  //symbol for <
                     }
                     .font(.system(size: 24))
                     .foregroundColor(.white)
@@ -133,7 +141,7 @@ struct CreateMapView: View {
                     Spacer()
 
                     Button(action: {  // emergency button
-                        showEmergency = true
+                        showEmergency = true  // show the emergency popup
                         AudioManager.playSound(
                             soundName: "siren.wav",
                             soundVol: 0.5
@@ -206,7 +214,7 @@ struct CreateMapView: View {
                             zone: "Custom"
 
                         )
-                        locations.append(newFence)
+                        locations.append(newFence)  // add fence to locations array
                         var allLocations = LocationLoader.loadLocations()
 
                         // Update the locations efficiently
@@ -238,13 +246,13 @@ struct CreateMapView: View {
                     Button {  // center location
                         if let userLocation = locationManager.userLocation {
                             mapRegion.center = userLocation.coordinate
-                            mapRegion.span = MKCoordinateSpan(
+                            mapRegion.span = MKCoordinateSpan(  //default zoom too
                                 latitudeDelta: 0.005,
                                 longitudeDelta: 0.005
                             )
                         }
                     } label: {
-                        Image(systemName: "location.circle.fill")
+                        Image(systemName: "location.circle.fill")  //location symbol
                     }
                     .simultaneousGesture(
                         TapGesture().onEnded {
@@ -267,9 +275,9 @@ struct CreateMapView: View {
                             soundName: "boing.wav",
                             soundVol: 0.5
                         )
-                        showSettingsSheet.toggle()
+                        showSettingsSheet.toggle()  // show settings view
                     } label: {
-                        Image(systemName: "gear")
+                        Image(systemName: "gear")  // settings icon
                     }
                     .font(.system(size: 24))
                     .foregroundColor(.white)
@@ -280,16 +288,16 @@ struct CreateMapView: View {
                     .hapticOnTouch()
                 }
             }
-            .overlay(
+            .overlay(  // if the show emergency is true
                 Group {
                     if showEmergency {  // this just toggles the emergency menu if the button has been pressed
                         ZStack {
                             Color.black.opacity(0.4)
                                 .ignoresSafeArea()
-                                .onTapGesture { showEmergency = false }
+                                .onTapGesture { showEmergency = false }  // background, if background is pressed the view goes away
 
                             Emergency(showEmergency: $showEmergency)
-                                .transition(.scale)
+                                .transition(.scale)  // small animation as suggested by Co-Pilot
                         }
                     }
                 }
@@ -367,9 +375,9 @@ struct CreateMapView: View {
                                             soundVol: 0.5
                                         )
                                     }
-                                    isQuizFinished = true
+                                    isQuizFinished = true  // sets quiz completion to true
                                 }) {
-                                    Text(answers[index])
+                                    Text(answers[index])  //display the answers text
                                         .padding()
                                         .frame(maxWidth: .infinity)
                                         .background(
@@ -403,9 +411,9 @@ struct CreateMapView: View {
                                         $0.id == location.id
                                     }) {
                                         locations[index].visited =
-                                            newValue ? 1 : 0
+                                            newValue ? 1 : 0  // switch it over to the other value
                                         var allLocations =
-                                            LocationLoader.loadLocations()
+                                            LocationLoader.loadLocations()  // loads locations
 
                                         // Update the locations efficiently
                                         for updated in locations {
@@ -492,9 +500,6 @@ struct CreateMapView: View {
                 .transition(.move(edge: .bottom))
             }
         }
-        .sheet(isPresented: $showSheet) {
-            GalleryView()
-        }
         .sheet(isPresented: $showSettingsSheet) {
             Settings()
         }
@@ -506,7 +511,7 @@ struct CreateMapView: View {
                         .bold()
                         .padding(.top)
 
-                    TextField("Enter name", text: $newLocationName)
+                    TextField("Enter name", text: $newLocationName)  //name text
                         .padding()
                         .background(Color(.systemGray6))
                         .cornerRadius(10)
@@ -514,7 +519,7 @@ struct CreateMapView: View {
 
                     TextField(
                         "Enter description",
-                        text: $newLocationDescription
+                        text: $newLocationDescription  //description text
                     )
                     .padding()
                     .background(Color(.systemGray6))
@@ -525,17 +530,17 @@ struct CreateMapView: View {
                         ForEach(
                             LocationCategory.allCases.filter { $0 != .fence }
                         ) { category in
-                            Text(category.rawValue.capitalized).tag(category)
+                            Text(category.rawValue.capitalized).tag(category)  // retrieved from (https://developer.apple.com/documentation/swiftui/picker) as part of a dynamic picker for categories
                         }
                     }
-                    .pickerStyle(SegmentedPickerStyle())
+                    .pickerStyle(SegmentedPickerStyle())  //so they can only choose between 3 options, excluding fence
                     .cornerRadius(10)
                     .padding(.horizontal)
 
                     Text("Quiz Question")
                         .font(.headline)
 
-                    TextField("Enter question", text: $quizQuestion)
+                    TextField("Enter question", text: $quizQuestion)  //save quiz question text
                         .padding()
                         .background(Color(.systemGray6))
                         .cornerRadius(10)
@@ -568,8 +573,9 @@ struct CreateMapView: View {
                     }
 
                     HStack {
-                        Button(action: {
+                        Button(action: {  // save location button
                             let newLocation = Location(
+                                //gather field data and let all location information equal that
                                 id: UUID(),
                                 name: newLocationName,
                                 description: newLocationDescription,
@@ -587,21 +593,27 @@ struct CreateMapView: View {
                                 zone: selectedZone
                             )
 
+                            // add it to the array of locations
                             locations.append(newLocation)
+
+                            // reload the map with the new location
                             var allLocations = LocationLoader.loadLocations()
 
+                            //if it already exisits, update it, otherwise add new one
                             for updated in locations {
                                 if let index = allLocations.firstIndex(where: {
                                     $0.id == updated.id
                                 }) {
-                                    allLocations[index] = updated
+                                    allLocations[index] = updated  // pre-exisintg
                                 } else {
-                                    allLocations.append(updated)
+                                    allLocations.append(updated)  // add new
                                 }
                             }
 
                             LocationLoader.saveLocations(allLocations)
+                            // save locations
 
+                            //reset everything to blank
                             newLocationName = ""
                             newLocationDescription = ""
                             quizQuestion = ""
@@ -621,7 +633,7 @@ struct CreateMapView: View {
                         }
                         .padding(.horizontal)
 
-                        Button(action: {
+                        Button(action: {  // when cancelled, reset values to nothing
                             newLocationName = ""
                             newLocationDescription = ""
                             quizQuestion = ""
@@ -629,9 +641,9 @@ struct CreateMapView: View {
                             selectedCategory = .location
                             correctAnswerIndex = nil
                             showLocationForm = false
-                            selectedZone = "Custom"
+                            selectedZone = "Custom"  // custom map pins zone will always be "Custom"
                         }) {
-                            Text("Cancel")
+                            Text("Cancel")  // cancel text formatting
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding()
@@ -644,10 +656,11 @@ struct CreateMapView: View {
                 }
                 .padding()
             }
-        }.preferredColorScheme(.light)
+        }.preferredColorScheme(.light)  //map is alwsys on light mode
 
     }
 
+    // gives a location, searched if it is visited, if it is, the normal icon, otherwise blank version
     func pinImageName(for location: Location) -> String {
         switch location.category {
         case .animal:

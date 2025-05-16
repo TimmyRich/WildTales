@@ -7,34 +7,34 @@
 
 // This is the main map view, it is the one that will notify the user when they get close to a location and mark it as visited as well
 // They can also do the quizzes when the go up to a location
+// Swipe between different categories on bottom
+// Click on location symbol to center map
+// Click on emergency to show emergency menu
+// Screen time notifications
+// Badge notifications if all spots in a certain zone are visited
 
-import AVFoundation
-import CoreHaptics
-import CoreLocation
-import MapKit
-import SpriteKit
-import SwiftUI
+import AVFoundation  // sound managers
+import CoreHaptics  // haptics when needed
+import CoreLocation  //location use
+import MapKit  //maps
+import SwiftUI  //ui elements
 
 struct MapView: View {
     let zone: String
 
-    @State private var showNewBadge = false
-    @State private var navigateToGallery = false
+    @State private var showGIF = true  // shows swipe gif by default
 
-    @State private var showGIF = true
+    @Environment(\.presentationMode) var goBack  // to go back to map selection
 
-    @EnvironmentObject var appState: AppState
-    @Environment(\.presentationMode) var goBack
+    @State private var isShowingFullImage = false  //for full image on pin
 
-    @State private var isShowingFullImage = false
+    @State private var wikipediaImageURL: URL? = nil  // default wikipedia url to nothing
 
-    @State private var wikipediaImageURL: URL? = nil
+    @State private var showScreenTimeAlert = false  // for screen time alert
+    @State private var screenTimerStart: Date? = nil  //start time for alert
+    @State private var ScreenTimer: Timer? = nil  // timer count
 
-    @State private var showUsageAlert = false
-    @State private var usageStartTime: Date? = nil
-    @State private var usageTimer: Timer? = nil
-
-    @State private var showEmergency = false
+    @State private var showEmergency = false  //to show the emergency popup
     @StateObject private var locationManager = LocationManager()
 
     // where default map view is when no location (its brisbane city)
@@ -43,17 +43,16 @@ struct MapView: View {
         span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)  // this part is just the zoom
     )
 
-    @State private var locations = [Location]()
-    @State private var showSheet = false
-    @State private var showSettingsSheet = false
-    @State private var isMapInitialized = false
+    @State private var locations = [Location]()  // all locations
+    @State private var isMapLoaded = false  // checks if map is initialised
 
-    @State private var selectedLocation: Location?
+    @State private var selectedLocation: Location?  //selected location for when pressed
 
     // state of quiz for showing
     @State private var isQuizFinished = false
     @State private var isAnswerCorrect = false
 
+    //filter rotation for swipable interface
     enum FilterCategory: String, CaseIterable {
         case all = "All"
         case animal = "Animals"
@@ -61,17 +60,17 @@ struct MapView: View {
         case location = "Locations"
     }
 
-    @State private var selectedFilter: FilterCategory = .all
+    @State private var selectedFilter: FilterCategory = .all  //default to all for filter
 
     var body: some View {
         ZStack {
             // map with user dot
-            Map(
+            Map(  // most of thse variables are standard and autofill when createing a Map()
                 coordinateRegion: $mapRegion,
-                interactionModes: .all,
-                showsUserLocation: true,
-                userTrackingMode: .none,
-                annotationItems: locations.filter { location in
+                interactionModes: .all,  // allows all interactions with the map
+                showsUserLocation: true,  // shows user location as blue dot
+                userTrackingMode: .none,  // dont follow user
+                annotationItems: locations.filter { location in  // show for each of the filter locations of present
                     switch selectedFilter {
                     case .all: return true
                     case .animal: return location.category == .animal
@@ -79,14 +78,14 @@ struct MapView: View {
                     case .location: return location.category == .location
                     }
                 }
-            ) { location in
+            ) { location in  // eah location in the locations array is turned into a button and placed on the map
                 MapAnnotation(
                     coordinate: CLLocationCoordinate2D(
                         latitude: location.latitude,
                         longitude: location.longitude
                     )
                 ) {
-                    if location.category == .fence {
+                    if location.category == .fence {  //fence is shown but not clickable
                         Image("House")
                             .resizable()
                             .frame(width: 30, height: 30)
@@ -94,13 +93,13 @@ struct MapView: View {
                     } else {
                         Button(action: {
                             withAnimation {
-                                selectedLocation = location
+                                selectedLocation = location  // select this location for viewing
                             }
                         }) {
                             Image(
                                 uiImage: UIImage(
-                                    named: pinImageName(for: location)
-                                ) ?? UIImage()
+                                    named: pinImageName(for: location)  // visited or uvisited map pin
+                                ) ?? UIImage()  // default
                             )
                             .resizable()
                             .frame(width: 30, height: 30)
@@ -110,25 +109,26 @@ struct MapView: View {
                 }
 
             }
-            .ignoresSafeArea()
-            .onAppear {
-                locationManager.requestLocation()
-                startUsageTimer()
-                let allLocations = LocationLoader.loadLocations()
-                locations = allLocations.filter { $0.zone == zone }
+            .ignoresSafeArea()  // can go from corner to corner
+            .onAppear {  // when view first shows up
+                locationManager.requestLocation()  // request location if not previoously asked
+                startScreenTimer()  // start screen on timer
+                let allLocations = LocationLoader.loadLocations()  //load locations
+                locations = allLocations.filter { $0.zone == zone }  //filter by zone
 
-                ProximityNotificationManager.shared.requestPermission()
+                ProximityNotificationManager.shared.requestPermission()  //request notification permission
             }
 
-            .onChange(of: locationManager.userLocation) { newLocation in
+            .onChange(of: locationManager.userLocation) { newLocation in  // when the users locations changes
                 if let newLocation = newLocation {
-                    if !isMapInitialized {
+                    if !isMapLoaded {  // when first initialised, center the screen to the user
                         mapRegion.center = newLocation.coordinate
-                        isMapInitialized = true
+                        isMapLoaded = true
                     }
 
-                    let userCoordinate = newLocation.coordinate
+                    let userCoordinate = newLocation.coordinate  //users location
 
+                    //zones for badge notification, add here for all unique locations to get a badge for
                     let zonesOfInterest = [
                         "University of Queensland",
                         "Southbank Parklands",
@@ -136,6 +136,7 @@ struct MapView: View {
                         "Custom",
                     ]
 
+                    //load locations
                     var allLocations = LocationLoader.loadLocations()
 
                     // Update the locations efficiently
@@ -149,6 +150,7 @@ struct MapView: View {
                         }
                     }
 
+                    //checks if each zone has been completed
                     checkZoneCompletion(
                         zones: zonesOfInterest,
                         locations: allLocations
@@ -165,18 +167,20 @@ struct MapView: View {
                         //if the location is a fence and they go past 500 meters of it
                         if locations[index].category == LocationCategory.fence
                             && distance > 500
-                        {
+                        {  //setting up notofication content
                             let content = UNMutableNotificationContent()
                             content.title = "You're Too Far Away!"
                             content.body =
                                 "Move closer home, you could be in danger!"
                             content.sound = UNNotificationSound.default
 
+                            //time to trigger the notification
                             let trigger = UNTimeIntervalNotificationTrigger(
-                                timeInterval: 1,
+                                timeInterval: 1,  //one second
                                 repeats: false
                             )
 
+                            //when the notification is actioned
                             let request = UNNotificationRequest(
                                 identifier: "noticication",
                                 content: content,
@@ -191,7 +195,7 @@ struct MapView: View {
                                     )
                                 }
                             }
-
+                            // siren sound constant
                             AudioManager.playSound(
                                 soundName: "siren.wav",
                                 soundVol: 0.5
@@ -203,7 +207,7 @@ struct MapView: View {
                         if distance < 50 && locations[index].visited != 1
                             && locations[index].category
                                 != LocationCategory.fence
-                        {
+                        {  //notification content
                             let content = UNMutableNotificationContent()
                             content.title = "You're Close!"
                             content.body =
@@ -221,6 +225,7 @@ struct MapView: View {
                                 trigger: trigger
                             )
 
+                            //if user gets close and t isnt already bvisited, the pin will open automatically
                             UNUserNotificationCenter.current().add(request) {
                                 (error) in
                                 if let error = error {
@@ -229,15 +234,16 @@ struct MapView: View {
                                         "Error adding notification request: \(error.localizedDescription)"
                                     )
                                 } else {
-                                    selectedLocation = locations[index]
+                                    selectedLocation = locations[index]  //select location
                                     print(
                                         "Notification request successfully added."
                                     )
                                 }
                             }
 
+                            //mark as visited
                             locations[index].visited = 1
-                            var allLocations = LocationLoader.loadLocations()
+                            var allLocations = LocationLoader.loadLocations()  //reload locations
 
                             // Update the locations efficiently
                             for updated in locations {
@@ -267,7 +273,7 @@ struct MapView: View {
                 }
             }
             .onDisappear {
-                stopUsageTimer()
+                stopScreenTimer()  // when going off this view, stop the screen time timer
             }
 
             VStack {
@@ -278,7 +284,7 @@ struct MapView: View {
                             soundName: "boing.wav",
                             soundVol: 0.5
                         )
-                        goBack.wrappedValue.dismiss()
+                        goBack.wrappedValue.dismiss()  //go to previous view
                     } label: {
                         Image(systemName: "chevron.left")
                     }
@@ -294,7 +300,7 @@ struct MapView: View {
 
                     // emergency button shows the emergency view overlay
                     Button {
-                        showEmergency = true
+                        showEmergency = true  // trigger emergency help
                         AudioManager.playSound(
                             soundName: "siren.wav",
                             soundVol: 0.5
@@ -304,7 +310,7 @@ struct MapView: View {
                             .font(.system(size: 24))
                             .foregroundColor(.white)
                             .frame(width: 60, height: 60)
-                            .background(Circle().fill(Color.red))
+                            .background(Circle().fill(Color.red))  //big red colour
                             .shadow(radius: 5)
                             .padding()
                     }
@@ -313,20 +319,20 @@ struct MapView: View {
             }
 
             // location detail panel with quiz
-            if let location = selectedLocation {
+            if let location = selectedLocation {  // for the selected location
                 VStack(alignment: .center, spacing: 12) {
                     ZStack(alignment: .topTrailing) {
-                        if let url = wikipediaImageURL {
+                        if let url = wikipediaImageURL {  //wikipedia image (if exists)
                             AsyncImage(url: url) { phase in
                                 switch phase {
-                                case .empty:
+                                case .empty:  //if no image use pawicon
                                     Image("PawIcon")
                                         .resizable()
                                         .scaledToFill()
                                         .frame(height: 150)
                                         .clipped()
                                         .cornerRadius(8)
-                                case .success(let image):
+                                case .success(let image):  // if there is an imag, us ut
                                     image
                                         .resizable()
                                         .scaledToFill()
@@ -334,9 +340,9 @@ struct MapView: View {
                                         .clipped()
                                         .cornerRadius(8)
                                         .onTapGesture {
-                                            isShowingFullImage = true
+                                            isShowingFullImage = true  // when clicked go to full screen image
                                         }
-                                case .failure:
+                                case .failure:  //if there was a failure, use default (stopped it reusing old image on new pin)
                                     Image("PawIcon")
                                         .resizable()
                                         .scaledToFill()
@@ -347,11 +353,11 @@ struct MapView: View {
                                             isShowingFullImage = true
                                         }
                                 @unknown default:
-                                    EmptyView()
+                                    EmptyView()  //default, showulnt get to this
                                 }
                             }
                         } else {
-                            Image("PawIcon")
+                            Image("PawIcon")  // default again to paw icon, for errors where old images would show up
                                 .resizable()
                                 .scaledToFill()
                                 .frame(height: 150)
@@ -362,15 +368,16 @@ struct MapView: View {
                                 }
                         }
 
-                        Button(action: {
+                        // this part is for redirecting to a wikipedia link for each pin
+                        Button(action: {  // when clicking on the blue ?
                             let query =
                                 location.name.addingPercentEncoding(
                                     withAllowedCharacters: .urlQueryAllowed
                                 ) ?? ""
-                            if let url = URL(
+                            if let url = URL(  // search wikipeida with the location name as the query
                                 string: "https://en.wikipedia.org/wiki/\(query)"
                             ) {
-                                UIApplication.shared.open(url)
+                                UIApplication.shared.open(url)  //go to the url in default browser
                             }
                         }) {
                             Image(systemName: "questionmark.circle.fill")
@@ -380,7 +387,7 @@ struct MapView: View {
                         }
                     }
 
-                    Text(location.name)
+                    Text(location.name)  //location details
                         .font(.title2)
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)
@@ -392,20 +399,22 @@ struct MapView: View {
                         .frame(maxWidth: .infinity)
 
                     HStack {
-                        Text("Visited:")
+                        Text("Visited:")  // if the place is visted
                             .font(.subheadline)
                             .bold()
                         Image(
-                            systemName: location.visited == 1
+                            systemName: location.visited == 1  // x if unvisited and tick if visited
                                 ? "checkmark.circle.fill" : "xmark.circle.fill"
                         )
-                        .foregroundColor(location.visited == 1 ? .green : .red)
+                        .foregroundColor(
+                            location.visited == 1 ? .green : .red
+                        )  //green if visited and red if not
                         .font(.title3)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.top, 4)
 
-                    if location.visited == 1 {
+                    if location.visited == 1 {  // if location has been visited, show quiz info
                         if let question = location.quizQuestion,
                             let answers = location.quizAnswers,
                             let correctIndex = location.correctAnswerIndex
@@ -419,21 +428,21 @@ struct MapView: View {
 
                             ForEach(answers.indices, id: \.self) { index in
                                 Button {
-                                    if index == correctIndex {
+                                    if index == correctIndex {  // if correct, play sound and mark answer as correct
                                         isAnswerCorrect = true
                                         AudioManager.playSound(
                                             soundName: "correct.wav",
                                             soundVol: 0.5
                                         )
-                                        if let selectedIndex =
+                                        if let selectedIndex =  // update array of the quiz is correct
                                             locations.firstIndex(where: {
                                                 $0.id == location.id
                                             })
                                         {
                                             locations[selectedIndex]
-                                                .quizCompleted = true
+                                                .quizCompleted = true  // mark as true
                                             var allLocations =
-                                                LocationLoader.loadLocations()
+                                                LocationLoader.loadLocations()  //reload locations
                                             for updated in locations {
                                                 if let index =
                                                     allLocations.firstIndex(
@@ -448,19 +457,19 @@ struct MapView: View {
                                                 }
                                             }
                                             LocationLoader.saveLocations(
-                                                allLocations
+                                                allLocations  //save changes to locations
                                             )
                                         }
                                     } else {
-                                        isAnswerCorrect = false
+                                        isAnswerCorrect = false  // if the answer is false
                                         AudioManager.playSound(
-                                            soundName: "wrong.wav",
+                                            soundName: "wrong.wav",  //incorrect sound
                                             soundVol: 0.5
                                         )
                                     }
-                                    isQuizFinished = true
+                                    isQuizFinished = true  // marks quiz completed as true
                                 } label: {
-                                    Text(answers[index])
+                                    Text(answers[index])  // all the answers for the quiz's text
                                         .padding()
                                         .frame(maxWidth: .infinity)
                                         .background(
@@ -471,36 +480,36 @@ struct MapView: View {
                                 }
                             }
 
-                            if isQuizFinished {
+                            if isQuizFinished {  //if the quiz has been attempted
                                 Text(
                                     isAnswerCorrect
-                                        ? "That's right!" : "Oops, try again!"
+                                        ? "That's right!" : "Oops, try again!"  // wrong or correct text
                                 )
                                 .font(.headline)
                                 .foregroundColor(
-                                    isAnswerCorrect ? .green : .red
+                                    isAnswerCorrect ? .green : .red  // wrong or correct text colours
                                 )
                                 .padding()
                                 .transition(.opacity)
                             }
                         }
                     } else {
-                        if location.quizQuestion != nil {
+                        if location.quizQuestion != nil {  // if there is a quiz
                             HStack {
                                 Image(systemName: "dot.radiowaves.up.forward")
                                     .foregroundColor(.red)
                                 Text(
-                                    "Get closer to the location to take the quiz!"
+                                    "Get closer to the location to take the quiz!"  // say get closer to attampt
                                 )
                                 .font(.footnote)
                                 .foregroundColor(.red)
                             }
                             .padding(.top)
-                        } else {
+                        } else {  // if there is not quiz question or quiz
                             HStack {
                                 Image(systemName: "pencil.slash")
                                     .foregroundColor(.orange)
-                                Text("No quiz for this location!")
+                                Text("No quiz for this location!")  // say there is no quiz for this location
                                     .font(.footnote)
                                     .foregroundColor(.orange)
                             }
@@ -508,13 +517,13 @@ struct MapView: View {
                         }
                     }
 
-                    Button("Close") {
+                    Button("Close") {  // close location button
                         AudioManager.playSound(
                             soundName: "boing.wav",
                             soundVol: 0.5
                         )
                         withAnimation {
-                            selectedLocation = nil
+                            selectedLocation = nil  // unselect the location
                         }
                     }
                     .font(.body)
@@ -524,14 +533,14 @@ struct MapView: View {
                 }
                 .padding()
                 .background(
-                    RoundedRectangle(cornerRadius: 12).fill(Color.white)
+                    RoundedRectangle(cornerRadius: 12).fill(Color.white)  //background panel
                 )
                 .shadow(radius: 8)
                 .frame(maxWidth: 300)
                 .transition(.opacity)
                 .zIndex(100)
                 .onAppear {
-                    fetchWikipediaImage(for: location.name)
+                    fetchWikipediaImage(for: location.name)  // when appearing, attempt to get a image from wikipedia
                 }
             }
 
@@ -551,14 +560,14 @@ struct MapView: View {
                 Spacer()
                 HStack {
 
-                    Image("Quokka_1")
+                    Image("Quokka_1")  //quokka image
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(
-                            width: UIScreen.main.bounds.width / 6,
+                            width: UIScreen.main.bounds.width / 6,  //dynamic
                             height: UIScreen.main.bounds.height / 6
                         )
-                        .rotationEffect(.degrees(30))
+                        .rotationEffect(.degrees(30))  //rotated a little
                         .ignoresSafeArea(.all)
                         .padding(.leading, 20.0)
 
@@ -566,8 +575,8 @@ struct MapView: View {
 
                     ZStack {
 
-                        TabView(selection: $selectedFilter) {
-                            ForEach(FilterCategory.allCases, id: \.self) {
+                        TabView(selection: $selectedFilter) {  //swipable filter using a TabView to di it
+                            ForEach(FilterCategory.allCases, id: \.self) {  // for each filter category
                                 filter in
                                 Text(filter.rawValue)
                                     .font(.headline)
@@ -585,7 +594,7 @@ struct MapView: View {
                             }
                         }
                         .tabViewStyle(
-                            PageTabViewStyle(indexDisplayMode: .never)
+                            PageTabViewStyle(indexDisplayMode: .never)  // dont have the white dots which is default to on
                         )
                         .frame(height: 70)
 
@@ -596,15 +605,15 @@ struct MapView: View {
                             mapRegion.center = userLocation.coordinate
                             mapRegion.span = MKCoordinateSpan(
                                 latitudeDelta: 0.003,
-                                longitudeDelta: 0.003
+                                longitudeDelta: 0.003  // default zoom when laoding in and clicking button
                             )
                         }
                         AudioManager.playSound(
-                            soundName: "boing.wav",
+                            soundName: "boing.wav",  //boing sound
                             soundVol: 0.5
                         )
                     } label: {
-                        Image(systemName: "location.circle.fill")
+                        Image(systemName: "location.circle.fill")  //icon
                     }
                     .font(.system(size: 24))
                     .foregroundColor(.white)
@@ -619,7 +628,7 @@ struct MapView: View {
             }.ignoresSafeArea()
 
             HStack {
-                if showGIF {
+                if showGIF {  //show swipe gif for ease of access
                     GIFView(gifName: "swipe")
                         .frame(width: 70, height: 70)
                         .padding(.top, UIScreen.main.bounds.height - 300)
@@ -627,15 +636,13 @@ struct MapView: View {
             }
 
         }
-        .sheet(isPresented: $showSheet) {
-            GalleryView()
-        }
-        .fullScreenCover(isPresented: $isShowingFullImage) {
+
+        .fullScreenCover(isPresented: $isShowingFullImage) {  // when full screen image is selected
             ZStack {
                 // Background color set to MapGreen
-                Color.mapGreen.ignoresSafeArea()
+                Color.mapGreen.ignoresSafeArea()  // full screen background green colour
 
-                if let url = wikipediaImageURL {
+                if let url = wikipediaImageURL {  // show the wikipedia image
                     AsyncImage(url: url) { image in
                         image
                             .resizable()
@@ -651,25 +658,25 @@ struct MapView: View {
                         .ignoresSafeArea()
                 }
 
-                // Close button in the top-left corner with HunterGreen background
+                // Close button
                 VStack {
                     HStack {
                         Button(action: {
-                            isShowingFullImage = false
+                            isShowingFullImage = false  // close the full screen view and go back to map
                         }) {
                             Image(systemName: "xmark.circle.fill")
                                 .font(.system(size: 30))
                                 .foregroundColor(.white)
-                                .padding(12)  // Adds space around the X icon
-                                .background(Color.hunterGreen)  // HunterGreen background
-                                .clipShape(Circle())  // Makes the button round
+                                .padding(12)
+                                .background(Color.hunterGreen)
+                                .clipShape(Circle())
                         }
                         Spacer()
                     }
                     Spacer()
                 }
             }
-        }.onAppear {
+        }.onAppear {  // when map appears
             // Hide the GIF after 10 seconds
             DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                 withAnimation {
@@ -678,20 +685,17 @@ struct MapView: View {
             }
         }
 
-        .sheet(isPresented: $showSettingsSheet) {
-            Settings()
-        }
-        .animation(.easeInOut, value: selectedLocation)
-        .onChange(of: selectedLocation) { _ in
+        .animation(.easeInOut, value: selectedLocation)  // gif animation
+        .onChange(of: selectedLocation) { _ in  // default for each location so going into it resets the quiz, but does not reset status in array
             isQuizFinished = false
             isAnswerCorrect = false
-        }.preferredColorScheme(.light)
+        }.preferredColorScheme(.light)  // always light mode map
         .alert(
-            "You've been using the app for a while!",
-            isPresented: $showUsageAlert
+            "You've been using the app for a while!",  //aleart for screen time
+            isPresented: $showScreenTimeAlert
         ) {
             Button("Okay") {
-                startUsageTimer()  // Reset timer when user acknowledges
+                startScreenTimer()  // Reset timer when user acknowledges
             }
         } message: {
             Text("Time to take a break!")
@@ -699,6 +703,7 @@ struct MapView: View {
 
     }
 
+    //different cases for the categories and the pins to show on the map
     func pinImageName(for location: Location) -> String {
         switch location.category {
         case .animal:
@@ -712,36 +717,40 @@ struct MapView: View {
         }
     }
 
-    func startUsageTimer() {
-        usageStartTime = Date()
-        usageTimer?.invalidate()  // Cancel previous timer if any
+    //function to start the timer for screen time
+    func startScreenTimer() {
+        screenTimerStart = Date()
+        ScreenTimer?.invalidate()  // Cancel previous timer if any
 
-        usageTimer = Timer.scheduledTimer(
-            withTimeInterval: 20,
+        ScreenTimer = Timer.scheduledTimer(
+            withTimeInterval: 1600,
             repeats: false
         ) { _ in
-            showUsageAlert = true
+            showScreenTimeAlert = true
         }
     }
 
-    func stopUsageTimer() {
-        usageTimer?.invalidate()
-        usageTimer = nil
+    //stop the timer
+    func stopScreenTimer() {
+        ScreenTimer?.invalidate()
+        ScreenTimer = nil
     }
 
+    //loops through the locations and checks if the one is completed, if so awarding a badge and notifying about it
     func checkZoneCompletion(zones: [String], locations: [Location]) {
         for zone in zones {
-            let locationsInZone = locations.filter { $0.zone == zone }
-            let allVisited = locationsInZone.allSatisfy { $0.visited == 1 }
+            let locationsInZone = locations.filter { $0.zone == zone }  // check for the zone currently in
+            let allVisited = locationsInZone.allSatisfy { $0.visited == 1 }  // if all are visit
 
-            @State var notified = UserDefaults.standard.integer(forKey: zone)
+            @State var notified = UserDefaults.standard.integer(forKey: zone)  // if not already notified
 
-            if allVisited && notified != 1 {
+            if allVisited && notified != 1 {  // if all visited and not notified
                 let content = UNMutableNotificationContent()
 
                 UserDefaults.standard.set(1, forKey: zone)
                 notified = 1  // Update the local state to reflect the change
 
+                // set up notification ttext
                 content.title = "You Have Earned A Badge!"
                 content.body =
                     "Go into the gallery to see what you have recieved"
@@ -758,7 +767,7 @@ struct MapView: View {
                     trigger: trigger
                 )
 
-                UNUserNotificationCenter.current().add(request) {
+                UNUserNotificationCenter.current().add(request) {  //error handling default autofil
                     error in
                     if let error = error {
                         print(
@@ -767,13 +776,15 @@ struct MapView: View {
                     }
                 }
 
-            } else if !allVisited && notified == 1 {
+            } else if !allVisited && notified == 1 {  // if something in the array changes
                 UserDefaults.standard.set(0, forKey: zone)
-                notified = 0
+                notified = 0  // set to not notifiy so when they get them all again, it will re-show the badge
             }
         }
     }
 
+    //basic function to get the firtst image wikipedia presents, takes a string and returns an imageURL
+    // This was derived from ChatGPT with the promopt, "write some swift code that displays a wikipedia image based on a string input to it"
     func fetchWikipediaImage(for title: String) {
         // Reset the image to nil so the previous one is cleared immediately
         DispatchQueue.main.async {
@@ -807,27 +818,28 @@ struct MapView: View {
     }
 
 }
-
-// small extention to calculate distance between two coordinates, courtesy (https://stackoverflow.com/questions/11077425/finding-distance-between-cllocationcoordinate2d-points/28683508)
-extension CLLocationCoordinate2D {
-    func distance(to coordinate: CLLocationCoordinate2D) -> CLLocationDistance {
-        let fromLocation = CLLocation(
-            latitude: self.latitude,
-            longitude: self.longitude
-        )
-        let toLocation = CLLocation(
-            latitude: coordinate.latitude,
-            longitude: coordinate.longitude
-        )
-        return fromLocation.distance(from: toLocation)
-    }
-}
-
+// struct to define wikipedia context, also from ChatGPT
 struct WikipediaSummary: Decodable {
     struct Thumbnail: Decodable {
         let source: String
     }
     let thumbnail: Thumbnail?
+}
+//end ChatGPT assisted coding
+
+// small extention to calculate distance between two coordinates, courtesy (https://stackoverflow.com/questions/11077425/finding-distance-between-cllocationcoordinate2d-points/28683508)
+extension CLLocationCoordinate2D {
+    func distance(to coordinate: CLLocationCoordinate2D) -> CLLocationDistance {
+        let fromLocation = CLLocation(  // get coordiantes of user
+            latitude: self.latitude,
+            longitude: self.longitude
+        )
+        let toLocation = CLLocation(  //get coordinates of map pin
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude
+        )
+        return fromLocation.distance(from: toLocation)
+    }
 }
 
 #Preview {

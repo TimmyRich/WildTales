@@ -4,35 +4,32 @@
 //
 //  Created by Kurt McCullough on 31/3/2025.
 //
+//Home page, just a NavigationView that redirects to differeent views within the application
 
 import SwiftUI
 
 struct Home: View {
     @EnvironmentObject var appState: AppState
 
-    @State private var showEmergency = false
-
-    var hasSeenScrapBookGuide: Bool {
-        UserDefaults.standard.bool(forKey: "hasSeenScrapBookGuide")
-    }
+    @State private var showEmergency = false  // variable to show emergency
 
     var body: some View {
         NavigationView {
             ZStack {
-                Image("home")
+                Image("home")  // background and styling
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .ignoresSafeArea(edges: .all)
+                    .ignoresSafeArea(edges: .all)  // fill to corners
                     .frame(
                         width: UIScreen.main.bounds.width,
-                        height: UIScreen.main.bounds.height
+                        height: UIScreen.main.bounds.height  // over whole screen
                     )
 
                 VStack {
                     HStack {
                         Spacer()
 
-                        Image("Quokka_2")
+                        Image("Quokka_2")  //quokka image and styling
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(
@@ -45,14 +42,14 @@ struct Home: View {
                     Spacer()
                 }
 
-                VStack {
+                VStack {  //just the emergency button and styling
                     HStack {
                         Button(action: {
                             AudioManager.playSound(
                                 soundName: "siren.wav",
                                 soundVol: 0.5
                             )
-                            showEmergency = true
+                            showEmergency = true  // for emergency toggle
                         }) {
                             Image(systemName: "phone.connection.fill")
                                 .font(.system(size: 24))
@@ -60,7 +57,7 @@ struct Home: View {
                                 .frame(width: 60, height: 60)
                                 .background(Circle().fill(Color.red))
                                 .shadow(radius: 5)
-                                .padding()
+                                .padding()  // so its not sitting on the edge
                         }
                         .padding()
 
@@ -70,7 +67,7 @@ struct Home: View {
                     Spacer()
                 }
 
-                Image("logoTitle")
+                Image("logoTitle")  //logo image and styling
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 180, height: 180)
@@ -81,15 +78,15 @@ struct Home: View {
                         Spacer()
                         VStack {
                             NavigationLink(
-                                destination: MapChoice()
-                                    .navigationBarBackButtonHidden(true)
+                                destination: MapChoice()  // go to select maps
+                                    .navigationBarBackButtonHidden(true)  //dont show navigation bar or details
                             ) {
                                 Image("homeButton2")
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 100, height: 100)
                             }.simultaneousGesture(
-                                TapGesture().onEnded {
+                                TapGesture().onEnded {  // play sound when clicked
                                     AudioManager.playSound(
                                         soundName: "boing.wav",
                                         soundVol: 0.5
@@ -98,7 +95,7 @@ struct Home: View {
                             )
 
                             NavigationLink(
-                                destination: ScrapBookGuide()
+                                destination: ScrapBookGuide()  //go to scrapbook
                                     .navigationBarBackButtonHidden(true)
                             ) {
                                 Image("homeButton4")
@@ -119,7 +116,7 @@ struct Home: View {
                         VStack {
 
                             NavigationLink(
-                                destination: GalleryView()
+                                destination: GalleryView()  // go to gallery
                                     .navigationBarBackButtonHidden(true)
                                     .preferredColorScheme(.light)
                             ) {
@@ -137,7 +134,7 @@ struct Home: View {
                             )
 
                             NavigationLink(
-                                destination: Learn()
+                                destination: Learn()  //learn about quinn again
                                     .navigationBarBackButtonHidden(true)
                             ) {
                                 Image("homeButton3")
@@ -161,7 +158,7 @@ struct Home: View {
             }
             .overlay(
                 Group {
-                    if showEmergency {
+                    if showEmergency {  // if th emergency button is clicked, open the emergency toggle
                         ZStack {
                             Color.black.opacity(0.4)
                                 .ignoresSafeArea()
@@ -174,7 +171,7 @@ struct Home: View {
                 }
             )
             .onAppear {
-                AudioManager.startBackgroundMusic()
+                AudioManager.startBackgroundMusic()  //starts background music
             }
 
         }

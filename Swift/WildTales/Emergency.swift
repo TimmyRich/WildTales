@@ -4,6 +4,7 @@
 //
 //  Created by Kurt McCullough on 3/4/2025.
 //
+// Emergency Page View, just a few buttos that redirect within the iPhone
 
 import SwiftUI
 
@@ -26,7 +27,7 @@ struct Emergency: View {
                         soundVol: 0.5
                     )
                     if let url = URL(string: "tel://0434797833") {
-                        UIApplication.shared.open(url)
+                        UIApplication.shared.open(url)  //prompt to call parents number
                     }
                 }
                 .foregroundColor(.white)
@@ -40,7 +41,7 @@ struct Emergency: View {
                         soundVol: 0.5
                     )
 
-                    if let url = URL(string: "findmy://") {
+                    if let url = URL(string: "findmy://") {  //open the find my application
                         if UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
                         }
@@ -67,7 +68,7 @@ struct Emergency: View {
                         soundName: "siren.wav",
                         soundVol: 0.5
                     )
-                    let searchQuery = "police"
+                    let searchQuery = "police"  // search query in apple maps for police
                     if let url = URL(string: "maps://?q=\(searchQuery)") {
                         if UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
@@ -80,19 +81,19 @@ struct Emergency: View {
                 .cornerRadius(10)
 
                 Button("Rescue") {
-                    showAlert = true
+                    showAlert = true  // variable to show the rescue prompt
                 }
                 .frame(width: 300, height: 50)
                 .foregroundColor(.white)
                 .background(Color.red)
                 .cornerRadius(10)
-                .alert(isPresented: $showAlert) {
+                .alert(isPresented: $showAlert) {  //alert for rescue button
                     Alert(
                         title: Text("WARNING: THIS WILL CALL 000"),
                         message: Text(
                             "Press the side button 5 times to trigger the emergency call.\n \nThen swipe the red slider to confirm."
                         ),
-                        primaryButton: .default(Text("OK")),
+                        primaryButton: .default(Text("OK")),  //dismiss on OK or cancel
                         secondaryButton: .cancel()
                     )
                 }
@@ -104,7 +105,7 @@ struct Emergency: View {
             .shadow(radius: 10)
 
             Button(action: {
-                showEmergency = false
+                showEmergency = false  // when X is clicked
             }) {
                 Image(systemName: "xmark")
                     .foregroundColor(.white)
