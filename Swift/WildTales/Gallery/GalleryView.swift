@@ -1,7 +1,9 @@
 /*
  -- Acknowledgments --
 
- ChatGPT was used to generate the image carousel, prompt: "Generate an image carousel which cycles through the images in imageNames"
+ ChatGPT was used to generate the image carousel,
+ prompt: "Generate an image carousel which cycles through the images in imageNames"
+ prompt: "Make each image in my carousel navigate to a BadgeDecoratorView and pass the imageName"
  */
 
 import SwiftUI
