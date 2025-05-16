@@ -144,7 +144,7 @@ struct GalleryView: View {
                         } label: {
                             ExitButton()
                         }
-                        Spacer().frame(height: screenHeight * 0.65)
+                        Spacer().frame(height: screenHeight * 0.6)
                     }
                     Spacer()
                 }
