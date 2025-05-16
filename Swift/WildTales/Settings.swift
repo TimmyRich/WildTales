@@ -30,14 +30,17 @@ struct Settings: View {
                     }
                     .padding()
                 // Set up notifications, commented out and can be implemented later
-                /*VStack {
+                VStack {
+                    Text("Select Notification Time").padding()
                     DatePicker(
-                        "Select Notification Time",
+                        "",
                         selection: $selectedTime,
                         displayedComponents: .hourAndMinute
                     )
-                    .datePickerStyle(WheelDatePickerStyle())
                     .padding()
+                    .padding(.leading)
+                    .datePickerStyle(WheelDatePickerStyle())
+                    
 
                     Button("Schedule Notification") {
                         let notificationDate =
@@ -50,12 +53,10 @@ struct Settings: View {
                         print("pressing ok")
                     }
                     .buttonStyle(.borderedProminent).tint(.green)
-                    Button("Test in 5s") {
-                        NotificationManager.scheduleImmediateNotification()
-                        print("test notification is scheduled")
-                    }
+
                     .buttonStyle(.borderedProminent).tint(.blue)
-                }*/
+                    
+                }
 
             }
             .background(Color.green)
