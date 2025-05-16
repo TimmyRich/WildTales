@@ -16,14 +16,14 @@ class AppState: ObservableObject {
     @Published var showIntro: Bool
     @Published var isLoggedIn: Bool {
         didSet {
-            UserDefaults.standard.set(isLoggedIn, forKey: "isLoggedIn") //stores if logged in on the iPhone, can remember this when closing the app
+            UserDefaults.standard.set(isLoggedIn, forKey: "isLoggedIn")  //stores if logged in on the iPhone, can remember this when closing the app
         }
     }
 
     init() {
         self.clickedGo = false
         self.showIntro = false
-        self.isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn") //stores again
+        self.isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")  //stores again
         // Set up notification
         NotificationManager.setupNotifications()
     }

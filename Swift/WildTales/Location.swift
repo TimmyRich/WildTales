@@ -12,7 +12,7 @@ import CoreLocation
 import Foundation
 
 struct Location: Identifiable, Codable, Equatable {
-    var id: UUID //unique ID
+    var id: UUID  //unique ID
     var name: String
     var description: String
     var latitude: Double
@@ -27,7 +27,7 @@ struct Location: Identifiable, Codable, Equatable {
 
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-    } //coordinate
+    }  //coordinate
 }
 
 // for each location category

@@ -13,11 +13,11 @@
 // Screen time notifications
 // Badge notifications if all spots in a certain zone are visited
 
-import AVFoundation // sound managers
-import CoreHaptics // haptics when needed
-import CoreLocation //location use
-import MapKit //maps
-import SwiftUI //ui elements
+import AVFoundation  // sound managers
+import CoreHaptics  // haptics when needed
+import CoreLocation  //location use
+import MapKit  //maps
+import SwiftUI  //ui elements
 
 struct MapView: View {
     let zone: String
@@ -65,7 +65,7 @@ struct MapView: View {
     var body: some View {
         ZStack {
             // map with user dot
-            Map( // most of thse variables are standard and autofill when createing a Map()
+            Map(  // most of thse variables are standard and autofill when createing a Map()
                 coordinateRegion: $mapRegion,
                 interactionModes: .all,  // allows all interactions with the map
                 showsUserLocation: true,  // shows user location as blue dot

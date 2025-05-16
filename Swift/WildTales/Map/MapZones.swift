@@ -26,7 +26,7 @@ struct MapZones: View {
 
             Color("MapGreen").edgesIgnoringSafeArea(.all)  //keep a consistant background, removes white bar
             TabView(selection: $selectedTab) {
-                MapCardView( // for botanical gardens
+                MapCardView(  // for botanical gardens
                     image: Image("gardens"),
                     title: "Mt Coot-tha Botanic Gardens",
                     description:
@@ -37,7 +37,7 @@ struct MapZones: View {
                 .tag(0)
                 .ignoresSafeArea()
 
-                MapCardView( // for uq
+                MapCardView(  // for uq
                     image: Image("uq"),
                     title: "University of Queensland",
                     description:
@@ -45,10 +45,10 @@ struct MapZones: View {
                     photoCount: 12,
                     zone: "University of Queensland"
                 )
-                .tag(1) //shows the index how many tabs, this is the second tab
+                .tag(1)  //shows the index how many tabs, this is the second tab
                 .ignoresSafeArea()
 
-                MapCardView( // southbank card
+                MapCardView(  // southbank card
                     image: Image("southbank"),
                     title: "Southbank Parklands",
                     description:
@@ -59,8 +59,8 @@ struct MapZones: View {
                 .tag(2)
                 .ignoresSafeArea()
 
-                MapCardView( //custom icon
-                    image: Image("PawIcon"), //default if no image
+                MapCardView(  //custom icon
+                    image: Image("PawIcon"),  //default if no image
                     title: "Custom Map",
                     description:
                         "Walk through a custom map that your parents have created for you. Don't forget to stay safe!",
@@ -70,7 +70,7 @@ struct MapZones: View {
                 .tag(3)
                 .ignoresSafeArea()
             }
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic)) // shows the white dots in terms of view
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))  // shows the white dots in terms of view
             .background(Color.clear)
 
             // Back Button
@@ -81,7 +81,7 @@ struct MapZones: View {
                             soundName: "boing.wav",
                             soundVol: 0.5
                         )
-                        goBack.wrappedValue.dismiss() // go back to select map
+                        goBack.wrappedValue.dismiss()  // go back to select map
                     } label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 40))
@@ -98,7 +98,7 @@ struct MapZones: View {
 
             HStack {
                 if showGIF {
-                    GIFView(gifName: "swipe") // swipe gif
+                    GIFView(gifName: "swipe")  // swipe gif
                         .frame(width: 70, height: 70)
                         .padding(.top, UIScreen.main.bounds.height - 200)
                 }
@@ -107,7 +107,7 @@ struct MapZones: View {
         }
         .onAppear {
             // Hide the GIF after 10 seconds
-            DispatchQueue.main.asyncAfter(deadline: .now() + 10) { //timer for 10 second hand showing the fading
+            DispatchQueue.main.asyncAfter(deadline: .now() + 10) {  //timer for 10 second hand showing the fading
                 withAnimation {
                     showGIF = false
                 }

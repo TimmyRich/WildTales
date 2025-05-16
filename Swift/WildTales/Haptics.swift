@@ -21,10 +21,10 @@ struct HapticOnTouch: ViewModifier {
                 DragGesture(minimumDistance: 0)
                     .onChanged { _ in
                         if !isDragging {
-                            let impactLight = UIImpactFeedbackGenerator( //impact feedback for user to feel
+                            let impactLight = UIImpactFeedbackGenerator(  //impact feedback for user to feel
                                 style: .light
                             )
-                            impactLight.impactOccurred() // light impact
+                            impactLight.impactOccurred()  // light impact
                         }
 
                         isDragging = true

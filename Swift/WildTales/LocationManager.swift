@@ -21,25 +21,25 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     override init() {
         super.init()
         locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters //highest accuracy of location
+        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters  //highest accuracy of location
     }
 
     //requests users location
     func requestLocation() {
-        locationManager.requestWhenInUseAuthorization() //popup for request for in use authorisation
+        locationManager.requestWhenInUseAuthorization()  //popup for request for in use authorisation
         //locationManager.requestAlwaysAuthorization()
-        locationManager.startUpdatingLocation() // updates location
+        locationManager.startUpdatingLocation()  // updates location
     }
 
     func locationManager(
         _ manager: CLLocationManager,
-        didUpdateLocations locations: [CLLocation] // update location
+        didUpdateLocations locations: [CLLocation]  // update location
     ) {
         if let location = locations.first {
             userLocation = location
         }
     }
-    
+
     //any loading errors
     func locationManager(
         _ manager: CLLocationManager,

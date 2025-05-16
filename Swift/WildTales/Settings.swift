@@ -9,7 +9,7 @@ import SwiftUI
 
 struct Settings: View {
     @Environment(\.dismiss) var dismiss
-    @State private var isMusicEnabled: Bool = true //default music playing
+    @State private var isMusicEnabled: Bool = true  //default music playing
     @State private var selectedTime: Date = Date()  // Use for temporary notification, uneeded as code is commented out
 
     var body: some View {
@@ -23,9 +23,9 @@ struct Settings: View {
                 Toggle("Enable Background Music", isOn: $isMusicEnabled)
                     .onChange(of: isMusicEnabled) { value in
                         if value {
-                            AudioManager.startBackgroundMusic() //asks the auto manager to start music
+                            AudioManager.startBackgroundMusic()  //asks the auto manager to start music
                         } else {
-                            AudioManager.stopBackgroundMusic() // stop of not selected, mute button also works
+                            AudioManager.stopBackgroundMusic()  // stop of not selected, mute button also works
                         }
                     }
                     .padding()
@@ -40,7 +40,6 @@ struct Settings: View {
                     .padding()
                     .padding(.leading)
                     .datePickerStyle(WheelDatePickerStyle())
-                    
 
                     Button("Schedule Notification") {
                         let notificationDate =
@@ -55,7 +54,7 @@ struct Settings: View {
                     .buttonStyle(.borderedProminent).tint(.green)
 
                     .buttonStyle(.borderedProminent).tint(.blue)
-                    
+
                 }
 
             }
@@ -63,7 +62,7 @@ struct Settings: View {
             .cornerRadius(20)
 
             Button("back") {
-                dismiss() // go back to previous view, dismiss popup
+                dismiss()  // go back to previous view, dismiss popup
             }
             .padding()
             .background(Color("Pink"))
@@ -76,7 +75,7 @@ struct Settings: View {
         .padding()
         .onAppear {
             // request notification permissions
-            NotificationManager.requestPermissions() //request notification access if not provided already
+            NotificationManager.requestPermissions()  //request notification access if not provided already
         }
     }
 }
