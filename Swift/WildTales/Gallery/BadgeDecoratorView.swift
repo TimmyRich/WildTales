@@ -38,6 +38,8 @@ func getAvailableBadges() -> [String] {
 
 struct BadgeDecoratorView: View {
     @Environment(\.presentationMode) var presentationMode
+    let screenHeight = UIScreen.main.bounds.height
+    let screenWidth = UIScreen.main.bounds.width
 
     let trailName: String
     let helpMessage: String =
@@ -70,8 +72,8 @@ struct BadgeDecoratorView: View {
             // Define safe area within the trail image
             GeometryReader { geo in
                 ZStack {
-                    let imageWidth: CGFloat = 205
-                    let imageHeight: CGFloat = 430
+                    let imageWidth: CGFloat = screenWidth * 0.6
+                    let imageHeight: CGFloat = screenHeight * 0.6
                     let imageOrigin = CGPoint(
                         x: (geo.size.width - imageWidth) / 2,
                         y: (geo.size.height - imageHeight) / 2
@@ -88,7 +90,7 @@ struct BadgeDecoratorView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: imageWidth, height: imageHeight)
-                        .border(Color.black, width: 4)
+                        //.border(Color.black, width: 4)
                         .position(x: imageRect.midX, y: imageRect.midY)
 
                     // Render each badge associated with this trail
