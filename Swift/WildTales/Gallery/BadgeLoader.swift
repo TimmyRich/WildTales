@@ -1,6 +1,6 @@
 /*
  -- Acknowledgments --
- 
+
  The BadgeLoader class was originally adapted from code provided by https://www.youtube.com/watch?v=G9vXr41ssdM
  which details how to load JSON data from a json file in the app bundle. This code was
  then adapted to work with JSON data formatted to to be decodable into a Badge struct
@@ -15,7 +15,7 @@ import SwiftUI
 
 // badge model
 struct Badge: Codable, Identifiable {
-    
+
     enum CodingKeys: CodingKey {
         case imageName
         case scale
@@ -53,37 +53,42 @@ class BadgeLoader: ObservableObject {
         // call loadBadges whenever this object is initialised
         loadBadges()
     }
-    
+
     // Get the file url where Badge data is being stored
     private func getFileURL() -> URL? {
         let fileManager = FileManager.default
-        guard let docsDir = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        guard
+            let docsDir = fileManager.urls(
+                for: .documentDirectory,
+                in: .userDomainMask
+            ).first
+        else {
             return nil
         }
         return docsDir.appendingPathComponent("Badges.json")
     }
-    
+
     func loadBadges() {
-        guard let url = getFileURL() else { // Updated: using new helper function getFileURL()
+        guard let url = getFileURL() else {  // Updated: using new helper function getFileURL()
             // Print error message if file not found
             print("Badges.json not found")
             return
         }
-        
+
         // Try to load badges
         do {
             // "data" gets raw JSON data from file
             let data = try Data(contentsOf: url)
             // badges gets decoded data from "data"
-            let badges = try JSONDecoder().decode([Badge].self, from: data) // decode data of type "[Badge].self" from the variable "data"
+            let badges = try JSONDecoder().decode([Badge].self, from: data)  // decode data of type "[Badge].self" from the variable "data"
             self.data = badges
         } catch {
             // print error message if JSON data couldn't be loaded or decoded
-            print("Failed to load badges: \(error)") // Updated: more detailed error info
+            print("Failed to load badges: \(error)")  // Updated: more detailed error info
             self.data = []
         }
     }
-    
+
     // Save updated badges back to JSON file
     func saveBadges() {
         guard let url = getFileURL() else {
@@ -97,7 +102,7 @@ class BadgeLoader: ObservableObject {
             let data = try encoder.encode(self.data)
             try data.write(to: url)
         } catch {
-            print("Failed to save badges: \(error)") // Print error if saving fails
+            print("Failed to save badges: \(error)")  // Print error if saving fails
         }
     }
 
@@ -106,7 +111,7 @@ class BadgeLoader: ObservableObject {
         self.data.append(badge)
         saveBadges()
     }
-    
+
     // Remove a badge and save changes to file
     func removeBadge(_ badge: Badge) {
         if let index = self.data.firstIndex(where: { $0.id == badge.id }) {
@@ -114,10 +119,10 @@ class BadgeLoader: ObservableObject {
             saveBadges()
         }
     }
-    
+
     // Remove all badges that belong to the parentImage
     func removeAllBadges(parentImage: String) {
-        self.data = self.data.filter{ badge in
+        self.data = self.data.filter { badge in
             badge.parentImage != parentImage
         }
         saveBadges()
