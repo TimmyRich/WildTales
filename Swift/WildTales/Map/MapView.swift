@@ -22,7 +22,7 @@ import SwiftUI  //ui elements
 struct MapView: View {
     let zone: String
 
-    @State private var showGIF = true  // shows swipe gif by default
+    @State private var showGIF = true  // shows swipe gif by default on startup
 
     @Environment(\.presentationMode) var goBack  // to go back to map selection
 
@@ -117,6 +117,7 @@ struct MapView: View {
                 locations = allLocations.filter { $0.zone == zone }  //filter by zone
 
                 ProximityNotificationManager.shared.requestPermission()  //request notification permission
+                ProximityNotificationManager.shared.scheduleDailyNotification()
             }
 
             .onChange(of: locationManager.userLocation) { newLocation in  // when the users locations changes
@@ -234,7 +235,7 @@ struct MapView: View {
                                         "Error adding notification request: \(error.localizedDescription)"
                                     )
                                 } else {
-                                    selectedLocation = locations[index]  //select location
+                                    selectedLocation = locations[index]  //if it work, just debugging
                                     print(
                                         "Notification request successfully added."
                                     )
@@ -784,6 +785,7 @@ struct MapView: View {
     }
 
     //basic function to get the firtst image wikipedia presents, takes a string and returns an imageURL
+    
     // This was derived from ChatGPT with the promopt, "write some swift code that displays a wikipedia image based on a string input to it"
     func fetchWikipediaImage(for title: String) {
         // Reset the image to nil so the previous one is cleared immediately
@@ -823,7 +825,7 @@ struct WikipediaSummary: Decodable {
     struct Thumbnail: Decodable {
         let source: String
     }
-    let thumbnail: Thumbnail?
+    let thumbnail: Thumbnail? // thumbnail quality image
 }
 //end ChatGPT assisted coding
 
@@ -838,7 +840,7 @@ extension CLLocationCoordinate2D {
             latitude: coordinate.latitude,
             longitude: coordinate.longitude
         )
-        return fromLocation.distance(from: toLocation)
+        return fromLocation.distance(from: toLocation) //returns an int of distance
     }
 }
 
