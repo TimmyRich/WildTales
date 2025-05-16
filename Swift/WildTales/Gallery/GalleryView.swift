@@ -1,8 +1,7 @@
 /*
  -- Acknowledgments --
 
- ChatGPT was used to modularise the TrailCarouselView, see TrailCarouselView.swift
- for prompt.
+ ChatGPT was used to generate the image carousel, prompt: "Generate an image carousel which cycles through the images in imageNames"
  */
 
 import SwiftUI
