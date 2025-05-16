@@ -64,9 +64,10 @@ struct GalleryView: View {
                                     RoundedRectangle(cornerRadius: 15)
                                         .fill(Color.white)
                                         .frame(
-                                            width: screenWidth * 0.8,
-                                            height: screenHeight * 0.65
+                                            width: screenWidth * 0.85,
+                                            height: screenHeight
                                         )
+                                        .offset(y: screenHeight * 0.16)
 
                                     VStack {
                                         Text(
@@ -77,12 +78,10 @@ struct GalleryView: View {
 
                                         Image(imageNames[index])
                                             .resizable()
-                                            .frame(
-                                                width: screenWidth * 0.75,
-                                                height: screenHeight * 0.6
-                                            )
+                                            .scaledToFit()
                                             .cornerRadius(10)
-                                    }
+                                            
+                                    }.padding(.top, screenHeight * 0.17)
                                 }
                                 .tag(index)
                                 .shadow(radius: 10)
