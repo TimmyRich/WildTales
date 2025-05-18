@@ -25,7 +25,7 @@ struct GalleryView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color(red: 191 / 255, green: 209 / 255, blue: 161 / 255)
+                Color("HunterGreen")
                     .ignoresSafeArea()
                 VStack {
                     Image("quokka")
@@ -135,15 +135,19 @@ struct GalleryView: View {
                 // Home Button
                 HStack {
                     VStack {
-                        Button {
+                        Button {  // back button goes to the previous page
                             AudioManager.playSound(
                                 soundName: "boing.wav",
                                 soundVol: 0.5
                             )
-                            goBack.wrappedValue.dismiss()
+                            goBack.wrappedValue.dismiss()  //go to previous view
                         } label: {
-                            ExitButton()
+                            Image(systemName: "chevron.left")
                         }
+                        .font(.system(size: 40))
+                        .foregroundColor(Color("HunterGreen"))
+                        .shadow(radius: 5)
+                        .padding(.leading, 30.0)
                         Spacer().frame(height: screenHeight * 0.6)
                     }
                     Spacer()

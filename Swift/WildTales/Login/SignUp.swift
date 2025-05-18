@@ -52,7 +52,7 @@ struct SignUp: View {
                     .foregroundColor(.white)
                     .overlay(
                         RoundedRectangle(cornerRadius: 20)
-                            .stroke(Color("Pink"), lineWidth: 1)).shadow(radius: 5)
+                            .stroke(Color("HunterGreen"), lineWidth: 1)).shadow(radius: 5)
                 
                 Spacer()
                 
@@ -101,12 +101,12 @@ struct SignUp: View {
                     appState.showIntro = true
                     playSound(soundName: "boing.wav", soundVol: 0.5)
                 }.frame(width: UIScreen.main.bounds.width-150, height: 30)
-                    .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color("Pink")/*@END_MENU_TOKEN@*/)
+                    .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color("HunterGreen")/*@END_MENU_TOKEN@*/)
                     .foregroundColor(Color.white)
                     .cornerRadius(10)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color("Pink"), lineWidth: 1)).shadow(radius: 10)
+                            .stroke(Color("HunterGreen"), lineWidth: 1)).shadow(radius: 10)
                     .font(Font.custom("Inter", size: 15))
                     .hapticOnTouch()
                 
@@ -120,11 +120,11 @@ struct SignUp: View {
                         
                     }   .frame(width: UIScreen.main.bounds.width-300, height: 20)
                         .background(.white)
-                        .foregroundColor(Color("Pink"))
+                        .foregroundColor(Color("HunterGreen"))
                         .cornerRadius(10)
                         .overlay(
                             RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color("Pink"), lineWidth: 1))
+                                .stroke(Color("HunterGreen"), lineWidth: 1))
                         .font(Font.custom("Inter", size: 10))
                         .hapticOnTouch()
                     
@@ -134,11 +134,11 @@ struct SignUp: View {
                         
                     }.frame(width: UIScreen.main.bounds.width-300, height: 20)
                         .background(.white)
-                        .foregroundColor(Color("Pink"))
+                        .foregroundColor(Color("HunterGreen"))
                         .cornerRadius(10)
                         .overlay(
                             RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color("Pink"), lineWidth: 1))
+                                .stroke(Color("HunterGreen"), lineWidth: 1))
                         .font(Font.custom("Inter", size: 10))
                         .hapticOnTouch()
                     
@@ -157,7 +157,7 @@ struct SignUp: View {
                         
                     }.frame(width: 50, height: 20)
                         .background(.white)
-                        .foregroundColor(Color("Pink"))
+                        .foregroundColor(Color("HunterGreen"))
                         .cornerRadius(10)
                     
                     

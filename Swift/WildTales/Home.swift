@@ -24,6 +24,7 @@ struct Home: View {
                         width: UIScreen.main.bounds.width,
                         height: UIScreen.main.bounds.height  // over whole screen
                     )
+                    .preferredColorScheme(.light)
 
                 VStack {
                     HStack {
@@ -176,6 +177,7 @@ struct Home: View {
 
         }
     }
+    
 }
 
 #Preview {

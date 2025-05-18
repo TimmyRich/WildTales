@@ -608,15 +608,10 @@ struct CommunityMapView: View {
                     } label: {
                         Image(systemName: "location.circle.fill")  //icon
                     }
-                    .font(.system(size: 24))
-                    .foregroundColor(.white)
-                    .frame(width: 50, height: 50)
-                    .background(
-                        Circle().fill(Color("HunterGreen").opacity(0.8))
-                    )
+                    .font(.system(size: 40))
+                    .foregroundColor(Color("HunterGreen"))
                     .shadow(radius: 5)
                     .padding()
-                    .hapticOnTouch()
                 }
             }.ignoresSafeArea()
 

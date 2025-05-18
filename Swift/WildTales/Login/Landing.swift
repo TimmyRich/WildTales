@@ -66,7 +66,7 @@ struct Landing: View {
                         .foregroundColor(.white)
                         .overlay(
                             RoundedRectangle(cornerRadius: 20)
-                                .stroke(Color("Pink"), lineWidth: 1)
+                                .stroke(Color("HunterGreen"), lineWidth: 1)
                         ).shadow(radius: 5)
 
                     Spacer()
@@ -117,11 +117,11 @@ struct Landing: View {
                             .frame(maxWidth: .infinity, minHeight: 20)
                     }
                     .frame(width: UIScreen.main.bounds.width - 150, height: 30)
-                    .background(Color("Pink"))
+                    .background(Color("HunterGreen"))
                     .cornerRadius(10)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color("Pink"), lineWidth: 1)
+                            .stroke(Color("HunterGreen"), lineWidth: 1)
                     )
                     .shadow(radius: 10)
                     .hapticOnTouch()  //haptic press
@@ -142,11 +142,11 @@ struct Landing: View {
                             height: 20
                         )
                         .background(.white)
-                        .foregroundColor(Color("Pink"))
+                        .foregroundColor(Color("HunterGreen"))
                         .cornerRadius(10)
                         .overlay(
                             RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color("Pink"), lineWidth: 1)
+                                .stroke(Color("HunterGreen"), lineWidth: 1)
                         )
                         .font(Font.custom("Inter", size: 10))
                         .hapticOnTouch()
@@ -162,11 +162,11 @@ struct Landing: View {
                             height: 20
                         )
                         .background(.white)
-                        .foregroundColor(Color("Pink"))
+                        .foregroundColor(Color("HunterGreen"))
                         .cornerRadius(10)
                         .overlay(
                             RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color("Pink"), lineWidth: 1)
+                                .stroke(Color("HunterGreen"), lineWidth: 1)
                         )
                         .font(Font.custom("Inter", size: 10))
                         .hapticOnTouch()
@@ -187,7 +187,7 @@ struct Landing: View {
                         }
                         .frame(width: 100, height: 30)
                         .background(Color.white)
-                        .foregroundColor(Color("Pink"))
+                        .foregroundColor(Color("HunterGreen"))
                         .cornerRadius(10)
                         .font(Font.custom("Inter", size: 10))
                         .hapticOnTouch()
@@ -207,7 +207,7 @@ struct Landing: View {
                 }
                 .frame(width: 100, height: 30)
                 .background(Color.white)
-                .foregroundColor(Color("Pink"))
+                .foregroundColor(Color("HunterGreen"))
                 .cornerRadius(10)
                 .font(Font.custom("Inter", size: 10))
                 .padding(.top, 600)
