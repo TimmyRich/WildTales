@@ -50,6 +50,7 @@ struct SignUp: View {
                     .frame(width: UIScreen.main.bounds.width-130, height: 340)
                     .cornerRadius(20)
                     .foregroundColor(.white)
+                    .preferredColorScheme(.light)
                     .overlay(
                         RoundedRectangle(cornerRadius: 20)
                             .stroke(Color("HunterGreen"), lineWidth: 1)).shadow(radius: 5)
@@ -64,6 +65,7 @@ struct SignUp: View {
                 Text("Sign Up")
                     .font(Font.custom("Inter", size: 25))
                     .padding(.vertical, 20)
+                    .preferredColorScheme(.light)
                 
                 TextField("Name", text: $name)
                     .padding(.leading)
@@ -74,6 +76,7 @@ struct SignUp: View {
                     .cornerRadius(10)
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
+                    .preferredColorScheme(.light)
                 
                 TextField("Username/Email", text: $username)
                     .padding(.leading)
@@ -84,6 +87,7 @@ struct SignUp: View {
                     .cornerRadius(10)
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
+                    .preferredColorScheme(.light)
                 
                 
                 SecureField("Password", text: $password)
@@ -96,6 +100,7 @@ struct SignUp: View {
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
                     .padding(.bottom, 20)
+                    .preferredColorScheme(.light)
                 
                 Button("Login") {
                     appState.showIntro = true
@@ -108,11 +113,13 @@ struct SignUp: View {
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(Color("HunterGreen"), lineWidth: 1)).shadow(radius: 10)
                     .font(Font.custom("Inter", size: 15))
+                    .preferredColorScheme(.light)
                     .hapticOnTouch()
                 
                 Text("───  Access Quickly  ───")
                     .font(Font.custom("Inter", size: 10))
                     .padding(.vertical, 10)
+                    .preferredColorScheme(.light)
                 
                 HStack {
                     Button("Google") {
@@ -127,6 +134,7 @@ struct SignUp: View {
                                 .stroke(Color("HunterGreen"), lineWidth: 1))
                         .font(Font.custom("Inter", size: 10))
                         .hapticOnTouch()
+                        .preferredColorScheme(.light)
                     
                     
                     Button("iCloud") {
@@ -141,6 +149,7 @@ struct SignUp: View {
                                 .stroke(Color("HunterGreen"), lineWidth: 1))
                         .font(Font.custom("Inter", size: 10))
                         .hapticOnTouch()
+                        .preferredColorScheme(.light)
                     
                 }
                 
@@ -150,6 +159,7 @@ struct SignUp: View {
                         .font(Font.custom("Inter", size: 10))
                         .padding(.bottom, 5)
                         .padding(.top, 5)
+                        .preferredColorScheme(.light)
                     
                     Button("Log In") {
                         playSound(soundName: "boing.wav", soundVol: 0.5)
@@ -163,6 +173,7 @@ struct SignUp: View {
                     
                         .font(Font.custom("Inter", size: 10))
                         .hapticOnTouch()
+                        .preferredColorScheme(.light)
                     
                 }
                 Spacer()
