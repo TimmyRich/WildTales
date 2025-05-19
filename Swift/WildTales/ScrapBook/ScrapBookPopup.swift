@@ -147,12 +147,16 @@ struct CarouselView: View {
                 HStack {
                     Button {
                         withAnimation { currentIndex = max(0, currentIndex - 1) }
+                        AudioManager.playSound(
+                            soundName: "boing.wav",
+                            soundVol: 0.5)
                     } label: {
-                        Image(systemName: "arrow.left.circle.fill")
+                        Image("back_button")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 30, height: 30)
-                            .foregroundColor(Color(.green1))
+                            .frame(width: 40, height: 40)
+                            .padding(.leading, -1)
+                        
                     }
                     .disabled(currentIndex == 0)
                     .padding(.leading, 5)
@@ -161,12 +165,16 @@ struct CarouselView: View {
 
                     Button {
                         withAnimation { currentIndex = min(carouselImages.count - 1, currentIndex + 1) }
+                        AudioManager.playSound(
+                            soundName: "boing.wav",
+                            soundVol: 0.5)
                     } label: {
-                        Image(systemName: "arrow.right.circle.fill")
+                        
+                        Image("forward_button")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 30, height: 30)
-                            .foregroundColor(Color(.green1))
+                            .frame(width: 40, height: 40)
+                            .padding(.trailing, -1)
                     }
                     .disabled(currentIndex >= carouselImages.count - 1)
                     .padding(.trailing, 5)

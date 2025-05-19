@@ -54,20 +54,23 @@ struct ScrapBookGuide: View {
                         
                         HStack (spacing: 30) {
                             VStack {
-                                NavigationLink(destination: ScrapBookDrag().navigationBarBackButtonHidden(true)) {
+                                Button {
+                                    
+                                } label: {
                                     Image("albumButton").resizable().frame(width: 60, height: 60)
+                                        .hapticOnTouch()
+                                    
                                 }
-                                .hapticOnTouch()
                                 
                                 Text("Add from Album").font(Font.custom("Inter", size: 8))
                             }
                             
                             VStack {
-                                Button {
-                                    
-                                } label: {
+                                NavigationLink(destination: ScrapBookDrag().navigationBarBackButtonHidden(true))
+                                {
                                     Image("cameraButton").resizable().frame(width: 60, height: 60)
                                 }
+                                .hapticOnTouch()
                                 Text("Take Photo").font(Font.custom("Inter", size: 8))
                             }
                         }.padding(.bottom,15)
