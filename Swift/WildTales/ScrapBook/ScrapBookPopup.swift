@@ -100,6 +100,7 @@ struct Header: View {
             HStack {
                 Button {
                     closeAction()
+                    AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                 } label: {
                     
                     Image("exitButton")

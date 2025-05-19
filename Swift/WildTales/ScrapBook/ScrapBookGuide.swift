@@ -4,7 +4,7 @@
 //
 //  Created by Kurt McCullough on 31/3/2025.
 //  Updated by Yujie Wei on 18/4/2025.
-//  Scrapbook main page with update visual elements
+//  Scrapbook main landing page with update visual elements. It provide users with 
 //  Inspired by https://www.youtube.com/watch?v=OaIn7HBlCSk
 
 import SwiftUI
@@ -92,6 +92,7 @@ struct ScrapBookGuide: View {
                             withAnimation(.spring()) {
                                 popupManager.present()
                             }
+                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         }
                         .frame(width: UIScreen.main.bounds.width-220, height: 25)
                         .foregroundColor(.black)

@@ -59,7 +59,7 @@ struct ScrapBookDrag: View {
             
             VStack(spacing: 5) {
                 
-                Header.padding(.bottom, 20)
+                Header.padding(.bottom, UIScreen.main.bounds.height * 0.08)
 
                 PrimaryPhoto.padding(.horizontal, 20)
                    
@@ -112,6 +112,7 @@ struct ScrapBookDrag: View {
             // Undo button
             Button {
                 undoLastAction()
+                AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
             } label: {
                 Image(systemName: "arrow.uturn.backward.circle")
                     .font(.title2)
@@ -126,7 +127,7 @@ struct ScrapBookDrag: View {
         .padding(.top, safeAreaTop())
     }
     
-    // Photo
+    //  in the center
     var PrimaryPhoto: some View {
         
         GeometryReader { geometry in
@@ -140,7 +141,7 @@ struct ScrapBookDrag: View {
                     }
                 .coordinateSpace(name: areaCoordinateSpace)
         }
-        .frame(height: UIScreen.main.bounds.height * 0.5)
+        .frame(width: UIScreen.main.bounds.width * 0.8, height: UIScreen.main.bounds.height * 0.4)
     }
 
     var photoArea: some View {
@@ -166,15 +167,6 @@ struct ScrapBookDrag: View {
                     .position(sticker.position)
             }
 
-            Button {
-                print("Save image")
-            } label: {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 35))
-                    .foregroundColor(.green1)
-                    
-            }.padding([.top, .trailing], photoAreaWidth * 0.03)
-           
         }.frame(width: photoAreaWidth, height: photoAreaHeight)
     }
     
@@ -308,7 +300,6 @@ struct ScrapBookDrag: View {
     // End AI assisted coding
     
     
-
     func safeAreaTop() -> CGFloat { return 40 }
     func safeAreaBottom() -> CGFloat { return 30 }
 }
