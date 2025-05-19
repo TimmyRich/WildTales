@@ -32,7 +32,7 @@ struct Emergency: View {
                 }
                 .foregroundColor(.white)
                 .frame(width: 300, height: 50)
-                .background(Color.orange)
+                .background(Color("HunterGreen"))
                 .cornerRadius(10)
 
                 Button("Find your parents!") {
@@ -50,7 +50,7 @@ struct Emergency: View {
                 }
                 .foregroundColor(.white)
                 .frame(width: 300, height: 50)
-                .background(Color.blue)
+                .background(Color("MapGreen"))
                 .cornerRadius(10)
 
                 Image("unsafe")
@@ -77,7 +77,7 @@ struct Emergency: View {
                 }
                 .frame(width: 300, height: 50)
                 .foregroundColor(.white)
-                .background(Color.purple)
+                .background(Color("BigBrown"))
                 .cornerRadius(10)
 
                 Button("Rescue") {
@@ -85,7 +85,7 @@ struct Emergency: View {
                 }
                 .frame(width: 300, height: 50)
                 .foregroundColor(.white)
-                .background(Color.red)
+                .background(Color("BigRed"))
                 .cornerRadius(10)
                 .alert(isPresented: $showAlert) {  //alert for rescue button
                     Alert(
@@ -107,11 +107,13 @@ struct Emergency: View {
             Button(action: {
                 showEmergency = false  // when X is clicked
             }) {
-                Image(systemName: "xmark")
+                Image("exitButton")
+
+                    .resizable()
+                    .frame(width: 60, height: 30)
                     .foregroundColor(.white)
                     .padding()
-                    .background(Color("Pink"))
-                    .clipShape(Circle())
+
             }.simultaneousGesture(
                 TapGesture().onEnded {
                     AudioManager.playSound(
@@ -120,8 +122,8 @@ struct Emergency: View {
                     )
                 }
             )
-            .padding(.trailing, 280)
-            .padding(.bottom, 520)
+            .padding(.trailing, 250)
+            .padding(.bottom, 540)
 
             HStack {
                 Spacer()

@@ -24,6 +24,7 @@ struct Home: View {
                         width: UIScreen.main.bounds.width,
                         height: UIScreen.main.bounds.height  // over whole screen
                     )
+                    .preferredColorScheme(.light)
 
                 VStack {
                     HStack {
@@ -95,7 +96,7 @@ struct Home: View {
                             )
 
                             NavigationLink(
-                                destination: ScrapBookGuide()  //go to scrapbook
+                                destination: GalleryView()  //go to scrapbook
                                     .navigationBarBackButtonHidden(true)
                             ) {
                                 Image("homeButton4")
@@ -116,7 +117,7 @@ struct Home: View {
                         VStack {
 
                             NavigationLink(
-                                destination: GalleryView()  // go to gallery
+                                destination: ScrapBookGuide()  // go to gallery
                                     .navigationBarBackButtonHidden(true)
                                     .preferredColorScheme(.light)
                             ) {
@@ -176,6 +177,7 @@ struct Home: View {
 
         }
     }
+    
 }
 
 #Preview {

@@ -50,6 +50,7 @@ struct Landing: View {
                         .frame(width: UIScreen.main.bounds.width, height: 200)
                         .padding(.trailing, UIScreen.main.bounds.width - 200)
                         .padding(.bottom, 300)
+                        .preferredColorScheme(.light)
 
                     Spacer()
                 }
@@ -66,8 +67,9 @@ struct Landing: View {
                         .foregroundColor(.white)
                         .overlay(
                             RoundedRectangle(cornerRadius: 20)
-                                .stroke(Color("Pink"), lineWidth: 1)
+                                .stroke(Color("HunterGreen"), lineWidth: 1)
                         ).shadow(radius: 5)
+                        .preferredColorScheme(.light)
 
                     Spacer()
                 }
@@ -78,10 +80,12 @@ struct Landing: View {
                     Text("Login")
                         .font(Font.custom("Inter", size: 25))
                         .padding(.vertical, 20)
+                        .preferredColorScheme(.light)
 
                     TextField("Username/Email", text: $username)  // doesnt hole text
                         .padding(.leading)
                         .font(Font.custom("Inter", size: 15))
+                        .preferredColorScheme(.light)
                         .frame(
                             width: UIScreen.main.bounds.width - 150,
                             height: 30
@@ -91,6 +95,7 @@ struct Landing: View {
                         .cornerRadius(10)
                         .autocapitalization(.none)
                         .disableAutocorrection(true)
+                        .preferredColorScheme(.light)
 
                     SecureField("Password", text: $password)  //also doesnt hole text but will encrypt it in SecureField
                         .padding(.leading)
@@ -106,6 +111,7 @@ struct Landing: View {
                         .disableAutocorrection(true)
                         .padding(.bottom, 20)
                         .keyboardShortcut(.defaultAction)
+                        .preferredColorScheme(.light)
 
                     Button(action: {
                         UserDefaults.standard.set(true, forKey: "isLoggedIn")
@@ -115,13 +121,15 @@ struct Landing: View {
                             .font(Font.custom("Inter", size: 15))
                             .foregroundColor(Color.white)
                             .frame(maxWidth: .infinity, minHeight: 20)
+                            .preferredColorScheme(.light)
                     }
                     .frame(width: UIScreen.main.bounds.width - 150, height: 30)
-                    .background(Color("Pink"))
+                    .background(Color("HunterGreen"))
                     .cornerRadius(10)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color("Pink"), lineWidth: 1)
+                            .stroke(Color("HunterGreen"), lineWidth: 1)
+                            .preferredColorScheme(.light)
                     )
                     .shadow(radius: 10)
                     .hapticOnTouch()  //haptic press
@@ -129,6 +137,7 @@ struct Landing: View {
                     Text("───  Access Quickly  ───")
                         .font(Font.custom("Inter", size: 10))
                         .padding(.vertical, 10)
+                        .preferredColorScheme(.light)
 
                     HStack {
                         Button("Google") {
@@ -142,13 +151,14 @@ struct Landing: View {
                             height: 20
                         )
                         .background(.white)
-                        .foregroundColor(Color("Pink"))
+                        .foregroundColor(Color("HunterGreen"))
                         .cornerRadius(10)
                         .overlay(
                             RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color("Pink"), lineWidth: 1)
+                                .stroke(Color("HunterGreen"), lineWidth: 1)
                         )
                         .font(Font.custom("Inter", size: 10))
+                        .preferredColorScheme(.light)
                         .hapticOnTouch()
 
                         Button("iCloud") {
@@ -162,14 +172,15 @@ struct Landing: View {
                             height: 20
                         )
                         .background(.white)
-                        .foregroundColor(Color("Pink"))
+                        .foregroundColor(Color("HunterGreen"))
                         .cornerRadius(10)
                         .overlay(
                             RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color("Pink"), lineWidth: 1)
+                                .stroke(Color("HunterGreen"), lineWidth: 1)
                         )
                         .font(Font.custom("Inter", size: 10))
                         .hapticOnTouch()
+                        .preferredColorScheme(.light)
                     }
 
                     HStack {
@@ -177,6 +188,7 @@ struct Landing: View {
                             .font(Font.custom("Inter", size: 10))
                             .padding(.bottom, 5)
                             .padding(.top, 5)
+                            .preferredColorScheme(.light)
 
                         Button("Sign up") {
                             showSignUp.toggle()  // shows the sign up sheet
@@ -187,9 +199,10 @@ struct Landing: View {
                         }
                         .frame(width: 100, height: 30)
                         .background(Color.white)
-                        .foregroundColor(Color("Pink"))
+                        .foregroundColor(Color("HunterGreen"))
                         .cornerRadius(10)
                         .font(Font.custom("Inter", size: 10))
+                        .preferredColorScheme(.light)
                         .hapticOnTouch()
                     }
 
@@ -207,10 +220,11 @@ struct Landing: View {
                 }
                 .frame(width: 100, height: 30)
                 .background(Color.white)
-                .foregroundColor(Color("Pink"))
+                .foregroundColor(Color("HunterGreen"))
                 .cornerRadius(10)
                 .font(Font.custom("Inter", size: 10))
                 .padding(.top, 600)
+                .preferredColorScheme(.light)
                 .hapticOnTouch()
             }
             .sheet(isPresented: $showSignUp) {

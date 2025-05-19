@@ -1,14 +1,17 @@
 /*
  -- Acknowledgments --
 
- ChatGPT was used to modularise the TrailCarouselView, see TrailCarouselView.swift
- for prompt.
+ ChatGPT was used to generate the image carousel,
+ prompt: "Generate an image carousel which cycles through the images in imageNames"
+ prompt: "Make each image in my carousel navigate to a BadgeDecoratorView and pass the imageName"
  */
 
 import SwiftUI
 
 // Gallery view for selecting which digital artwork to decorate
 struct GalleryView: View {
+    let screenHeight = UIScreen.main.bounds.height
+    let screenWidth = UIScreen.main.bounds.width
 
     let imageNames = [
         "Botanical Gardens", "Botanical Gardens Night Time", "Sunny Fields",
@@ -22,27 +25,74 @@ struct GalleryView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color(red: 191 / 255, green: 209 / 255, blue: 161 / 255)
+                Color("HunterGreen")
                     .ignoresSafeArea()
+                VStack {
+                    Image("quokka")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: screenHeight * 0.15)
+                        .offset(x: screenWidth * 0.3, y: screenHeight * 0.07)
+                    ZStack {
+                        Rectangle()
+                            .cornerRadius(60)
+                            .foregroundColor(.lightGrey)
+                            
+                        VStack {
+                            Text("Gallery")
+                                .font(.system(size: 32, design: .default))
+                                .foregroundStyle(.green1)
+                            Text("Select your trail")
+                                .foregroundStyle(.grey)
+                            Spacer()
+                        }
+                        .padding(.top, 20)
+                    }
+                }
+                .padding(.top, 75)
 
-                // Quokka image
-                Image("quokka")
-                    .resizable()
-                    .scaledToFit()
-                    .scaleEffect(0.2)
-                    .offset(x: 100, y: UIScreen.main.bounds.height * -0.43)
+                VStack {
+                    Spacer().frame(height: 200)
 
-                // Background image
-                Image("GalleryBackgroundRect")
-                    .resizable()
-                    .scaledToFit()
-                    .offset(y: 100)
+                    TabView(selection: $selectedIndex) {
+                        ForEach(0..<imageNames.count, id: \.self) { index in
+                            NavigationLink(
+                                destination: BadgeDecoratorView(
+                                    trailName: imageNames[index]
+                                )
+                            ) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 15)
+                                        .fill(Color.white)
+                                        .frame(
+                                            width: screenWidth * 0.85,
+                                            height: screenHeight
+                                        )
+                                        .offset(y: screenHeight * 0.16)
 
-                TrailCarouselView(
-                    imageNames: imageNames,
-                    selectedIndex: $selectedIndex
-                )
-                .offset(y: 20)
+                                    VStack {
+                                        Text(
+                                            "The \(imageNames[selectedIndex]) trail"
+                                        )
+                                        .padding(.bottom, 10)
+                                        .font(.headline)
+
+                                        Image(imageNames[index])
+                                            .resizable()
+                                            .scaledToFit()
+                                            .cornerRadius(10)
+                                            
+                                    }.padding(.top, screenHeight * 0.17)
+                                }
+                                .tag(index)
+                                .shadow(radius: 10)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                    .frame(height: screenHeight)
+                }
 
                 // Carousel navigation buttons
                 VStack {
@@ -51,6 +101,10 @@ struct GalleryView: View {
                             if selectedIndex > 0 {
                                 selectedIndex -= 1
                             }
+                            AudioManager.playSound(
+                                soundName: "boing.wav",
+                                soundVol: 0.5
+                            )
                         }) {
                             Image("back_button")
                                 .resizable()
@@ -64,6 +118,10 @@ struct GalleryView: View {
                             if selectedIndex < imageNames.count - 1 {
                                 selectedIndex += 1
                             }
+                            AudioManager.playSound(
+                                soundName: "boing.wav",
+                                soundVol: 0.5
+                            )
                         }) {
                             Image("forward_button")
                                 .resizable()
@@ -73,29 +131,27 @@ struct GalleryView: View {
                     }
                     .padding()
                 }
-
-                // Home Button (Top-left)
+                
+                // Home Button
                 HStack {
-                    VStack(alignment: .leading) {
+                    VStack {
                         Button {  // back button goes to the previous page
                             AudioManager.playSound(
                                 soundName: "boing.wav",
                                 soundVol: 0.5
                             )
-                            goBack.wrappedValue.dismiss()
+                            goBack.wrappedValue.dismiss()  //go to previous view
                         } label: {
-                            Image(systemName: "x.circle.fill").resizable()
+                            Image(systemName: "chevron.left")
                         }
-                        .font(.system(size: 24))
-                        .foregroundColor(.red)
-                        .frame(width: 20, height: 20)
+                        .font(.system(size: 40))
+                        .foregroundColor(Color("HunterGreen"))
                         .shadow(radius: 5)
-                        .padding(.top, 200)
-                        Spacer()
+                        .padding(.leading, 30.0)
+                        Spacer().frame(height: screenHeight * 0.6)
                     }
                     Spacer()
                 }
-                .padding()
             }
         }
     }

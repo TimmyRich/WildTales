@@ -98,6 +98,9 @@ struct ScrapBookDrag: View {
                 Image(systemName: "chevron.left")
                     .font(.title2)
             }
+            .font(.system(size: 40))
+            .foregroundColor(Color("HunterGreen"))
+            .shadow(radius: 5)
             .padding(.leading)
 
             Spacer()

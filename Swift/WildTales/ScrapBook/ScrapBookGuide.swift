@@ -109,18 +109,26 @@ struct ScrapBookGuide: View {
                     HStack{
                         VStack (alignment: .leading) {
                             
-                            Button {
-                                AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-                                dismiss()
+                            Button {  // back button goes to the previous page
+                                AudioManager.playSound(
+                                    soundName: "boing.wav",
+                                    soundVol: 0.5
+                                )
+                                dismiss()  //go to previous view
                             } label: {
-                                Image("homeButtonGreen").resizable().frame(width: 60, height: 60).padding(.top, 40).padding(.leading, 15)
+                                Image(systemName: "chevron.left")
                             }
-                            .hapticOnTouch()
+                            .font(.system(size: 40))
+                            .foregroundColor(Color("HunterGreen"))
+                            .shadow(radius: 5)
+                            .padding([.top, .leading], 40)
+                            
                             Spacer()
                             
                         }
-                        
                         Spacer()
+                        
+                        
                     }
                 }.overlay(alignment: .bottom) {
                     if popupManager.action.isPresented {

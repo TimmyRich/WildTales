@@ -27,7 +27,7 @@ struct Badge: Codable, Identifiable {
 
     var id = UUID()
     var imageName: String
-    var scale: Double = 0.13
+    var scale: Double = 0.3
     var degrees: Double = 0.0
     var x: Double = 0.0  // X position in points
     var y: Double = 0.0  // Y position in points
