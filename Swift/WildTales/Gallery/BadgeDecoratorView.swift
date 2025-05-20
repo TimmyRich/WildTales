@@ -1,11 +1,3 @@
-/*
- -- Acknowledgments --
-
- Heavily inspired by https://www.youtube.com/watch?v=O3QAI8Mxh8M . GenAI was used to develop the logic for determining when an
- image was placed out of bounds using a geometryReader with prompt: "Use a GeometryReader to define a safe area inside the
-'Image(trailName)'. Make a function which checks if a badge has been placed outside of this safe area"
- */
-
 import SwiftUI
 
 // Get available badges, including unlocked badges
@@ -27,7 +19,7 @@ func getAvailableBadges() -> [String] {
     }
 
     // badges available by default
-    var defaultBadges: [String] = ["moon-badge", "possum-badge", "cloud-badge"]
+    var defaultBadges: [String] = ["moon-badge", "possum-badge", "cloud-badge", "cow-badge", "monkey-badge", "turtle-badge", "tongue-badge"]
 
     addZoneBadge(zone: "University of Queensland", badge: "quokka-badge")
     addZoneBadge(zone: "Southbank Parklands", badge: "ibis-badge")
@@ -45,11 +37,11 @@ struct BadgeDecoratorView: View {
     let helpMessage: String =
         "Tap a badge to add it. Drag, pinch, or rotate to adjust. Drag offscreen to delete."
 
-    // Loads all previously saved badges
     @StateObject private var badgeLoader = BadgeLoader()
-
-    // Gets the list of badge names that the user has unlocked
     let availableBadges: [String] = getAvailableBadges()
+
+    @State private var currentIndex: Int = 0
+    let scrollStep = 3
 
     var body: some View {
         VStack {
@@ -58,11 +50,9 @@ struct BadgeDecoratorView: View {
             Text("The \(trailName) trail")
                 .font(.title)
                 .padding(.top, -8)
-                .foregroundColor(
-                    Color(red: 25 / 255, green: 71 / 255, blue: 41 / 255)
-                )
+                .foregroundColor(Color(red: 25 / 255, green: 71 / 255, blue: 41 / 255))
 
-            // Help message, directs user to manipulate badges
+            // Help message
             Text(helpMessage)
                 .frame(width: 250)
                 .font(.subheadline)
@@ -79,25 +69,19 @@ struct BadgeDecoratorView: View {
                         y: (geo.size.height - imageHeight) / 2
                     )
 
-                    // Safe area for placing badfges
                     let imageRect = CGRect(
                         origin: imageOrigin,
                         size: CGSize(width: imageWidth, height: imageHeight)
                     )
 
-                    // Trail image
                     Image(trailName)
                         .resizable()
                         .scaledToFit()
                         .frame(width: imageWidth, height: imageHeight)
-                        //.border(Color.black, width: 4)
                         .position(x: imageRect.midX, y: imageRect.midY)
 
-                    // Render each badge associated with this trail
                     ForEach($badgeLoader.data) { $badge in
-                        if badge.parentImage == trailName
-                            && availableBadges.contains(badge.imageName)
-                        {
+                        if badge.parentImage == trailName && availableBadges.contains(badge.imageName) {
                             BadgeView(
                                 badge: $badge,
                                 imageRect: imageRect,
@@ -113,35 +97,57 @@ struct BadgeDecoratorView: View {
                 .frame(width: geo.size.width, height: geo.size.height)
             }
 
-            // Badge selector
+            // Badge selector with scroll buttons
             HStack(alignment: .center, spacing: 10) {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 20) {
-                        ForEach(availableBadges, id: \.self) { badgeName in
-                            Button(action: {
-                                let newBadge = Badge(
-                                    imageName: badgeName,
-                                    x: 200,
-                                    y: 300,
-                                    parentImage: trailName
-                                )
-                                badgeLoader.addBadge(newBadge)
-                                AudioManager.playSound(
-                                    soundName: "boing.wav",
-                                    soundVol: 0.5
-                                )
-                            }) {
-                                Image(badgeName)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(height: 50)
+                Button(action: {
+                    if currentIndex > 0 {
+                        currentIndex = max(0, currentIndex - scrollStep)
+                    }
+                    AudioManager.playSound(
+                        soundName: "boing.wav",
+                        soundVol: 0.5
+                    )
+                }) {
+                    Image("back_button")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(.blue)
+                }
+
+                ScrollViewReader { proxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 20) {
+                            ForEach(Array(availableBadges.enumerated()), id: \.element) { index, badgeName in
+                                Button(action: {
+                                    let newBadge = Badge(
+                                        imageName: badgeName,
+                                        x: 200,
+                                        y: 300,
+                                        parentImage: trailName
+                                    )
+                                    badgeLoader.addBadge(newBadge)
+                                    AudioManager.playSound(
+                                        soundName: "boing.wav",
+                                        soundVol: 0.5
+                                    )
+                                }) {
+                                    Image(badgeName)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(height: 50)
+                                }
+                                .id(index)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .onChange(of: currentIndex) { index in
+                            withAnimation {
+                                proxy.scrollTo(index, anchor: .center)
                             }
                         }
                     }
-                    .padding(.horizontal)
                 }
 
-                // clear all badges button
                 Button(action: {
                     badgeLoader.removeAllBadges(parentImage: trailName)
                     AudioManager.playSound(
@@ -158,6 +164,23 @@ struct BadgeDecoratorView: View {
                         .shadow(radius: 5)
                 }
                 .padding(.trailing)
+                
+                Button(action: {
+                    if currentIndex < availableBadges.count - 1 {
+                        currentIndex = min(availableBadges.count - 1, currentIndex + scrollStep)
+                    }
+                    AudioManager.playSound(
+                        soundName: "boing.wav",
+                        soundVol: 0.5
+                    )
+                }) {
+                    Image("forward_button")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(.blue)
+                }
+
+                
             }
             .frame(width: UIScreen.main.bounds.width * 0.9, height: 70)
             .padding(.bottom)
@@ -203,7 +226,6 @@ struct BadgeView: View {
             .scaleEffect(badge.scale)
             .rotationEffect(Angle(degrees: badge.degrees))
             .position(x: badge.x, y: badge.y)
-            // Simulataneous gesture allows user to manipulate size position and rotation with one gesture
             .gesture(
                 SimultaneousGesture(
                     SimultaneousGesture(
@@ -239,7 +261,6 @@ struct BadgeView: View {
             }
     }
 
-    // Check if this badge is out of bounds
     private func checkIfOutOfBounds() {
         let actualBadgeWidth = badgeSize * badge.scale
         let actualBadgeHeight = badgeSize * badge.scale
