@@ -1,3 +1,11 @@
+/*
+ -- Acknowledgments --
+
+ Heavily inspired by https://www.youtube.com/watch?v=O3QAI8Mxh8M . GenAI was used to develop the logic for determining when an
+ image was placed out of bounds using a geometryReader with prompt: "Use a GeometryReader to define a safe area inside the
+'Image(trailName)'. Make a function which checks if a badge has been placed outside of this safe area"
+ */
+
 import SwiftUI
 
 // Get available badges, including unlocked badges
@@ -98,6 +106,8 @@ struct BadgeDecoratorView: View {
             }
 
             // Badge selector with scroll buttons
+            // Scroll buttons added using prompt: "Add buttons to my BadgeDecoratorView
+            // which when pressed scroll through the ScrollView"
             HStack(alignment: .center, spacing: 10) {
                 Button(action: {
                     if currentIndex > 0 {
