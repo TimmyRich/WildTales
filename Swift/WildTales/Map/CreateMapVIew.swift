@@ -300,7 +300,6 @@ struct CreateMapView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text(location.name).font(.headline)  // gets location name and description
                         Text(location.description).font(.subheadline)
-                        Text(location.zone).font(.subheadline)
 
                         // gets location quiz parts
                         if let question = location.quizQuestion,
@@ -554,7 +553,7 @@ struct CreateMapView: View {
                                 )
                                 .foregroundColor(
                                     correctAnswerIndex == i
-                                        ? Color("Pink") : .gray
+                                        ? Color("HunterGreen") : .gray
                                 )
                                 .imageScale(.large)
                                 .padding(.leading, 8)
@@ -618,7 +617,7 @@ struct CreateMapView: View {
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color("Pink"))
+                                .background(Color("HunterGreen"))
                                 .cornerRadius(10)
                                 .contentShape(Rectangle())  // Ensures the entire padded area is tappable
                         }

@@ -613,7 +613,7 @@ struct CommunityMapView: View {
                                 }
                             }
                         }
-                        if location.quizQuestion != nil && location.visited == 1 {  // if there is a quiz
+                        if location.quizQuestion != nil && location.visited != 1 {  // if there is a quiz
                             HStack {
                                 Image(systemName: "dot.radiowaves.up.forward")
                                     .foregroundColor(.red)
@@ -624,7 +624,7 @@ struct CommunityMapView: View {
                                 .foregroundColor(.red)
                             }
                             .padding(.top)
-                        } else {  // if there is not quiz question or quiz
+                        } else if location.quizQuestion == nil  {  // if there is not quiz question or quiz
                             HStack {
                                 Image(systemName: "pencil.slash")
                                     .foregroundColor(.orange)
