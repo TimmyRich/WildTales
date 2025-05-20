@@ -15,18 +15,17 @@ import MapKit
 import SwiftUI
 
 struct CommunityMapView: View {
-
-    @State private var showGIF = true  // shows swipe gif by default
+    @State private var showGIF = true  // shows swipe gif by default on startup
 
     @Environment(\.presentationMode) var goBack  // to go back to map selection
 
     @State private var isShowingFullImage = false  //for full image on pin
 
-    @State private var wikipediaImageURL: URL? = nil  // default wikipedia url
+    @State private var wikipediaImageURL: URL? = nil  // default wikipedia url to nothing
 
-    @State private var showUsageAlert = false  // for screen time alert
-    @State private var usageStartTime: Date? = nil  //start time for alert
-    @State private var usageTimer: Timer? = nil  // timer count
+    @State private var showScreenTimeAlert = false  // for screen time alert
+    @State private var screenTimerStart: Date? = nil  //start time for alert
+    @State private var ScreenTimer: Timer? = nil  // timer count
 
     @State private var showEmergency = false  //to show the emergency popup
     @StateObject private var locationManager = LocationManager()
@@ -59,7 +58,7 @@ struct CommunityMapView: View {
     var body: some View {
         ZStack {
             // map with user dot
-            Map(
+            Map(  // most of thse variables are standard and autofill when createing a Map()
                 coordinateRegion: $mapRegion,
                 interactionModes: .all,  // allows all interactions with the map
                 showsUserLocation: true,  // shows user location as blue dot
@@ -88,6 +87,10 @@ struct CommunityMapView: View {
                         Button(action: {
                             withAnimation {
                                 selectedLocation = location  // select this location for viewing
+                                AudioManager.playSound(
+                                    soundName: "boing.wav",
+                                    soundVol: 0.5
+                                )
                             }
                         }) {
                             Image(
@@ -106,10 +109,11 @@ struct CommunityMapView: View {
             .ignoresSafeArea()  // can go from corner to corner
             .onAppear {  // when view first shows up
                 locationManager.requestLocation()  // request location if not previoously asked
-                startUsageTimer()  // start screen on timer
+                startScreenTimer()  // start screen on timer
                 locations = LocationLoader.loadLocations()  //load locations
 
                 ProximityNotificationManager.shared.requestPermission()  //request notification permission
+                ProximityNotificationManager.shared.scheduleDailyNotification()
             }
 
             .onChange(of: locationManager.userLocation) { newLocation in  // when the users locations changes
@@ -227,7 +231,7 @@ struct CommunityMapView: View {
                                         "Error adding notification request: \(error.localizedDescription)"
                                     )
                                 } else {
-                                    selectedLocation = locations[index]  //select location
+                                    selectedLocation = locations[index]  //if it work, just debugging
                                     print(
                                         "Notification request successfully added."
                                     )
@@ -266,7 +270,7 @@ struct CommunityMapView: View {
                 }
             }
             .onDisappear {
-                stopUsageTimer()  // when going off this view, stop the screen time timer
+                stopScreenTimer()  // when going off this view, stop the screen time timer
             }
 
             VStack {
@@ -283,7 +287,6 @@ struct CommunityMapView: View {
                     }
                     .font(.system(size: 40))
                     .foregroundColor(Color("HunterGreen"))
-
                     .shadow(radius: 5)
                     .padding(.leading, 30.0)
 
@@ -310,245 +313,7 @@ struct CommunityMapView: View {
                 }
                 Spacer()
             }
-
-            // location detail panel with quiz
-            if let location = selectedLocation {  // for the selected location
-                VStack(alignment: .center, spacing: 12) {
-                    ZStack(alignment: .topTrailing) {
-                        if let url = wikipediaImageURL {  //wikipedia image (if exists)
-                            AsyncImage(url: url) { phase in
-                                switch phase {
-                                case .empty:  //if no image use pawicon
-                                    Image("PawIcon")
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(height: 150)
-                                        .clipped()
-                                        .cornerRadius(8)
-                                case .success(let image):  // if there is an imag, us ut
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(height: 150)
-                                        .clipped()
-                                        .cornerRadius(8)
-                                        .onTapGesture {
-                                            isShowingFullImage = true  // when clicked go to full screen image
-                                        }
-                                case .failure:  //if there was a failure, use default (stopped it reusing old image on new pin)
-                                    Image("PawIcon")
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(height: 150)
-                                        .clipped()
-                                        .cornerRadius(8)
-                                        .onTapGesture {
-                                            isShowingFullImage = true
-                                        }
-                                @unknown default:
-                                    EmptyView()  //default, showulnt get to this
-                                }
-                            }
-                        } else {
-                            Image("PawIcon")  // default again to paw icon, for errors where old images would show up
-                                .resizable()
-                                .scaledToFill()
-                                .frame(height: 150)
-                                .clipped()
-                                .cornerRadius(8)
-                                .onTapGesture {
-                                    isShowingFullImage = true
-                                }
-                        }
-
-                        // this part is for redirecting to a wikipedia link for each pin
-                        Button(action: {  // when clicking on the blue ?
-                            let query =
-                                location.name.addingPercentEncoding(
-                                    withAllowedCharacters: .urlQueryAllowed
-                                ) ?? ""
-                            if let url = URL(  // search wikipeida with the location name as the query
-                                string: "https://en.wikipedia.org/wiki/\(query)"
-                            ) {
-                                UIApplication.shared.open(url)  //go to the url in default browser
-                            }
-                        }) {
-                            Image(systemName: "questionmark.circle.fill")
-                                .font(.title2)
-                                .foregroundColor(.blue)
-                                .padding(8)
-                        }
-                    }
-
-                    Text(location.name)  //location details
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-
-                    Text(location.description)
-                        .font(.subheadline)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-
-                    HStack {
-                        Text("Visited:")  // if the place is visted
-                            .font(.subheadline)
-                            .bold()
-                        Image(
-                            systemName: location.visited == 1  // x if unvisited and tick if visited
-                                ? "checkmark.circle.fill" : "xmark.circle.fill"
-                        )
-                        .foregroundColor(
-                            location.visited == 1 ? .green : .red
-                        )  //green if visited and red if not
-                        .font(.title3)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 4)
-
-                    if location.visited == 1 {  // if location has been visited, show quiz info
-                        if let question = location.quizQuestion,
-                            let answers = location.quizAnswers,
-                            let correctIndex = location.correctAnswerIndex
-                        {
-
-                            Text(question)
-                                .font(.headline)
-                                .padding(.top)
-                                .multilineTextAlignment(.center)
-                                .frame(maxWidth: .infinity)
-
-                            ForEach(answers.indices, id: \.self) { index in
-                                Button {
-                                    if index == correctIndex {  // if correct, play sound and mark answer as correct
-                                        isAnswerCorrect = true
-                                        AudioManager.playSound(
-                                            soundName: "correct.wav",
-                                            soundVol: 0.5
-                                        )
-                                        if let selectedIndex =  // update array of the quiz is correct
-                                            locations.firstIndex(where: {
-                                                $0.id == location.id
-                                            })
-                                        {
-                                            locations[selectedIndex]
-                                                .quizCompleted = true  // mark as true
-                                            var allLocations =
-                                                LocationLoader.loadLocations()  //reload locations
-                                            for updated in locations {
-                                                if let index =
-                                                    allLocations.firstIndex(
-                                                        where: {
-                                                            $0.id == updated.id
-                                                        })
-                                                {
-                                                    allLocations[index] =
-                                                        updated
-                                                } else {
-                                                    allLocations.append(updated)
-                                                }
-                                            }
-                                            LocationLoader.saveLocations(
-                                                allLocations  //save changes to locations
-                                            )
-                                        }
-                                    } else {
-                                        isAnswerCorrect = false  // if the anseer is false
-                                        AudioManager.playSound(
-                                            soundName: "wrong.wav",  //incorrect sound
-                                            soundVol: 0.5
-                                        )
-                                    }
-                                    isQuizFinished = true  // marks quiz completed as true
-                                } label: {
-                                    Text(answers[index])  // all the answers for the quiz's text
-                                        .padding()
-                                        .frame(maxWidth: .infinity)
-                                        .background(
-                                            Color("HunterGreen").opacity(0.1)
-                                        )
-                                        .cornerRadius(5)
-                                        .foregroundColor(.black)
-                                }
-                            }
-
-                            if isQuizFinished {  //if the quiz has been attempted
-                                Text(
-                                    isAnswerCorrect
-                                        ? "That's right!" : "Oops, try again!"  // wrong or correct text
-                                )
-                                .font(.headline)
-                                .foregroundColor(
-                                    isAnswerCorrect ? .green : .red  // wrong or correct text colours
-                                )
-                                .padding()
-                                .transition(.opacity)
-                            }
-                        }
-                    } else {
-                        if location.quizQuestion != nil {  // if there is a quiz
-                            HStack {
-                                Image(systemName: "dot.radiowaves.up.forward")
-                                    .foregroundColor(.red)
-                                Text(
-                                    "Get closer to the location to take the quiz!"  // say get closer to attampt
-                                )
-                                .font(.footnote)
-                                .foregroundColor(.red)
-                            }
-                            .padding(.top)
-                        } else {  // if there is not quiz question or quiz
-                            HStack {
-                                Image(systemName: "pencil.slash")
-                                    .foregroundColor(.orange)
-                                Text("No quiz for this location!")  // say there is no quiz for this location
-                                    .font(.footnote)
-                                    .foregroundColor(.orange)
-                            }
-                            .padding(.top)
-                        }
-                    }
-
-                    Button("Close") {  // close location button
-                        AudioManager.playSound(
-                            soundName: "boing.wav",
-                            soundVol: 0.5
-                        )
-                        withAnimation {
-                            selectedLocation = nil  // unselect the location
-                        }
-                    }
-                    .font(.body)
-                    .padding(.top, 6)
-                    .frame(maxWidth: .infinity)
-
-                }
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12).fill(Color.white)  //background panel
-                )
-                .shadow(radius: 8)
-                .frame(maxWidth: 300)
-                .transition(.opacity)
-                .zIndex(100)
-                .onAppear {
-                    fetchWikipediaImage(for: location.name)  // when appearing, attempt to get a image from wikipedia
-                }
-            }
-
-            // Emergency overlay
-            if showEmergency {
-                ZStack {
-                    Color.black.opacity(0.4)
-                        .ignoresSafeArea()
-                        .onTapGesture { showEmergency = false }
-
-                    Emergency(showEmergency: $showEmergency)
-                        .transition(.scale)
-                }
-            }
-
+            
             VStack {
                 Spacer()
                 HStack {
@@ -614,12 +379,288 @@ struct CommunityMapView: View {
                     .padding()
                 }
             }.ignoresSafeArea()
-
+            
             HStack {
                 if showGIF {  //show swipe gif for ease of access
                     GIFView(gifName: "swipe")
                         .frame(width: 70, height: 70)
                         .padding(.top, UIScreen.main.bounds.height - 300)
+                }
+            }
+
+            // location detail panel with quiz
+            if let location = selectedLocation {  // for the selected location
+                ZStack{
+                    Color.black.opacity(0.8)
+                        .ignoresSafeArea()
+                    
+                    /*Button(action: {
+                        selectedLocation = nil  // when X is clicked
+                    }) {
+                        Image("exitButtonWhite")
+                            .resizable()
+                            .frame(width: 80, height: 40)
+                            .foregroundColor(.white)
+                            
+                            .padding()
+                            //.background(Color("HunterGreen"))
+                    }.simultaneousGesture(
+                        TapGesture().onEnded {
+                            AudioManager.playSound(
+                                soundName: "boing.wav",
+                                soundVol: 0.5
+                            )
+                        }
+                    )
+                    .padding(.trailing, UIScreen.main.bounds.width-150)
+                    .padding(.bottom, UIScreen.main.bounds.height-250)*/
+                    
+                    VStack(alignment: .center, spacing: 12) {
+                        Button(action: {
+                            selectedLocation = nil  // when X is clicked
+                        }) {
+                            Image("exitButton")
+                                .resizable()
+                                .frame(width: 60, height: 30)
+                                .foregroundColor(.white)
+                                
+                                .padding(.trailing, 190.0)
+                                .padding(10.0)
+                                //.background(Color("HunterGreen"))
+                                //.frame(width: 60, height: 30)
+                            
+                        }.simultaneousGesture(
+                            TapGesture().onEnded {
+                                AudioManager.playSound(
+                                    soundName: "boing.wav",
+                                    soundVol: 0.5
+                                )
+                            }
+                        ).zIndex(1)
+                        
+                        ZStack(alignment: .topTrailing) {
+                            
+                            if let url = wikipediaImageURL {  //wikipedia image (if exists)
+                                AsyncImage(url: url) { phase in
+                                    switch phase {
+                                    case .empty:  //if no image use pawicon
+                                        Image("PawIcon")
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(height: 150)
+                                            .clipped()
+                                            .cornerRadius(8)
+                                    case .success(let image):  // if there is an imag, us ut
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(height: 150)
+                                            .clipped()
+                                            .cornerRadius(8)
+                                            .onTapGesture {
+                                                isShowingFullImage = true  // when clicked go to full screen image
+                                            }
+                                    case .failure:  //if there was a failure, use default (stopped it reusing old image on new pin)
+                                        Image("PawIcon")
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(height: 150)
+                                            .clipped()
+                                            .cornerRadius(8)
+                                            .onTapGesture {
+                                                isShowingFullImage = true
+                                            }
+                                    @unknown default:
+                                        EmptyView()  //default, showulnt get to this
+                                    }
+                                }
+                            } else {
+                                Image("PawIcon")  // default again to paw icon, for errors where old images would show up
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(height: 150)
+                                    .clipped()
+                                    .cornerRadius(8)
+                                    .onTapGesture {
+                                        isShowingFullImage = true
+                                    }
+                            }
+                            
+                            // this part is for redirecting to a wikipedia link for each pin
+                            Button(action: {  // when clicking on the blue ?
+                                let query =
+                                location.name.addingPercentEncoding(
+                                    withAllowedCharacters: .urlQueryAllowed
+                                ) ?? ""
+                                if let url = URL(  // search wikipeida with the location name as the query
+                                    string: "https://en.wikipedia.org/wiki/\(query)"
+                                ) {
+                                    UIApplication.shared.open(url)  //go to the url in default browser
+                                }
+                            }) {
+                                Image(systemName: "questionmark.circle.fill")
+                                    .font(.title2)
+                                    .foregroundColor(Color("HunterGreen"))
+                                    .padding(8)
+                            }
+                            
+                        }
+                        
+                        Text(location.name)  //location details
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                        
+                        Text(location.description)
+                            .font(.subheadline)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                        
+                        HStack {
+                            Text("Visited:")  // if the place is visted
+                                .font(.subheadline)
+                                .bold()
+                            Image(
+                                systemName: location.visited == 1  // x if unvisited and tick if visited
+                                ? "checkmark.circle.fill" : "xmark.circle.fill"
+                            )
+                            .foregroundColor(
+                                location.visited == 1 ? .green : .red
+                            )  //green if visited and red if not
+                            .font(.title3)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 4)
+                        
+                        if location.visited == 1 {  // if location has been visited, show quiz info
+                            if let question = location.quizQuestion,
+                               let answers = location.quizAnswers,
+                               let correctIndex = location.correctAnswerIndex
+                            {
+                                
+                                Text(question)
+                                    .font(.headline)
+                                    .padding(.top)
+                                    .multilineTextAlignment(.center)
+                                    .frame(maxWidth: .infinity)
+                                
+                                ForEach(answers.indices, id: \.self) { index in
+                                    Button {
+                                        if index == correctIndex {  // if correct, play sound and mark answer as correct
+                                            isAnswerCorrect = true
+                                            AudioManager.playSound(
+                                                soundName: "correct.wav",
+                                                soundVol: 0.5
+                                            )
+                                            if let selectedIndex =  // update array of the quiz is correct
+                                                locations.firstIndex(where: {
+                                                    $0.id == location.id
+                                                })
+                                            {
+                                                locations[selectedIndex]
+                                                    .quizCompleted = true  // mark as true
+                                                var allLocations =
+                                                LocationLoader.loadLocations()  //reload locations
+                                                for updated in locations {
+                                                    if let index =
+                                                        allLocations.firstIndex(
+                                                            where: {
+                                                                $0.id == updated.id
+                                                            })
+                                                    {
+                                                        allLocations[index] =
+                                                        updated
+                                                    } else {
+                                                        allLocations.append(updated)
+                                                    }
+                                                }
+                                                LocationLoader.saveLocations(
+                                                    allLocations  //save changes to locations
+                                                )
+                                            }
+                                        } else {
+                                            isAnswerCorrect = false  // if the answer is false
+                                            AudioManager.playSound(
+                                                soundName: "wrong.wav",  //incorrect sound
+                                                soundVol: 0.5
+                                            )
+                                        }
+                                        isQuizFinished = true  // marks quiz completed as true
+                                    } label: {
+                                        Text(answers[index])  // all the answers for the quiz's text
+                                            .padding()
+                                            .frame(maxWidth: .infinity)
+                                            .background(
+                                                Color("HunterGreen").opacity(0.1)
+                                            )
+                                            .cornerRadius(5)
+                                            .foregroundColor(.black)
+                                    }
+                                }
+                                
+                                if isQuizFinished {  //if the quiz has been attempted
+                                    Text(
+                                        isAnswerCorrect
+                                        ? "That's right!" : "Oops, try again!"  // wrong or correct text
+                                    )
+                                    .font(.headline)
+                                    .foregroundColor(
+                                        isAnswerCorrect ? .green : .red  // wrong or correct text colours
+                                    )
+                                    .padding()
+                                    .transition(.opacity)
+                                }
+                            }
+                        }
+                        if location.quizQuestion != nil && location.visited == 1 {  // if there is a quiz
+                            HStack {
+                                Image(systemName: "dot.radiowaves.up.forward")
+                                    .foregroundColor(.red)
+                                Text(
+                                    "Get closer to the location to take the quiz!"  // say get closer to attampt
+                                )
+                                .font(.footnote)
+                                .foregroundColor(.red)
+                            }
+                            .padding(.top)
+                        } else {  // if there is not quiz question or quiz
+                            HStack {
+                                Image(systemName: "pencil.slash")
+                                    .foregroundColor(.orange)
+                                Text("No quiz for this location!")  // say there is no quiz for this location
+                                    .font(.footnote)
+                                    .foregroundColor(.orange)
+                            }
+                            .padding(.top)
+                        } 
+                        
+                    }
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 12).fill(Color.white)  //background panel
+                    )
+                    .shadow(radius: 8)
+                    .frame(maxWidth: 300)
+                    .transition(.opacity)
+                    .zIndex(100)
+                    .onAppear {
+                        fetchWikipediaImage(for: location.name)  // when appearing, attempt to get a image from wikipedia
+                    }
+                }
+            }
+
+            // Emergency overlay
+            if showEmergency {
+                ZStack {
+                    ZStack{
+                        Color.black.opacity(0.9)
+                            .ignoresSafeArea()
+                            .onTapGesture { showEmergency = false }
+                        
+                        Emergency(showEmergency: $showEmergency)
+                            .transition(.scale)
+                    }.zIndex(1)
                 }
             }
 
@@ -652,12 +693,12 @@ struct CommunityMapView: View {
                         Button(action: {
                             isShowingFullImage = false  // close the full screen view and go back to map
                         }) {
-                            Image(systemName: "xmark.circle.fill")
+                            Image("exitButton")
+                                .resizable()
+                                .frame(width: 60, height: 30)
                                 .font(.system(size: 30))
                                 .foregroundColor(.white)
                                 .padding(12)
-                                .background(Color.hunterGreen)
-                                .clipShape(Circle())
                         }
                         Spacer()
                     }
@@ -680,10 +721,10 @@ struct CommunityMapView: View {
         }.preferredColorScheme(.light)  // always light mode map
         .alert(
             "You've been using the app for a while!",  //aleart for screen time
-            isPresented: $showUsageAlert
+            isPresented: $showScreenTimeAlert
         ) {
             Button("Okay") {
-                startUsageTimer()  // Reset timer when user acknowledges
+                startScreenTimer()  // Reset timer when user acknowledges
             }
         } message: {
             Text("Time to take a break!")
@@ -706,22 +747,22 @@ struct CommunityMapView: View {
     }
 
     //function to start the timer for screen time
-    func startUsageTimer() {
-        usageStartTime = Date()
-        usageTimer?.invalidate()  // Cancel previous timer if any
+    func startScreenTimer() {
+        screenTimerStart = Date()
+        ScreenTimer?.invalidate()  // Cancel previous timer if any
 
-        usageTimer = Timer.scheduledTimer(
+        ScreenTimer = Timer.scheduledTimer(
             withTimeInterval: 1600,
             repeats: false
         ) { _ in
-            showUsageAlert = true
+            showScreenTimeAlert = true
         }
     }
 
     //stop the timer
-    func stopUsageTimer() {
-        usageTimer?.invalidate()
-        usageTimer = nil
+    func stopScreenTimer() {
+        ScreenTimer?.invalidate()
+        ScreenTimer = nil
     }
 
     //loops through the locations and checks if the one is completed, if so awarding a badge and notifying about it
@@ -772,6 +813,7 @@ struct CommunityMapView: View {
     }
 
     //basic function to get the firtst image wikipedia presents, takes a string and returns an imageURL
+
     // This was derived from ChatGPT with the promopt, "write some swift code that displays a wikipedia image based on a string input to it"
     func fetchWikipediaImage(for title: String) {
         // Reset the image to nil so the previous one is cleared immediately
