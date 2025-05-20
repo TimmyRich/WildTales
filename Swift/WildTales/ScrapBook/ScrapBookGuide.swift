@@ -4,7 +4,7 @@
 //
 //  Created by Kurt McCullough on 31/3/2025.
 //  Updated by Yujie Wei on 18/4/2025.
-//  Scrapbook main page with update visual elements
+//  Scrapbook main landing page with update visual elements. It provide users with 
 //  Inspired by https://www.youtube.com/watch?v=OaIn7HBlCSk
 
 import SwiftUI
@@ -54,20 +54,23 @@ struct ScrapBookGuide: View {
                         
                         HStack (spacing: 30) {
                             VStack {
-                                NavigationLink(destination: ScrapBookDrag().navigationBarBackButtonHidden(true)) {
+                                Button {
+                                    
+                                } label: {
                                     Image("albumButton").resizable().frame(width: 60, height: 60)
+                                        .hapticOnTouch()
+                                    
                                 }
-                                .hapticOnTouch()
                                 
                                 Text("Add from Album").font(Font.custom("Inter", size: 8))
                             }
                             
                             VStack {
-                                Button {
-                                    
-                                } label: {
+                                NavigationLink(destination: ScrapBookDrag().navigationBarBackButtonHidden(true))
+                                {
                                     Image("cameraButton").resizable().frame(width: 60, height: 60)
                                 }
+                                .hapticOnTouch()
                                 Text("Take Photo").font(Font.custom("Inter", size: 8))
                             }
                         }.padding(.bottom,15)
@@ -92,6 +95,7 @@ struct ScrapBookGuide: View {
                             withAnimation(.spring()) {
                                 popupManager.present()
                             }
+                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
                         }
                         .frame(width: UIScreen.main.bounds.width-220, height: 25)
                         .foregroundColor(.black)
