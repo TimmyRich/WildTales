@@ -321,7 +321,7 @@ struct MapView: View {
                 }
                 Spacer()
             }
-            
+
             VStack {
                 Spacer()
                 HStack {
@@ -387,7 +387,7 @@ struct MapView: View {
                     .padding()
                 }
             }.ignoresSafeArea()
-            
+
             HStack {
                 if showGIF {  //show swipe gif for ease of access
                     GIFView(gifName: "swipe")
@@ -398,10 +398,10 @@ struct MapView: View {
 
             // location detail panel with quiz
             if let location = selectedLocation {  // for the selected location
-                ZStack{
+                ZStack {
                     Color.black.opacity(0.8)
                         .ignoresSafeArea()
-                    
+
                     /*Button(action: {
                         selectedLocation = nil  // when X is clicked
                     }) {
@@ -409,7 +409,7 @@ struct MapView: View {
                             .resizable()
                             .frame(width: 80, height: 40)
                             .foregroundColor(.white)
-                            
+                    
                             .padding()
                             //.background(Color("HunterGreen"))
                     }.simultaneousGesture(
@@ -422,7 +422,7 @@ struct MapView: View {
                     )
                     .padding(.trailing, UIScreen.main.bounds.width-150)
                     .padding(.bottom, UIScreen.main.bounds.height-250)*/
-                    
+
                     VStack(alignment: .center, spacing: 12) {
                         Button(action: {
                             selectedLocation = nil  // when X is clicked
@@ -431,12 +431,12 @@ struct MapView: View {
                                 .resizable()
                                 .frame(width: 60, height: 30)
                                 .foregroundColor(.white)
-                                
+
                                 .padding(.trailing, 190.0)
                                 .padding(10.0)
-                                //.background(Color("HunterGreen"))
-                                //.frame(width: 60, height: 30)
-                            
+                            //.background(Color("HunterGreen"))
+                            //.frame(width: 60, height: 30)
+
                         }.simultaneousGesture(
                             TapGesture().onEnded {
                                 AudioManager.playSound(
@@ -445,9 +445,9 @@ struct MapView: View {
                                 )
                             }
                         ).zIndex(1)
-                        
+
                         ZStack(alignment: .topTrailing) {
-                            
+
                             if let url = wikipediaImageURL {  //wikipedia image (if exists)
                                 AsyncImage(url: url) { phase in
                                     switch phase {
@@ -493,15 +493,16 @@ struct MapView: View {
                                         isShowingFullImage = true
                                     }
                             }
-                            
+
                             // this part is for redirecting to a wikipedia link for each pin
                             Button(action: {  // when clicking on the blue ?
                                 let query =
-                                location.name.addingPercentEncoding(
-                                    withAllowedCharacters: .urlQueryAllowed
-                                ) ?? ""
+                                    location.name.addingPercentEncoding(
+                                        withAllowedCharacters: .urlQueryAllowed
+                                    ) ?? ""
                                 if let url = URL(  // search wikipeida with the location name as the query
-                                    string: "https://en.wikipedia.org/wiki/\(query)"
+                                    string:
+                                        "https://en.wikipedia.org/wiki/\(query)"
                                 ) {
                                     UIApplication.shared.open(url)  //go to the url in default browser
                                 }
@@ -511,27 +512,28 @@ struct MapView: View {
                                     .foregroundColor(Color("HunterGreen"))
                                     .padding(8)
                             }
-                            
+
                         }
-                        
+
                         Text(location.name)  //location details
                             .font(.title2)
                             .fontWeight(.bold)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity)
-                        
+
                         Text(location.description)
                             .font(.subheadline)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity)
-                        
+
                         HStack {
                             Text("Visited:")  // if the place is visted
                                 .font(.subheadline)
                                 .bold()
                             Image(
                                 systemName: location.visited == 1  // x if unvisited and tick if visited
-                                ? "checkmark.circle.fill" : "xmark.circle.fill"
+                                    ? "checkmark.circle.fill"
+                                    : "xmark.circle.fill"
                             )
                             .foregroundColor(
                                 location.visited == 1 ? .green : .red
@@ -540,19 +542,19 @@ struct MapView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.top, 4)
-                        
+
                         if location.visited == 1 {  // if location has been visited, show quiz info
                             if let question = location.quizQuestion,
-                               let answers = location.quizAnswers,
-                               let correctIndex = location.correctAnswerIndex
+                                let answers = location.quizAnswers,
+                                let correctIndex = location.correctAnswerIndex
                             {
-                                
+
                                 Text(question)
                                     .font(.headline)
                                     .padding(.top)
                                     .multilineTextAlignment(.center)
                                     .frame(maxWidth: .infinity)
-                                
+
                                 ForEach(answers.indices, id: \.self) { index in
                                     Button {
                                         if index == correctIndex {  // if correct, play sound and mark answer as correct
@@ -569,18 +571,22 @@ struct MapView: View {
                                                 locations[selectedIndex]
                                                     .quizCompleted = true  // mark as true
                                                 var allLocations =
-                                                LocationLoader.loadLocations()  //reload locations
+                                                    LocationLoader.loadLocations()  //reload locations
                                                 for updated in locations {
                                                     if let index =
                                                         allLocations.firstIndex(
                                                             where: {
-                                                                $0.id == updated.id
+                                                                $0.id
+                                                                    == updated
+                                                                    .id
                                                             })
                                                     {
                                                         allLocations[index] =
-                                                        updated
+                                                            updated
                                                     } else {
-                                                        allLocations.append(updated)
+                                                        allLocations.append(
+                                                            updated
+                                                        )
                                                     }
                                                 }
                                                 LocationLoader.saveLocations(
@@ -600,17 +606,20 @@ struct MapView: View {
                                             .padding()
                                             .frame(maxWidth: .infinity)
                                             .background(
-                                                Color("HunterGreen").opacity(0.1)
+                                                Color("HunterGreen").opacity(
+                                                    0.1
+                                                )
                                             )
                                             .cornerRadius(5)
                                             .foregroundColor(.black)
                                     }
                                 }
-                                
+
                                 if isQuizFinished {  //if the quiz has been attempted
                                     Text(
                                         isAnswerCorrect
-                                        ? "That's right!" : "Oops, try again!"  // wrong or correct text
+                                            ? "That's right!"
+                                            : "Oops, try again!"  // wrong or correct text
                                     )
                                     .font(.headline)
                                     .foregroundColor(
@@ -620,35 +629,30 @@ struct MapView: View {
                                     .transition(.opacity)
                                 }
                             }
-                        } else {
-                            if location.quizQuestion != nil {  // if there is a quiz
-                                HStack {
-                                    Image(systemName: "dot.radiowaves.up.forward")
-                                        .foregroundColor(.red)
-                                    Text(
-                                        "Get closer to the location to take the quiz!"  // say get closer to attampt
-                                    )
-                                    .font(.footnote)
-                                    .foregroundColor(.red)
-                                }
-                                .padding(.top)
-                            } else {  // if there is not quiz question or quiz
-                                HStack {
-                                    Image(systemName: "pencil.slash")
-                                        .foregroundColor(.orange)
-                                    Text("No quiz for this location!")  // say there is no quiz for this location
-                                        .font(.footnote)
-                                        .foregroundColor(.orange)
-                                }
-                                .padding(.top)
-                            }
                         }
-                        
-                        
-                        
-                        
-                        
-                        
+                        if location.quizQuestion != nil && location.visited != 1
+                        {  // if there is a quiz
+                            HStack {
+                                Image(systemName: "dot.radiowaves.up.forward")
+                                    .foregroundColor(.red)
+                                Text(
+                                    "Get closer to the location to take the quiz!"  // say get closer to attampt
+                                )
+                                .font(.footnote)
+                                .foregroundColor(.red)
+                            }
+                            .padding(.top)
+                        } else if location.quizQuestion == nil {  // if there is not quiz question or quiz
+                            HStack {
+                                Image(systemName: "pencil.slash")
+                                    .foregroundColor(.orange)
+                                Text("No quiz for this location!")  // say there is no quiz for this location
+                                    .font(.footnote)
+                                    .foregroundColor(.orange)
+                            }
+                            .padding(.top)
+                        }
+
                     }
                     .padding()
                     .background(
@@ -667,11 +671,11 @@ struct MapView: View {
             // Emergency overlay
             if showEmergency {
                 ZStack {
-                    ZStack{
+                    ZStack {
                         Color.black.opacity(0.9)
                             .ignoresSafeArea()
                             .onTapGesture { showEmergency = false }
-                        
+
                         Emergency(showEmergency: $showEmergency)
                             .transition(.scale)
                     }.zIndex(1)
