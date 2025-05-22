@@ -3,6 +3,7 @@
 //  WildTales
 //
 //  Created by Yujie Wei on 10/5/2025.
+//  Updated by Kurt McCullough on 22/5/2025
 //  Heavily inspired by the following content
 //  Inspired by https://www.youtube.com/watch?v=2ZK5wfbvvS4
 //  Inspired by https://www.youtube.com/watch?v=lMteVjlOIbM
