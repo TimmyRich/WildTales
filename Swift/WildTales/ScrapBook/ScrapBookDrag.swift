@@ -182,6 +182,19 @@ struct ScrapBookDrag: View {
         }.frame(width: photoAreaWidth, height: photoAreaHeight)
     }
 
+    // Combined view of title + photoArea for snapshotting
+    var combinedSnapshotView: some View {
+        VStack(spacing: 10) {
+            Text(titleText)
+                .bold()
+                .font(Font.custom("Inter", size: 30))
+                .foregroundColor(.green1)
+            photoArea
+        }
+        .frame(width: UIScreen.main.bounds.width * 0.8)
+        .background(Color.white)
+    }
+
     // Horizontal scrollable sticker selection bar with forward/back buttons
     var StickerSelectionView: some View {
         ScrollViewReader { proxy in
@@ -242,7 +255,7 @@ struct ScrapBookDrag: View {
         HStack(spacing: 30) {
             Spacer()
             Button {
-                if let screenshot = snapshotPhotoArea() {
+                if let screenshot = snapshotCombinedView() {
                     saveImageToPhotos(screenshot)
                     showSaveConfirmation = true   // Show confirmation alert here
                     AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
@@ -328,32 +341,26 @@ struct ScrapBookDrag: View {
     // Approximate safe area bottom inset
     func safeAreaBottom() -> CGFloat { return 30 }
 
-    // Capture a snapshot of the photoArea view as UIImage
-    func snapshotPhotoArea() -> UIImage? {
-        let screenWidth = UIScreen.main.bounds.width
-        let photoAreaWidth = min(screenWidth - 60, 330)
-        let photoAreaHeight = photoAreaWidth * (4.0/3.0)
+    // Capture a snapshot of the combined title + photoArea view as UIImage
+    func snapshotCombinedView() -> UIImage? {
+        let width = UIScreen.main.bounds.width * 0.8
+        let photoAreaWidth = min(width - 60, 330)
+        let photoAreaHeight = photoAreaWidth * (4.0 / 3.0)
+        // Estimate total height for title + spacing + photo area
+        let totalHeight: CGFloat = 40 + photoAreaHeight + 10
 
-        // Create hosting controller for the photoArea view
-        let controller = UIHostingController(rootView: photoArea)
-        controller.view.bounds = CGRect(x: 0, y: 0, width: photoAreaWidth, height: photoAreaHeight)
+        let controller = UIHostingController(rootView: combinedSnapshotView)
+        controller.view.bounds = CGRect(x: 0, y: 0, width: width, height: totalHeight)
         controller.view.backgroundColor = UIColor.clear
 
-        // Render the view to UIImage
         let renderer = UIGraphicsImageRenderer(size: controller.view.bounds.size)
         return renderer.image { _ in
             controller.view.drawHierarchy(in: controller.view.bounds, afterScreenUpdates: true)
         }
     }
 
-    // Save UIImage to photo library
+    // Save UIImage to Photos library
     func saveImageToPhotos(_ image: UIImage) {
         UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-    }
-}
-
-struct ScrapBookDrag_Previews: PreviewProvider {
-    static var previews: some View {
-        ScrapBookDrag(image: Image("displayImage3"))
     }
 }
