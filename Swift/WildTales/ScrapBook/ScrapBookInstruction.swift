@@ -3,7 +3,7 @@
 //  WildTales
 //
 //  Created by Yujie Wei on 18/4/2025.
-//
+//  A instruction page which provides guidances and hints
 
 import SwiftUI
 
@@ -28,7 +28,6 @@ struct ScrapBookInstruction: View {
             VStack(alignment: .leading) {
                 Spacer().frame(height: UIScreen.main.bounds.height * 0.17)
                 Rectangle()
-                    //.padding(.top, UIScreen.main.bounds.height * 0.1)
                     .frame(width: UIScreen.main.bounds.width - 100, height: 360)
                     .cornerRadius(20)
                     .foregroundColor(.white)

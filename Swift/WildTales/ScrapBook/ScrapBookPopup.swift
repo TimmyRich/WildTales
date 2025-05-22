@@ -4,7 +4,7 @@
 //
 //  Created by Yujie Wei on 18/4/2025.
 //
-//  The popup page containing image carousel
+//  The popup page containing image carousel, it also allows user to select photo from album to display
 //  Use the code from the following content
 //  Reference https://stackoverflow.com/questions/56760335/how-to-round-specific-corners-of-a-view
 //  Function processSelectedImage is derived from google gemini with prompt "for this page, we want to allow user to select photo from album, and then display the image in the Carousel.". The other parts of code like variables and CarouselView are also modified according to this function
@@ -122,6 +122,10 @@ struct Header: View {
                 Spacer()
 
                 Button {
+                    AudioManager.playSound(
+                        soundName: "boing.wav",
+                        soundVol: 0.5
+                    )
                     addPhotoAction()
                 } label: {
                     Image(systemName: "plus.circle.fill")

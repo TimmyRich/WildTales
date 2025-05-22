@@ -55,7 +55,7 @@ struct ImageItem: Identifiable, Codable {
 }
 
 
-// Function manages the array of `ImageItem` objects, it saves the image list in JSON format.
+// Function manages the array of ImageItem objects, it saves and loads the image list in JSON format.
 class ImageStore {
     static let shared = ImageStore()
     private let imagesKey = "storedScrapbookImages_v1" // Key for UserDefaults

@@ -8,8 +8,10 @@
 //  Inspired by https://www.youtube.com/watch?v=2ZK5wfbvvS4
 //  Inspired by https://www.youtube.com/watch?v=lMteVjlOIbM
 //  Inspired by https://www.youtube.com/watch?v=ZkOvD3okAJo
+//  Drag page allows users to decorate the selected picture. They can drag stickers and place them on picture, edit the title and save the edited picture to album.
 //
 // Save Image button was taken from ChatGPT, prompt was "Make the 'Save Image' button take a screenshot of the photo with pins and save it to the users photo library.
+// Function createDragGesture and function undoLastAction are derived from google gemini with the prompt "If I want to drag and drop the sticker image to the scene image. How can I edit code to do it?" The other parts of code like variables dragStartPosition,currentDragSticker, dragOffset, etc are also modified based on the change according to the code provided by genAI
 
 import PhotosUI
 import SwiftUI
@@ -378,6 +380,7 @@ struct ScrapBookDrag: View {
     }
 
     // Creates the drag gesture for stickers in the sticker bar
+    // Edit the following code based on the usage of AI Gemini
     func createDragGesture(for sticker: SelectSticker) -> some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { value in
@@ -420,6 +423,7 @@ struct ScrapBookDrag: View {
             finishedSticker.removeLast()
         }
     }
+    // End AI assisted coding
 
     // Provides a fixed safe area bottom padding value
     func safeAreaBottom() -> CGFloat { return 30 }
@@ -459,6 +463,6 @@ struct ScrapBookDrag: View {
 
 struct ScrapBookDrag_Previews: PreviewProvider {
     static var previews: some View {
-        ScrapBookDrag(image: Image("samplePhoto"))
+        ScrapBookDrag(image: Image("displayImage2"))
     }
 }
