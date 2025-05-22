@@ -11,12 +11,14 @@
 
 import SwiftUI
 
+// Represents a sticker that has been dropped onto the photo
 struct DropSticker: Identifiable {
     let id = UUID()
     var imageName: String
     var position: CGPoint
 }
 
+// Represents a sticker available for selection in the sticker bar
 struct SelectSticker: Identifiable {
     let id = UUID()
     let imageName: String
@@ -27,17 +29,24 @@ struct ScrapBookDrag: View {
 
     @Environment(\.presentationMode) var goBack
 
+    // Array holding all stickers dropped on the photo
     @State private var finishedSticker: [DropSticker] = []
+    // Currently dragged sticker (if any)
     @State private var currentDragSticker: SelectSticker? = nil
+    // Current drag offset from the initial drag start position
     @State private var dragOffset: CGSize = .zero
+    // The starting position of the drag gesture in global coordinates
     @State private var dragStartPosition: CGPoint? = nil
+    // Frame of the photo area in global coordinates for hit-testing
     @State private var photoAreaLocation: CGRect = .zero
+    // Index to manage scrolling of the sticker bar
     @State private var stickerIndex = 2
 
     let areaCoordinateSpace = "photoDropArea"
     let zoomedStickerSize: CGFloat = 70
     let placedStickerSize: CGFloat = 60
 
+    // Stickers available to select from the sticker bar
     let StickersInBar: [SelectSticker] = [
         SelectSticker(imageName: "badgeQuin"),
         SelectSticker(imageName: "badgeBird"),
@@ -56,6 +65,7 @@ struct ScrapBookDrag: View {
                 BottomButton
             }
 
+            // Show the sticker being dragged, semi-transparent and following the drag
             if let sticker = currentDragSticker, let startPos = dragStartPosition {
                 Image(sticker.imageName)
                     .resizable()
@@ -66,6 +76,7 @@ struct ScrapBookDrag: View {
                               y: startPos.y + dragOffset.height)
             }
 
+            // Back button at the top left
             TopBackButton
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .padding(.top, 40)
@@ -76,6 +87,7 @@ struct ScrapBookDrag: View {
         .navigationBarHidden(true)
     }
 
+    // Header view with title and undo button
     var Header: some View {
         HStack {
             Spacer().frame(width: UIScreen.main.bounds.width * 0.2)
@@ -91,7 +103,7 @@ struct ScrapBookDrag: View {
                 Image(systemName: "arrow.uturn.backward.circle")
                     .font(.title)
             }
-            .disabled(finishedSticker.isEmpty)
+            .disabled(finishedSticker.isEmpty) // Disable undo if no stickers placed
             .padding(.trailing, 20)
         }
         .foregroundColor(.green1)
@@ -99,10 +111,12 @@ struct ScrapBookDrag: View {
         .padding(.top, safeAreaTop())
     }
 
+    // Main photo area where stickers are dropped
     var PrimaryPhoto: some View {
         GeometryReader { geometry in
             photoArea
                 .frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
+                // Capture the frame of the photo area for hit testing during drag end
                 .onAppear {
                     photoAreaLocation = geometry.frame(in: .global)
                 }
@@ -115,6 +129,7 @@ struct ScrapBookDrag: View {
                height: UIScreen.main.bounds.height * 0.4)
     }
 
+    // The photo with all placed stickers drawn on top
     var photoArea: some View {
         let screenWidth = UIScreen.main.bounds.width
         let photoAreaWidth = min(screenWidth - 60, 330)
@@ -127,6 +142,7 @@ struct ScrapBookDrag: View {
                 .frame(width: photoAreaWidth, height: photoAreaHeight)
                 .clipped()
 
+            // Draw each placed sticker at its position
             ForEach(finishedSticker) { sticker in
                 Image(sticker.imageName)
                     .resizable()
@@ -138,6 +154,7 @@ struct ScrapBookDrag: View {
         }.frame(width: photoAreaWidth, height: photoAreaHeight)
     }
 
+    // Horizontal scrollable sticker selection bar with forward/back buttons
     var StickerSelectionView: some View {
         ScrollViewReader { proxy in
             HStack(spacing: 15) {
@@ -165,7 +182,7 @@ struct ScrapBookDrag: View {
                                 .frame(height: 60)
                                 .cornerRadius(5)
                                 .id(sticker.id)
-                                .gesture(createDragGesture(for: sticker))
+                                .gesture(createDragGesture(for: sticker)) // Attach drag gesture to each sticker image
                         }
                     }
                     .padding(.horizontal, 5)
@@ -183,7 +200,7 @@ struct ScrapBookDrag: View {
                     Image("forward_button")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 40, height: 40)
+                        .frame(width: 40)
                         .padding(.trailing, -7)
                 }.disabled(stickerIndex >= StickersInBar.count - 1)
             }
@@ -192,6 +209,7 @@ struct ScrapBookDrag: View {
         }
     }
 
+    // Bottom buttons for adding stickers or writing experiences (placeholders)
     var BottomButton: some View {
         HStack(spacing: 30) {
             Spacer()
@@ -221,6 +239,7 @@ struct ScrapBookDrag: View {
         .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(.black), lineWidth: 1))
     }
 
+    // Top left back button to dismiss view
     var TopBackButton: some View {
         Button {
             AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
@@ -235,6 +254,7 @@ struct ScrapBookDrag: View {
         .padding(.vertical, 10)
     }
 
+    // Creates a drag gesture for a given sticker to enable drag-and-drop onto photo
     func createDragGesture(for sticker: SelectSticker) -> some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { value in
@@ -244,6 +264,7 @@ struct ScrapBookDrag: View {
                                     height: value.location.y - value.startLocation.y)
             }
             .onEnded { value in
+                // If drag ended inside the photo area, add sticker at local position
                 if let currentSticker = currentDragSticker,
                    photoAreaLocation.contains(value.location) {
                     let localX = value.location.x - photoAreaLocation.origin.x
@@ -252,12 +273,14 @@ struct ScrapBookDrag: View {
                     let newSticker = DropSticker(imageName: currentSticker.imageName, position: localPosition)
                     finishedSticker.append(newSticker)
                 }
+                // Reset drag state
                 currentDragSticker = nil
                 dragOffset = .zero
                 dragStartPosition = nil
             }
     }
 
+    // Removes the last placed sticker (undo)
     func undoLastAction() {
         if !finishedSticker.isEmpty {
             finishedSticker.removeLast()
@@ -266,7 +289,9 @@ struct ScrapBookDrag: View {
         }
     }
 
+    // Approximate safe area top inset
     func safeAreaTop() -> CGFloat { return 40 }
+    // Approximate safe area bottom inset
     func safeAreaBottom() -> CGFloat { return 30 }
 }
 

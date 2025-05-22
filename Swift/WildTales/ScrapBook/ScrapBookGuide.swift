@@ -4,7 +4,7 @@
 //
 //  Created by Kurt McCullough on 31/3/2025.
 //  Updated by Yujie Wei on 18/4/2025.
-//  Scrapbook main landing page with update visual elements. It provide users with 
+//  Scrapbook main landing page with update visual elements. It provide users with
 //  Inspired by https://www.youtube.com/watch?v=OaIn7HBlCSk
 
 import SwiftUI
@@ -12,7 +12,7 @@ import UIKit
 import AVFoundation
 import Photos
 
-// MARK: - CameraView for taking photo
+// CameraView for taking photo
 
 struct CameraView: UIViewControllerRepresentable {
     @Environment(\.dismiss) var dismiss
@@ -53,7 +53,7 @@ struct CameraView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
 }
 
-// MARK: - PhotoLibraryView for picking photo from album
+// PhotoLibraryView for picking photo from album
 
 struct PhotoLibraryView: UIViewControllerRepresentable {
     @Environment(\.dismiss) var dismiss
@@ -94,7 +94,7 @@ struct PhotoLibraryView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
 }
 
-// MARK: - ScrapBookGuide View
+// Main ScrapBookGuide View
 
 struct ScrapBookGuide: View {
     @Environment(\.dismiss) var dismiss
@@ -295,7 +295,7 @@ struct ScrapBookGuide: View {
         }
     }
 
-    // MARK: - Camera permission check and show camera if allowed
+    // Camera permission check and show camera if allowed
 
     func checkCameraPermissionAndShow() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -318,7 +318,7 @@ struct ScrapBookGuide: View {
         }
     }
 
-    // MARK: - Photo library permission check and show photo library if allowed
+    // Photo library permission check and show photo library if allowed
 
     func checkPhotoLibraryPermissionAndShow() {
         let status = PHPhotoLibrary.authorizationStatus()
@@ -343,11 +343,10 @@ struct ScrapBookGuide: View {
     }
 }
 
-// MARK: - Preview
+// Preview for ScrapBookGuide
 
 struct ScrapBookGuide_Previews: PreviewProvider {
     static var previews: some View {
         ScrapBookGuide().environmentObject(PopupManager())
     }
 }
-
