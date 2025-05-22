@@ -3,7 +3,7 @@
 //  WildTales
 //
 //  Created by Yujie Wei on 18/4/2025.
-//
+//  A instruction page which provides guidances on how to use scrapbook
 
 import SwiftUI
 
@@ -24,11 +24,12 @@ struct ScrapBookInstruction: View {
                         .offset(y: 35)
                 }
             }
-
+            
+            // Main content area
             VStack(alignment: .leading) {
                 Spacer().frame(height: UIScreen.main.bounds.height * 0.17)
+                // The outside white card
                 Rectangle()
-                    //.padding(.top, UIScreen.main.bounds.height * 0.1)
                     .frame(width: UIScreen.main.bounds.width - 100, height: 360)
                     .cornerRadius(20)
                     .foregroundColor(.white)
@@ -40,6 +41,7 @@ struct ScrapBookInstruction: View {
                             Text("Scrapbook").font(
                                 Font.custom("Inter", size: 22)
                             ).foregroundColor(.green1).padding(.bottom, 15)
+                            // The inner green card 
                             Rectangle()
                                 .frame(
                                     width: UIScreen.main.bounds.width - 140,

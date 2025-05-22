@@ -3,6 +3,7 @@
 //  WildTales
 //
 //  Created by Yujie on 2025/4/30.
+//  It allows users to select from photo library in SwiftUi view
 //  Heavily inspired by the following content
 //  Reference https://www.youtube.com/watch?v=g-lJ2ODJD8E
 
@@ -11,6 +12,7 @@ import SwiftUI
 struct ImagePicker: UIViewControllerRepresentable {
 
     @Binding var selectedImage: UIImage?
+    // dimiss the image picker view
     @Environment(\.presentationMode) private var presentationMode
 
     // Create delegate and set the source as album
@@ -33,7 +35,7 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator(parent: self)
+        return ImagePicker.Coordinator(parent: self)
     }
 
     class Coordinator: NSObject, UIImagePickerControllerDelegate,
@@ -44,7 +46,7 @@ struct ImagePicker: UIViewControllerRepresentable {
             self.parent = parent
         }
 
-        // It is called when user selects a photo, convert UIImage to png
+        // It is called when user successfully selects a photo, convert UIImage to png
         func imagePickerController(
             _ picker: UIImagePickerController,
             didFinishPickingMediaWithInfo info: [UIImagePickerController
