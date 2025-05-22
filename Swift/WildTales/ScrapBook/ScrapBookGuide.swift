@@ -114,7 +114,8 @@ struct ScrapBookGuide: View {
                     Image("scrapbookBackground")
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(height: 400)
+                        .frame(height: UIScreen.main.bounds.height)
+                        .ignoresSafeArea(.all)
                 }
                 .edgesIgnoringSafeArea(.all)
 
@@ -236,10 +237,12 @@ struct ScrapBookGuide: View {
                         } label: {
                             Image(systemName: "chevron.left")
                         }
+                        .ignoresSafeArea(.all)
                         .font(.system(size: 40))
                         .foregroundColor(Color("HunterGreen"))
                         .shadow(radius: 5)
-                        .padding([.top, .leading], 40)
+                        .padding(.leading, 40)
+                        .padding(.top, 70)
 
                         Spacer()
                     }
