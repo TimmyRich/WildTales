@@ -33,7 +33,7 @@ struct ScrapBookPopup: View {
                             self.showImagePickerSheet = true
                         }
                     )
-                    .padding(.bottom, 20)
+                    .padding(.top, 20)
 
                    
                     CarouselView(carouselImages: currentImageList, currentIndex: $currentIndex)
@@ -43,7 +43,8 @@ struct ScrapBookPopup: View {
                 }
                 .background(Color.white)
                 .cornerRadius(30, corners: [.topLeft, .topRight])
-                .padding(.top, 80)
+                // change the height of pop up page
+                .padding(.top, UIScreen.main.bounds.width * 0.17)
             }
         }
         .sheet(isPresented: $showImagePickerSheet, onDismiss: processSelectedImage) {
