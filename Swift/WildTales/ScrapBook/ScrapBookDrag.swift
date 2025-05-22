@@ -89,14 +89,6 @@ struct ScrapBookDrag: View {
             }
 
             // Back button at the top left
-            TopBackButton
-                .frame(
-                    maxWidth: .infinity,
-                    maxHeight: .infinity,
-                    alignment: .topLeading
-                )
-                .padding(.top, 40)
-                .ignoresSafeArea()
         }
         .ignoresSafeArea(.container, edges: .bottom)
         .background(Color.white)
@@ -149,12 +141,25 @@ struct ScrapBookDrag: View {
                 }
                 .disabled(finishedSticker.isEmpty)
                 .padding(.leading, UIScreen.main.bounds.width-70)
+                .padding(.bottom)
+                
+                Button {
+                    AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                    goBack.wrappedValue.dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                }
+                .font(.system(size: 40))
+                .foregroundColor(Color("HunterGreen"))
+                .shadow(radius: 5)
+                .padding(.trailing, UIScreen.main.bounds.width-70)
                 
             }
         }
         .foregroundColor(.green1)
         .frame(height: 50)
         .padding(.top)
+        
     }
 
     // Main photo area where stickers are dropped
@@ -331,20 +336,6 @@ struct ScrapBookDrag: View {
         )
     }
 
-    // Top left back button to dismiss view
-    var TopBackButton: some View {
-        Button {
-            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
-            goBack.wrappedValue.dismiss()
-        } label: {
-            Image(systemName: "chevron.left")
-        }
-        .font(.system(size: 40))
-        .foregroundColor(Color("HunterGreen"))
-        .shadow(radius: 5)
-        .padding(.leading, 30)
-        .padding(.top, 38)
-    }
 
     // Creates a drag gesture for a given sticker to enable drag-and-drop onto photo
     func createDragGesture(for sticker: SelectSticker) -> some Gesture {

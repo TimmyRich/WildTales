@@ -164,7 +164,7 @@ struct ScrapBookGuide: View {
                                 Image("albumButton")
                                     .resizable()
                                     .frame(width: 60, height: 60)
-                                    .hapticOnTouch()
+                                    
                             }
 
                             Text("Add from Album")
@@ -237,12 +237,11 @@ struct ScrapBookGuide: View {
                         } label: {
                             Image(systemName: "chevron.left")
                         }
-                        .ignoresSafeArea(.all)
                         .font(.system(size: 40))
                         .foregroundColor(Color("HunterGreen"))
                         .shadow(radius: 5)
-                        .padding(.leading, 40)
-                        .padding(.top, 70)
+                        .padding(.leading, 25)
+                        .padding(.top, 50)
 
                         Spacer()
                     }
