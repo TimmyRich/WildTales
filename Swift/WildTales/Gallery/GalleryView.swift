@@ -39,7 +39,7 @@ struct GalleryView: View {
                             .foregroundColor(.lightGrey)
                             
                         VStack {
-                            Text("Gallery")
+                            Text("Artworks")
                                 .font(.system(size: 32, design: .default))
                                 .foregroundStyle(.green1)
                             Text("Select your trail")

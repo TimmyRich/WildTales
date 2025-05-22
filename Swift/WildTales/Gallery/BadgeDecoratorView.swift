@@ -51,6 +51,13 @@ struct BadgeDecoratorView: View {
     @State private var currentIndex: Int = 0
     let scrollStep = 3
 
+    // Track the safe image rect so BadgeView and DragTarget can use it
+    @State private var imageRect: CGRect = .zero
+
+    // For dragging badges from the bottom row
+    @State private var draggedBadgeName: String? = nil
+    @State private var dragLocation: CGPoint = .zero
+
     var body: some View {
         VStack {
 
@@ -67,7 +74,6 @@ struct BadgeDecoratorView: View {
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
 
-            // Define safe area within the trail image
             GeometryReader { geo in
                 ZStack {
                     let imageWidth: CGFloat = screenWidth * 0.6
@@ -77,17 +83,27 @@ struct BadgeDecoratorView: View {
                         y: (geo.size.height - imageHeight) / 2
                     )
 
-                    let imageRect = CGRect(
+                    let rect = CGRect(
                         origin: imageOrigin,
                         size: CGSize(width: imageWidth, height: imageHeight)
                     )
+
+                    // Save the imageRect state for access elsewhere
+                    Color.clear
+                        .onAppear {
+                            imageRect = rect
+                        }
+                        .onChange(of: geo.size) { _ in
+                            imageRect = rect
+                        }
 
                     Image(trailName)
                         .resizable()
                         .scaledToFit()
                         .frame(width: imageWidth, height: imageHeight)
-                        .position(x: imageRect.midX, y: imageRect.midY)
+                        .position(x: rect.midX, y: rect.midY)
 
+                    // Existing badges on the image
                     ForEach($badgeLoader.data) { $badge in
                         if badge.parentImage == trailName && availableBadges.contains(badge.imageName) {
                             BadgeView(
@@ -101,13 +117,22 @@ struct BadgeDecoratorView: View {
                             )
                         }
                     }
+
+                    // Badge being dragged from bottom row (ghost)
+                    if let draggedName = draggedBadgeName {
+                        Image(draggedName)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 50, height: 50)
+                            .position(dragLocation)
+                            .opacity(0.8)
+                    }
                 }
                 .frame(width: geo.size.width, height: geo.size.height)
             }
+            .frame(height: screenHeight * 0.65)
 
             // Badge selector with scroll buttons
-            // Scroll buttons added using prompt: "Add buttons to my BadgeDecoratorView
-            // which when pressed scroll through the ScrollView"
             HStack(alignment: .center, spacing: 10) {
                 Button(action: {
                     if currentIndex > 0 {
@@ -128,24 +153,25 @@ struct BadgeDecoratorView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 20) {
                             ForEach(Array(availableBadges.enumerated()), id: \.element) { index, badgeName in
-                                Button(action: {
-                                    let newBadge = Badge(
-                                        imageName: badgeName,
-                                        x: 200,
-                                        y: 300,
-                                        parentImage: trailName
-                                    )
-                                    badgeLoader.addBadge(newBadge)
-                                    AudioManager.playSound(
-                                        soundName: "boing.wav",
-                                        soundVol: 0.5
-                                    )
-                                }) {
-                                    Image(badgeName)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(height: 50)
-                                }
+                                BadgeDragSource(
+                                    badgeName: badgeName,
+                                    imageRect: imageRect,
+                                    onDropOnImage: { location in
+                                        let newBadge = Badge(
+                                            imageName: badgeName,
+                                            x: location.x,
+                                            y: location.y,
+                                            parentImage: trailName
+                                        )
+                                        badgeLoader.addBadge(newBadge)
+                                        AudioManager.playSound(
+                                            soundName: "boing.wav",
+                                            soundVol: 0.5
+                                        )
+                                    },
+                                    draggedBadgeName: $draggedBadgeName,
+                                    dragLocation: $dragLocation
+                                )
                                 .id(index)
                             }
                         }
@@ -174,7 +200,7 @@ struct BadgeDecoratorView: View {
                         .shadow(radius: 5)
                 }
                 .padding(.trailing)
-                
+
                 Button(action: {
                     if currentIndex < availableBadges.count - 1 {
                         currentIndex = min(availableBadges.count - 1, currentIndex + scrollStep)
@@ -189,14 +215,13 @@ struct BadgeDecoratorView: View {
                         .frame(width: 30, height: 30)
                         .foregroundColor(.blue)
                 }
-
-                
             }
             .frame(width: UIScreen.main.bounds.width * 0.9, height: 70)
             .padding(.bottom)
         }
+        .coordinateSpace(name: "badgeSpace")
         .navigationBarBackButtonHidden(true)
-        .toolbar {
+        .toolbar(content: {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
                     badgeLoader.saveBadges()
@@ -212,12 +237,14 @@ struct BadgeDecoratorView: View {
                         .frame(width: 30, height: 30)
                 }
             }
-        }
+        })
         .onDisappear {
             badgeLoader.saveBadges()
         }
     }
 }
+
+// MARK: - BadgeView
 
 struct BadgeView: View {
     @Binding var badge: Badge
@@ -283,3 +310,55 @@ struct BadgeView: View {
         }
     }
 }
+
+// MARK: - BadgeDragSource
+
+/// A badge in the bottom row that can be dragged onto the image
+struct BadgeDragSource: View {
+    let badgeName: String
+    let imageRect: CGRect
+    let onDropOnImage: (CGPoint) -> Void
+
+    @Binding var draggedBadgeName: String?
+    @Binding var dragLocation: CGPoint
+
+    @State private var dragOffset: CGSize = .zero
+
+    var body: some View {
+        GeometryReader { geo in
+            Image(badgeName)
+                .resizable()
+                .scaledToFit()
+                .frame(height: 50)
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            draggedBadgeName = badgeName
+
+                            let badgeFrame = geo.frame(in: .named("badgeSpace"))
+                            dragLocation = CGPoint(
+                                x: badgeFrame.minX + value.location.x,
+                                y: badgeFrame.minY + value.location.y
+                            )
+                        }
+                        .onEnded { value in
+                            draggedBadgeName = nil
+                            dragOffset = .zero
+
+                            let badgeFrame = geo.frame(in: .named("badgeSpace"))
+                            let dropPoint = CGPoint(
+                                x: badgeFrame.minX + value.location.x,
+                                y: badgeFrame.minY + value.location.y
+                            )
+
+                            if imageRect.contains(dropPoint) {
+                                onDropOnImage(dropPoint)
+                            }
+                        }
+                )
+        }
+        .frame(width: 50, height: 50)
+
+    }
+}
+

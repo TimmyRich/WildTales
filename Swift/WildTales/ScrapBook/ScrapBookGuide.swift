@@ -147,11 +147,11 @@ struct ScrapBookGuide: View {
                 }
 
                 VStack(spacing: 10) {
-                    Text("Scrapbook")
+                    Text("Gallery")
                         .font(Font.custom("Inter", size: 26))
                         .foregroundColor(.green1)
 
-                    Text("Keep all your memories safe!")
+                    Text("View All Your Memories!")
                         .font(Font.custom("Inter", size: 14))
                         .foregroundColor(.green1)
                         .padding(.bottom, 20)
