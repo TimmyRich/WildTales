@@ -4,7 +4,7 @@
 //
 //  Created by Kurt McCullough on 31/3/2025.
 //  Updated by Yujie Wei on 18/4/2025.
-//  Scrapbook main landing page with update visual elements. It provide users with
+//  Scrapbook main landing page with update visual elements. It serves as an entry point for Gallery.
 //  Inspired by https://www.youtube.com/watch?v=OaIn7HBlCSk
 
 import AVFoundation
@@ -13,11 +13,12 @@ import SwiftUI
 import UIKit
 
 // CameraView for taking photo
-
 struct CameraView: UIViewControllerRepresentable {
+    // Environment variable to dismiss view
     @Environment(\.dismiss) var dismiss
     var onImagePicked: (UIImage) -> Void
-
+    
+    // handle delegate of UIImagePickerController
     class Coordinator: NSObject, UINavigationControllerDelegate,
         UIImagePickerControllerDelegate
     {
@@ -26,7 +27,8 @@ struct CameraView: UIViewControllerRepresentable {
         init(_ parent: CameraView) {
             self.parent = parent
         }
-
+        
+        // when an image is successfully selected
         func imagePickerController(
             _ picker: UIImagePickerController,
             didFinishPickingMediaWithInfo info: [UIImagePickerController
@@ -46,7 +48,8 @@ struct CameraView: UIViewControllerRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-
+    
+    // Configure for camera
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
         picker.sourceType = .camera
@@ -114,6 +117,7 @@ struct PhotoLibraryView: UIViewControllerRepresentable {
 
 struct ScrapBookGuide: View {
     @Environment(\.dismiss) var dismiss
+    // Manages the gallery popup page
     @EnvironmentObject var popupManager: PopupManager
 
     @State private var showCamera = false
@@ -145,7 +149,8 @@ struct ScrapBookGuide: View {
                             .frame(width: 170, height: 200, alignment: .bottom)
                     }
                 }
-
+                
+                // Main content rectangle
                 VStack {
                     Spacer()
 
@@ -176,6 +181,8 @@ struct ScrapBookGuide: View {
                         .padding(.bottom, 20)
 
                     HStack(spacing: 30) {
+                        
+                        // Navigate to drag and drop page
                         VStack {
                             Button {
                                 checkPhotoLibraryPermissionAndShow()
@@ -189,7 +196,8 @@ struct ScrapBookGuide: View {
                             Text("Add from Album")
                                 .font(Font.custom("Inter", size: 8))
                         }
-
+                        
+                        // Camera button
                         VStack {
                             Button {
                                 checkCameraPermissionAndShow()
@@ -205,7 +213,8 @@ struct ScrapBookGuide: View {
                         }
                     }
                     .padding(.bottom, 15)
-
+                    
+                    // Navigate to instruction page
                     NavigationLink(
                         destination: ScrapBookInstruction()
                             .navigationBarBackButtonHidden(true)
@@ -225,7 +234,8 @@ struct ScrapBookGuide: View {
                             .font(Font.custom("Inter", size: 12))
                     }
                     .hapticOnTouch()
-
+                    
+                    // Popup gallery
                     Button("Show Image Gallery") {
                         withAnimation(.spring()) {
                             popupManager.present()
@@ -259,7 +269,8 @@ struct ScrapBookGuide: View {
                     }
 
                 }
-
+                
+                // Back button
                 HStack {
                     VStack(alignment: .leading) {
                         Button {
@@ -281,7 +292,8 @@ struct ScrapBookGuide: View {
                     }
                     Spacer()
                 }
-
+                
+                // Permission denied alert
                 if showPermissionDeniedAlert {
                     Color.black.opacity(0.4)
                         .edgesIgnoringSafeArea(.all)
@@ -306,6 +318,7 @@ struct ScrapBookGuide: View {
                 }
             }
             .overlay(alignment: .bottom) {
+                // Overlay of gallery popup page
                 if popupManager.action.isPresented {
                     ScrapBookPopup {
                         withAnimation(.spring()) {
