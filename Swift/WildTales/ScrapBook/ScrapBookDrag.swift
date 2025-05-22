@@ -10,6 +10,7 @@
 //  Function createDragGesture and function undoLastAction are derived from google gemini with the prompt "If I want to drag and drop the sticker image to the scene image. How can I edit code to do it?" The other parts of code like variables dragStartPosition,currentDragSticker, dragOffset, etc are also modified according to the code provided by genAI
 
 import SwiftUI
+import PhotosUI
 
 // Represents a sticker that has been dropped onto the photo
 struct DropSticker: Identifiable {
@@ -41,6 +42,13 @@ struct ScrapBookDrag: View {
     @State private var photoAreaLocation: CGRect = .zero
     // Index to manage scrolling of the sticker bar
     @State private var stickerIndex = 2
+
+    // New state for editable title and showing alert
+    @State private var titleText: String = "Title Text"
+    @State private var isEditingTitle: Bool = false
+
+    // New state for showing confirmation alert after saving image
+    @State private var showSaveConfirmation = false
 
     let areaCoordinateSpace = "photoDropArea"
     let zoomedStickerSize: CGFloat = 70
@@ -85,6 +93,21 @@ struct ScrapBookDrag: View {
         .ignoresSafeArea(.container, edges: .bottom)
         .background(Color.white)
         .navigationBarHidden(true)
+
+        // Alert for editing title
+        .alert("Edit Title", isPresented: $isEditingTitle, actions: {
+            TextField("Title", text: $titleText)
+            Button("Done", role: .cancel) { }
+        }, message: {
+            Text("Enter a new title for your scrapbook")
+        })
+
+        // Confirmation alert after saving image
+        .alert("Saved!", isPresented: $showSaveConfirmation) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Your edited image has been saved to your phone's photo library!")
+        }
     }
 
     // Header view with title and undo button
@@ -92,8 +115,13 @@ struct ScrapBookDrag: View {
         HStack {
             Spacer().frame(width: UIScreen.main.bounds.width * 0.2)
             VStack {
-                Text("At Tropical Dome").bold().font(Font.custom("Inter", size: 30)).foregroundColor(.green1)
-                Text("Drag sticker to decorate photo").font(.subheadline).foregroundColor(.gray)
+                Text(titleText)
+                    .bold()
+                    .font(Font.custom("Inter", size: 30))
+                    .foregroundColor(.green1)
+                Text("Drag sticker to decorate photo")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
             }
             Spacer()
             Button {
@@ -103,7 +131,7 @@ struct ScrapBookDrag: View {
                 Image(systemName: "arrow.uturn.backward.circle")
                     .font(.title)
             }
-            .disabled(finishedSticker.isEmpty) // Disable undo if no stickers placed
+            .disabled(finishedSticker.isEmpty)
             .padding(.trailing, 20)
         }
         .foregroundColor(.green1)
@@ -182,7 +210,7 @@ struct ScrapBookDrag: View {
                                 .frame(height: 60)
                                 .cornerRadius(5)
                                 .id(sticker.id)
-                                .gesture(createDragGesture(for: sticker)) // Attach drag gesture to each sticker image
+                                .gesture(createDragGesture(for: sticker))
                         }
                     }
                     .padding(.horizontal, 5)
@@ -209,25 +237,31 @@ struct ScrapBookDrag: View {
         }
     }
 
-    // Bottom buttons for adding stickers or writing experiences (placeholders)
+    // Bottom buttons for adding stickers or writing experiences
     var BottomButton: some View {
         HStack(spacing: 30) {
             Spacer()
             Button {
-                print("Add some sticker")
+                if let screenshot = snapshotPhotoArea() {
+                    saveImageToPhotos(screenshot)
+                    showSaveConfirmation = true   // Show confirmation alert here
+                    AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                } else {
+                    print("Failed to capture screenshot")
+                }
             } label: {
                 VStack(spacing: 8) {
                     Image(systemName: "camera.fill").font(.system(size: 24))
-                    Text("Add Some\nStickers").font(.caption).multilineTextAlignment(.center).lineLimit(2)
+                    Text("Save Image").font(.caption).multilineTextAlignment(.center).lineLimit(2)
                 }.foregroundColor(.green1).frame(minWidth: 100)
             }
             Spacer()
             Button {
-                print("Write experience")
+                isEditingTitle = true
             } label: {
                 VStack(spacing: 8) {
                     Image(systemName: "pencil.line").font(.system(size: 24))
-                    Text("Write Your\nExperience").font(.caption).multilineTextAlignment(.center).lineLimit(2)
+                    Text("Change Title").font(.caption).multilineTextAlignment(.center).lineLimit(2)
                 }.foregroundColor(.green1).frame(minWidth: 100)
             }
             Spacer()
@@ -293,6 +327,29 @@ struct ScrapBookDrag: View {
     func safeAreaTop() -> CGFloat { return 40 }
     // Approximate safe area bottom inset
     func safeAreaBottom() -> CGFloat { return 30 }
+
+    // Capture a snapshot of the photoArea view as UIImage
+    func snapshotPhotoArea() -> UIImage? {
+        let screenWidth = UIScreen.main.bounds.width
+        let photoAreaWidth = min(screenWidth - 60, 330)
+        let photoAreaHeight = photoAreaWidth * (4.0/3.0)
+
+        // Create hosting controller for the photoArea view
+        let controller = UIHostingController(rootView: photoArea)
+        controller.view.bounds = CGRect(x: 0, y: 0, width: photoAreaWidth, height: photoAreaHeight)
+        controller.view.backgroundColor = UIColor.clear
+
+        // Render the view to UIImage
+        let renderer = UIGraphicsImageRenderer(size: controller.view.bounds.size)
+        return renderer.image { _ in
+            controller.view.drawHierarchy(in: controller.view.bounds, afterScreenUpdates: true)
+        }
+    }
+
+    // Save UIImage to photo library
+    func saveImageToPhotos(_ image: UIImage) {
+        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+    }
 }
 
 struct ScrapBookDrag_Previews: PreviewProvider {
