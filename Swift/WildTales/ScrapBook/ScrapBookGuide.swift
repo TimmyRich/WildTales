@@ -7,10 +7,10 @@
 //  Scrapbook main landing page with update visual elements. It provide users with
 //  Inspired by https://www.youtube.com/watch?v=OaIn7HBlCSk
 
-import SwiftUI
-import UIKit
 import AVFoundation
 import Photos
+import SwiftUI
+import UIKit
 
 // CameraView for taking photo
 
@@ -18,15 +18,20 @@ struct CameraView: UIViewControllerRepresentable {
     @Environment(\.dismiss) var dismiss
     var onImagePicked: (UIImage) -> Void
 
-    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+    class Coordinator: NSObject, UINavigationControllerDelegate,
+        UIImagePickerControllerDelegate
+    {
         let parent: CameraView
 
         init(_ parent: CameraView) {
             self.parent = parent
         }
 
-        func imagePickerController(_ picker: UIImagePickerController,
-                                   didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        func imagePickerController(
+            _ picker: UIImagePickerController,
+            didFinishPickingMediaWithInfo info: [UIImagePickerController
+                .InfoKey: Any]
+        ) {
             if let image = info[.originalImage] as? UIImage {
                 parent.onImagePicked(image)
             }
@@ -50,7 +55,10 @@ struct CameraView: UIViewControllerRepresentable {
         return picker
     }
 
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+    func updateUIViewController(
+        _ uiViewController: UIImagePickerController,
+        context: Context
+    ) {}
 }
 
 // PhotoLibraryView for picking photo from album
@@ -59,15 +67,20 @@ struct PhotoLibraryView: UIViewControllerRepresentable {
     @Environment(\.dismiss) var dismiss
     var onImagePicked: (UIImage) -> Void
 
-    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+    class Coordinator: NSObject, UINavigationControllerDelegate,
+        UIImagePickerControllerDelegate
+    {
         let parent: PhotoLibraryView
 
         init(_ parent: PhotoLibraryView) {
             self.parent = parent
         }
 
-        func imagePickerController(_ picker: UIImagePickerController,
-                                   didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        func imagePickerController(
+            _ picker: UIImagePickerController,
+            didFinishPickingMediaWithInfo info: [UIImagePickerController
+                .InfoKey: Any]
+        ) {
             if let image = info[.originalImage] as? UIImage {
                 parent.onImagePicked(image)
             }
@@ -91,7 +104,10 @@ struct PhotoLibraryView: UIViewControllerRepresentable {
         return picker
     }
 
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+    func updateUIViewController(
+        _ uiViewController: UIImagePickerController,
+        context: Context
+    ) {}
 }
 
 // Main ScrapBookGuide View
@@ -134,7 +150,10 @@ struct ScrapBookGuide: View {
                     Spacer()
 
                     Rectangle()
-                        .frame(width: UIScreen.main.bounds.width - 100, height: 260)
+                        .frame(
+                            width: UIScreen.main.bounds.width - 100,
+                            height: 260
+                        )
                         .cornerRadius(20)
                         .foregroundColor(.white)
                         .overlay(
@@ -164,7 +183,7 @@ struct ScrapBookGuide: View {
                                 Image("albumButton")
                                     .resizable()
                                     .frame(width: 60, height: 60)
-                                    
+
                             }
 
                             Text("Add from Album")
@@ -187,9 +206,15 @@ struct ScrapBookGuide: View {
                     }
                     .padding(.bottom, 15)
 
-                    NavigationLink(destination: ScrapBookInstruction().navigationBarBackButtonHidden(true)) {
+                    NavigationLink(
+                        destination: ScrapBookInstruction()
+                            .navigationBarBackButtonHidden(true)
+                    ) {
                         Text("Instructions")
-                            .frame(width: UIScreen.main.bounds.width - 260, height: 25)
+                            .frame(
+                                width: UIScreen.main.bounds.width - 260,
+                                height: 25
+                            )
                             .foregroundColor(.black)
                             .cornerRadius(10)
                             .overlay(
@@ -205,7 +230,10 @@ struct ScrapBookGuide: View {
                         withAnimation(.spring()) {
                             popupManager.present()
                         }
-                        AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                        AudioManager.playSound(
+                            soundName: "boing.wav",
+                            soundVol: 0.5
+                        )
                     }
                     .frame(width: UIScreen.main.bounds.width - 220, height: 25)
                     .foregroundColor(.black)
@@ -220,7 +248,10 @@ struct ScrapBookGuide: View {
                     // Hidden NavigationLink to ScrapBookDrag
                     NavigationLink(
                         destination: capturedImage != nil
-                            ? AnyView(ScrapBookDrag(image: capturedImage!).navigationBarBackButtonHidden(true))
+                            ? AnyView(
+                                ScrapBookDrag(image: capturedImage!)
+                                    .navigationBarBackButtonHidden(true)
+                            )
                             : AnyView(EmptyView()),
                         isActive: $navigateToDrag
                     ) {
@@ -232,7 +263,10 @@ struct ScrapBookGuide: View {
                 HStack {
                     VStack(alignment: .leading) {
                         Button {
-                            AudioManager.playSound(soundName: "boing.wav", soundVol: 0.5)
+                            AudioManager.playSound(
+                                soundName: "boing.wav",
+                                soundVol: 0.5
+                            )
                             dismiss()
                         } label: {
                             Image(systemName: "chevron.left")
@@ -247,7 +281,7 @@ struct ScrapBookGuide: View {
                     }
                     Spacer()
                 }
-                
+
                 if showPermissionDeniedAlert {
                     Color.black.opacity(0.4)
                         .edgesIgnoringSafeArea(.all)

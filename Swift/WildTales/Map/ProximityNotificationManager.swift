@@ -31,25 +31,31 @@ class ProximityNotificationManager {
             }
         }
     }
-    
+
     //schedules notifications for 12:00 every day
     // This was created with ChatGPT with the prompt "create some code that sends the user a notification every day at 12:00"
     func scheduleDailyNotification() {
-            let content = UNMutableNotificationContent()
-            content.title = "Lets Go Explore!"
-            content.body = "Jump onto WildTales and explore the world around you!"
-            content.sound = UNNotificationSound.default
+        let content = UNMutableNotificationContent()
+        content.title = "Lets Go Explore!"
+        content.body = "Jump onto WildTales and explore the world around you!"
+        content.sound = UNNotificationSound.default
 
-            var dateComponents = DateComponents()
-            dateComponents.hour = 12
-            dateComponents.minute = 0
+        var dateComponents = DateComponents()
+        dateComponents.hour = 12
+        dateComponents.minute = 0
 
-            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-            let request = UNNotificationRequest(identifier: "dailyNotification", content: content, trigger: trigger)
+        let trigger = UNCalendarNotificationTrigger(
+            dateMatching: dateComponents,
+            repeats: true
+        )
+        let request = UNNotificationRequest(
+            identifier: "dailyNotification",
+            content: content,
+            trigger: trigger
+        )
 
-            UNUserNotificationCenter.current().add(request)
-        }
+        UNUserNotificationCenter.current().add(request)
+    }
     //end AI generated code
-
 
 }

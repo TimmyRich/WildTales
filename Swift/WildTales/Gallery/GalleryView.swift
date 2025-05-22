@@ -37,7 +37,7 @@ struct GalleryView: View {
                         Rectangle()
                             .cornerRadius(60)
                             .foregroundColor(.lightGrey)
-                            
+
                         VStack {
                             Text("Artworks")
                                 .font(.system(size: 32, design: .default))
@@ -81,7 +81,7 @@ struct GalleryView: View {
                                             .resizable()
                                             .scaledToFit()
                                             .cornerRadius(10)
-                                            
+
                                     }.padding(.top, screenHeight * 0.17)
                                 }
                                 .tag(index)
@@ -131,7 +131,7 @@ struct GalleryView: View {
                     }
                     .padding()
                 }
-                
+
                 // Home Button
                 HStack {
                     VStack {

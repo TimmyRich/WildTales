@@ -6,6 +6,9 @@
 'Image(trailName)'. Make a function which checks if a badge has been placed outside of this safe area"
  */
 
+// Code for drag and drop functionality came from ChatGPT, prompt was "make it so i can drag the badges from the bottom of the screen onto the pictures"
+// The code was then changed to allow for a more accurate and precise place of sticker and drag location, so it didnt come from some randomy location on the screen
+
 import SwiftUI
 
 // Get available badges, including unlocked badges
@@ -27,7 +30,10 @@ func getAvailableBadges() -> [String] {
     }
 
     // badges available by default
-    var defaultBadges: [String] = ["moon-badge", "possum-badge", "cloud-badge", "cow-badge", "monkey-badge", "turtle-badge", "tongue-badge"]
+    var defaultBadges: [String] = [
+        "moon-badge", "possum-badge", "cloud-badge", "cow-badge",
+        "monkey-badge", "turtle-badge", "tongue-badge",
+    ]
 
     addZoneBadge(zone: "University of Queensland", badge: "quokka-badge")
     addZoneBadge(zone: "Southbank Parklands", badge: "ibis-badge")
@@ -65,7 +71,9 @@ struct BadgeDecoratorView: View {
             Text("The \(trailName) trail")
                 .font(.title)
                 .padding(.top, -8)
-                .foregroundColor(Color(red: 25 / 255, green: 71 / 255, blue: 41 / 255))
+                .foregroundColor(
+                    Color(red: 25 / 255, green: 71 / 255, blue: 41 / 255)
+                )
 
             // Help message
             Text(helpMessage)
@@ -105,7 +113,9 @@ struct BadgeDecoratorView: View {
 
                     // Existing badges on the image
                     ForEach($badgeLoader.data) { $badge in
-                        if badge.parentImage == trailName && availableBadges.contains(badge.imageName) {
+                        if badge.parentImage == trailName
+                            && availableBadges.contains(badge.imageName)
+                        {
                             BadgeView(
                                 badge: $badge,
                                 imageRect: imageRect,
@@ -152,7 +162,10 @@ struct BadgeDecoratorView: View {
                 ScrollViewReader { proxy in
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 20) {
-                            ForEach(Array(availableBadges.enumerated()), id: \.element) { index, badgeName in
+                            ForEach(
+                                Array(availableBadges.enumerated()),
+                                id: \.element
+                            ) { index, badgeName in
                                 BadgeDragSource(
                                     badgeName: badgeName,
                                     imageRect: imageRect,
@@ -203,7 +216,10 @@ struct BadgeDecoratorView: View {
 
                 Button(action: {
                     if currentIndex < availableBadges.count - 1 {
-                        currentIndex = min(availableBadges.count - 1, currentIndex + scrollStep)
+                        currentIndex = min(
+                            availableBadges.count - 1,
+                            currentIndex + scrollStep
+                        )
                     }
                     AudioManager.playSound(
                         soundName: "boing.wav",
@@ -361,4 +377,3 @@ struct BadgeDragSource: View {
 
     }
 }
-
